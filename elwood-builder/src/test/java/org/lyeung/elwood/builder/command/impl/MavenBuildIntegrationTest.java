@@ -6,11 +6,11 @@ import org.junit.experimental.categories.Category;
 import org.lyeung.elwood.builder.model.BuildModel;
 import org.lyeung.elwood.builder.model.ModelStereotypeUtil;
 import org.lyeung.elwood.common.EncodingConstants;
-import org.lyeung.elwood.common.command.ShellCommandExecutorListener;
 import org.lyeung.elwood.common.command.ShellCommandParamBuilder;
+import org.lyeung.elwood.common.command.event.impl.ShellCommandExecutorEventData;
 import org.lyeung.elwood.common.command.impl.ShellCommandExecutorImpl;
-import org.lyeung.elwood.common.command.impl.ShellCommandExecutorListenerImpl;
 import org.lyeung.elwood.common.command.impl.ShellCommandImpl;
+import org.lyeung.elwood.common.event.impl.DefaultEventListener;
 import org.lyeung.elwood.common.test.SlowTest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -46,8 +46,8 @@ public class MavenBuildIntegrationTest {
         assertEquals(0, exitStatus.intValue());
     }
 
-    private ShellCommandExecutorListener createShellCommandExecutorListener() {
-        return new ShellCommandExecutorListenerImpl(e -> {
+    private DefaultEventListener<ShellCommandExecutorEventData> createShellCommandExecutorListener() {
+        return new DefaultEventListener<>(e -> {
             try {
                 LOGGER.debug(new String(e.getEventData().getData(), EncodingConstants.UTF_8));
             } catch (UnsupportedEncodingException ex) {

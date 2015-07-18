@@ -1,6 +1,6 @@
 package org.lyeung.elwood.vcs.command.impl;
 
-import org.lyeung.elwood.vcs.command.AbstractEventData;
+import org.lyeung.elwood.common.event.AbstractEventData;
 
 /**
  * Created by lyeung on 18/07/2015.

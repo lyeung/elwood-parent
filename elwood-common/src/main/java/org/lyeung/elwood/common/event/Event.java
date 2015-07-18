@@ -1,4 +1,4 @@
-package org.lyeung.elwood.vcs.command;
+package org.lyeung.elwood.common.event;
 
 /**
  * Created by lyeung on 17/07/2015.

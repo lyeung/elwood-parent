@@ -4,11 +4,11 @@ import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.lib.TextProgressMonitor;
 import org.lyeung.elwood.common.conveter.impl.ByteArrayConverterImpl;
+import org.lyeung.elwood.common.event.Event;
+import org.lyeung.elwood.common.event.EventListener;
 import org.lyeung.elwood.vcs.command.CloneCommand;
 import org.lyeung.elwood.vcs.command.CloneCommandException;
 import org.lyeung.elwood.vcs.command.CloneCommandParam;
-import org.lyeung.elwood.vcs.command.Event;
-import org.lyeung.elwood.vcs.command.EventListener;
 
 import java.io.File;
 import java.io.IOException;
@@ -20,9 +20,9 @@ import java.util.List;
  */
 public class GitCloneCommandImpl implements CloneCommand {
 
-    private final List<EventListener<Event<GitCloneEventData>>> listeners;
+    private final List<EventListener<GitCloneEventData>> listeners;
 
-    public GitCloneCommandImpl(List<EventListener<Event<GitCloneEventData>>> listeners) {
+    public GitCloneCommandImpl(List<EventListener<GitCloneEventData>> listeners) {
         this.listeners = listeners;
     }
 
@@ -55,9 +55,9 @@ public class GitCloneCommandImpl implements CloneCommand {
 
     private static final class ProgressMonitorWriter extends Writer {
 
-        private final List<EventListener<Event<GitCloneEventData>>> listeners;
+        private final List<EventListener<GitCloneEventData>> listeners;
 
-        public ProgressMonitorWriter(List<EventListener<Event<GitCloneEventData>>> listeners) {
+        public ProgressMonitorWriter(List<EventListener<GitCloneEventData>> listeners) {
             this.listeners = listeners;
         }
 

@@ -5,6 +5,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.lyeung.elwood.common.EncodingConstants;
+import org.lyeung.elwood.common.event.impl.DefaultEventListener;
 import org.lyeung.elwood.common.test.SlowTest;
 import org.lyeung.elwood.vcs.command.CloneCommandParam;
 import org.lyeung.elwood.vcs.command.CloneCommandParamBuilder;
@@ -48,7 +49,7 @@ public class GitCloneCommandImplTest {
                 .localDirectory(LOCAL_DIR)
                 .remoteUri(REMOTE_URI)
                 .build();
-        final File directory = new GitCloneCommandImpl(Arrays.asList(new DefaultEventListener<>(
+        final File directory = new GitCloneCommandImpl(Arrays.asList(new DefaultEventListener<GitCloneEventData>(
                 e -> {
                     try {
                         builder.append(new String(e.getEventData().getData(), EncodingConstants.UTF_8));

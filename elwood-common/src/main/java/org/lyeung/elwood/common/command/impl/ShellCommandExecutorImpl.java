@@ -1,10 +1,11 @@
 package org.lyeung.elwood.common.command.impl;
 
+
 import org.lyeung.elwood.common.command.ShellCommandExecutor;
-import org.lyeung.elwood.common.command.ShellCommandExecutorEvent;
-import org.lyeung.elwood.common.command.ShellCommandExecutorEventData;
 import org.lyeung.elwood.common.command.ShellCommandExecutorException;
-import org.lyeung.elwood.common.command.ShellCommandExecutorListener;
+import org.lyeung.elwood.common.command.event.impl.ShellCommandExecutorEventData;
+import org.lyeung.elwood.common.event.Event;
+import org.lyeung.elwood.common.event.EventListener;
 
 import java.io.BufferedInputStream;
 import java.io.IOException;
@@ -17,9 +18,9 @@ public class ShellCommandExecutorImpl implements ShellCommandExecutor {
 
     private static final int BUF_SIZE = 1024;
 
-    private List<ShellCommandExecutorListener> executorListeners;
+    private List<EventListener<ShellCommandExecutorEventData>> executorListeners;
 
-    public ShellCommandExecutorImpl(List<ShellCommandExecutorListener> executorListeners) {
+    public ShellCommandExecutorImpl(List<EventListener<ShellCommandExecutorEventData>> executorListeners) {
         this.executorListeners = executorListeners;
     }
 
@@ -35,8 +36,7 @@ public class ShellCommandExecutorImpl implements ShellCommandExecutor {
 
                 executorListeners.forEach(
                         e -> e.handleEvent(
-                                new ShellCommandExecutorEvent(ShellCommandExecutorEvent.EventType.INPUT_STREAM,
-                                        new ShellCommandExecutorEventData(copyBuf(buf, bytesRead)))));
+                                new Event(new ShellCommandExecutorEventData(copyBuf(buf, bytesRead)))));
             }
             return process.waitFor();
         } catch (IOException e) {
