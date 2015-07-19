@@ -6,8 +6,12 @@ import org.junit.experimental.categories.Category;
 import org.lyeung.elwood.builder.model.BuildModel;
 import org.lyeung.elwood.builder.model.ModelStereotypeUtil;
 import org.lyeung.elwood.common.EncodingConstants;
+import org.lyeung.elwood.common.command.MkDirCommand;
+import org.lyeung.elwood.common.command.MkDirCommandParam;
+import org.lyeung.elwood.common.command.MkDirCommandParamBuilder;
 import org.lyeung.elwood.common.command.ShellCommandParamBuilder;
 import org.lyeung.elwood.common.command.event.impl.ShellCommandExecutorEventData;
+import org.lyeung.elwood.common.command.impl.MkDirCommandImpl;
 import org.lyeung.elwood.common.command.impl.ShellCommandExecutorImpl;
 import org.lyeung.elwood.common.command.impl.ShellCommandImpl;
 import org.lyeung.elwood.common.event.impl.DefaultEventListener;
@@ -31,10 +35,15 @@ public class MavenBuildIntegrationTest {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MavenBuildIntegrationTest.class);
 
+    private static final String LOCAL_DIR = "target/test-sample-artifact";
+
     @Test
     public void testExecute() throws IOException {
-        FileUtils.copyDirectory(new File("src/test/resources/test-sample-artifact"),
-                new File("target/test-sample-artifact"));
+        final File localDir = new MkDirCommandImpl().execute(new MkDirCommandParamBuilder()
+                .directory(LOCAL_DIR)
+                .build());
+        FileUtils.copyDirectory(new File("src/test/resources/test-sample-artifact"), localDir);
+
         final BuildModel buildModel = ModelStereotypeUtil.createBuildModel("mvn clean package",
                 ModelStereotypeUtil.createProjectModel());
         buildModel.setWorkingDirectory("target/test-sample-artifact");
