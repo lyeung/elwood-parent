@@ -19,7 +19,7 @@ import static org.junit.Assert.assertTrue;
 @Category(SlowTest.class)
 public class MkDirCommandImplTest {
 
-    private static final String LOCAL_DIR = "target/mk-dir-command";
+    private static final String LOCAL_DIR = "target/mk-dir-command/subdir1";
 
     @Before
     public void setUp() throws Exception {
