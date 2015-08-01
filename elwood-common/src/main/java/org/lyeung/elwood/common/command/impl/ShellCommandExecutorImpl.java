@@ -36,7 +36,7 @@ public class ShellCommandExecutorImpl implements ShellCommandExecutor {
 
                 executorListeners.forEach(
                         e -> e.handleEvent(
-                                new Event(new ShellCommandExecutorEventData(copyBuf(buf, bytesRead)))));
+                                new Event<>(new ShellCommandExecutorEventData(copyBuf(buf, bytesRead)))));
             }
             return process.waitFor();
         } catch (IOException e) {

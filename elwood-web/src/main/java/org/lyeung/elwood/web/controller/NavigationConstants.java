@@ -6,6 +6,7 @@ package org.lyeung.elwood.web.controller;
 public final class NavigationConstants {
 
     public static final String APP_INFO = "/appInfo";
+    public static final String PROJECT = "/project";
 
     private NavigationConstants() {
         // do-nothing

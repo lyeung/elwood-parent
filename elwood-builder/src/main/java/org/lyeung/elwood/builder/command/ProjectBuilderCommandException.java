@@ -1,7 +1,6 @@
 package org.lyeung.elwood.builder.command;
 
 import org.lyeung.elwood.builder.BuilderException;
-import org.lyeung.elwood.builder.model.ProjectModel;
 
 /**
  * Created by lyeung on 11/07/2015.

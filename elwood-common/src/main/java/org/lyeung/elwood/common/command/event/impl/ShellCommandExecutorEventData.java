@@ -1,6 +1,5 @@
 package org.lyeung.elwood.common.command.event.impl;
 
-import org.lyeung.elwood.common.SystemException;
 import org.lyeung.elwood.common.event.AbstractEventData;
 
 /**

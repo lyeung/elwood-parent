@@ -1,6 +1,5 @@
 package org.lyeung.elwood.vcs.command;
 
-import org.eclipse.jgit.api.Git;
 import org.lyeung.elwood.common.command.Command;
 
 import java.io.File;

@@ -1,6 +1,7 @@
-package org.lyeung.elwood.web.controller;
+package org.lyeung.elwood.web.controller.main;
 
-import org.lyeung.elwood.web.controller.model.AppInfo;
+import org.lyeung.elwood.web.controller.NavigationConstants;
+import org.lyeung.elwood.web.controller.main.model.AppInfo;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;

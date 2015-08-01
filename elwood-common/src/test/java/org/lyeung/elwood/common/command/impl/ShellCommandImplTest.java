@@ -6,14 +6,13 @@ import org.junit.experimental.categories.Category;
 import org.lyeung.elwood.common.command.ShellCommandException;
 import org.lyeung.elwood.common.command.ShellCommandParam;
 import org.lyeung.elwood.common.command.ShellCommandParamBuilder;
-import org.lyeung.elwood.common.test.QuickTest;
 import org.lyeung.elwood.common.test.SlowTest;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 /**
  * Created by lyeung on 12/07/2015.

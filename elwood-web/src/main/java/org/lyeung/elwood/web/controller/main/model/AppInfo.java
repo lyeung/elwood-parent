@@ -1,4 +1,4 @@
-package org.lyeung.elwood.web.controller.model;
+package org.lyeung.elwood.web.controller.main.model;
 
 /**
  * Created by lyeung on 12/07/2015.

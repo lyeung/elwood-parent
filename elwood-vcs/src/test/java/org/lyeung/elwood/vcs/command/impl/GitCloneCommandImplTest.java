@@ -49,7 +49,7 @@ public class GitCloneCommandImplTest {
                 .localDirectory(LOCAL_DIR)
                 .remoteUri(REMOTE_URI)
                 .build();
-        final File directory = new GitCloneCommandImpl(Arrays.asList(new DefaultEventListener<GitCloneEventData>(
+        final File directory = new GitCloneCommandImpl(Arrays.asList(new DefaultEventListener<>(
                 e -> {
                     try {
                         builder.append(new String(e.getEventData().getData(), EncodingConstants.UTF_8));
