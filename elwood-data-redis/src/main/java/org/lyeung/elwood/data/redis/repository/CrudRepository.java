@@ -13,4 +13,6 @@ public interface CrudRepository<T, K extends Serializable> {
     void save(T domain);
 
     void delete(List<K> keys);
+
+    List<T> findAll();
 }

@@ -1,8 +1,10 @@
-package org.lyeung.elwood.web.controller.project;
+package org.lyeung.elwood.web.controller.article;
 
-import org.lyeung.elwood.data.redis.domain.Project;
-import org.lyeung.elwood.data.redis.repository.ProjectRepository;
 import org.lyeung.elwood.web.controller.NavigationConstants;
+import org.lyeung.elwood.web.controller.article.command.DeleteArticleCommand;
+import org.lyeung.elwood.web.controller.article.command.GetArticleCommand;
+import org.lyeung.elwood.web.controller.article.command.SaveArticleCommand;
+import org.lyeung.elwood.web.model.Article;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -12,33 +14,36 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.Collections;
-
 /**
- * Created by lyeung on 1/08/2015.
+ * Created by lyeung on 3/08/2015.
  */
+@RequestMapping(NavigationConstants.ARICLE)
 @RestController
-@RequestMapping(value = NavigationConstants.PROJECT)
-public class ProjectController {
+public class ArticleController {
 
     @Autowired
-    private ProjectRepository projectRepository;
+    private GetArticleCommand getArticleCommand;
+
+    @Autowired
+    private SaveArticleCommand saveArticleCommand;
+
+    @Autowired
+    private DeleteArticleCommand deleteArticleCommand;
 
     @RequestMapping(value = "/{key}", method = RequestMethod.GET)
-    public Project getByKey(@PathVariable("key") String key) {
-        return projectRepository.getOne(key);
+    public Article getByKey(@PathVariable("key") String key) {
+        return getArticleCommand.execute(key);
     }
 
     @RequestMapping(method = RequestMethod.POST)
     @ResponseStatus(HttpStatus.CREATED)
-    public Project saveProject(@RequestBody Project project) {
-        projectRepository.save(project);
-        return project;
+    public Article saveArticle(@RequestBody Article article) {
+        return saveArticleCommand.execute(article);
     }
 
     @RequestMapping(value = "/{key}", method = RequestMethod.DELETE)
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void removeProject(@PathVariable("key") String key) {
-        projectRepository.delete(Collections.singletonList(key));
+        deleteArticleCommand.execute(key);
     }
 }

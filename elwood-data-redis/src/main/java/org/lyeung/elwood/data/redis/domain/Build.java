@@ -5,7 +5,7 @@ package org.lyeung.elwood.data.redis.domain;
  */
 public class Build {
 
-    private Project project;
+    private String key;
 
     private String buildCommand;
 
@@ -13,12 +13,12 @@ public class Build {
 
     private String workingDirectory;
 
-    public Project getProject() {
-        return project;
+    public String getKey() {
+        return key;
     }
 
-    public void setProject(Project project) {
-        this.project = project;
+    public void setKey(String key) {
+        this.key = key;
     }
 
     public String getBuildCommand() {

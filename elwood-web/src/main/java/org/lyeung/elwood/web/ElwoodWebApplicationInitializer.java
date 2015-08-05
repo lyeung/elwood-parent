@@ -1,6 +1,7 @@
 package org.lyeung.elwood.web;
 
 import org.lyeung.elwood.web.config.ElwoodConfiguration;
+import org.lyeung.elwood.web.filter.SimpleCorsFilter;
 import org.springframework.web.WebApplicationInitializer;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 import org.springframework.web.servlet.DispatcherServlet;
@@ -21,9 +22,13 @@ public class ElwoodWebApplicationInitializer implements WebApplicationInitialize
         applicationContext.register(ElwoodConfiguration.class);
         applicationContext.setServletContext(servletContext);
 
+        servletContext.addFilter("corsFilter", SimpleCorsFilter.class)
+                .addMappingForUrlPatterns(null, false, "/*");
+
         ServletRegistration.Dynamic registration = servletContext.addServlet("dispatcher",
                 new DispatcherServlet(applicationContext));
         registration.setLoadOnStartup(1);
         registration.addMapping("/");
+
     }
 }

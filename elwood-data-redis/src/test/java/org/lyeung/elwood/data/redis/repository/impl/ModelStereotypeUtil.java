@@ -12,21 +12,21 @@ public final class ModelStereotypeUtil {
         // do-nothing
     }
 
-    public static Project createProject(String code) {
+    public static Project createProject(String key) {
         Project project = new Project();
-        project.setKey("PRJ-" + code);
-        project.setName("Project " + code);
-        project.setDescription("Project " + code + " description");
+        project.setKey(key);
+        project.setName("Project " + key);
+        project.setDescription("Project " + key + " description");
         project.setBuildFile("pom.xml");
         return project;
     }
 
-    public static Build createBuild(String code) {
+    public static Build createBuild(String key) {
         final Build build = new Build();
+        build.setKey(key);
         build.setWorkingDirectory("workingDirectory");
         build.setBuildCommand("buildDirectory");
         build.setEnvironmentVars("environmentVars");
-        build.setProject(createProject(code));
         return build;
     }
 

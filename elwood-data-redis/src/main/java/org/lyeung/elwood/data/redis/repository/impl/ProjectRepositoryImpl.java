@@ -2,6 +2,7 @@ package org.lyeung.elwood.data.redis.repository.impl;
 
 import org.lyeung.elwood.data.redis.domain.Project;
 import org.lyeung.elwood.data.redis.repository.ProjectRepository;
+import org.springframework.data.redis.core.HashOperations;
 import org.springframework.data.redis.core.RedisTemplate;
 
 import java.util.List;
@@ -21,12 +22,21 @@ public class ProjectRepositoryImpl extends AbstractRepository<Project, String> i
     }
 
     @Override
+    public List<Project> findAll() {
+        HashOperations<String,String,Project> ops = getTemplate().opsForHash();
+        return ops.values(getDomainKey());
+    }
+
+    @Override
     public void save(Project project) {
         getTemplate().opsForHash().put(getDomainKey(), project.getKey(), project);
     }
 
     @Override
     public void delete(List<String> keys) {
+        if (keys.isEmpty()) {
+            return;
+        }
         getTemplate().opsForHash().delete(getDomainKey(), keys.toArray(new String[keys.size()]));
     }
 }
