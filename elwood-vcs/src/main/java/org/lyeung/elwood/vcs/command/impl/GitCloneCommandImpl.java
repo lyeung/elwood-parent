@@ -1,8 +1,19 @@
 package org.lyeung.elwood.vcs.command.impl;
 
+import com.jcraft.jsch.JSch;
+import com.jcraft.jsch.JSchException;
+import com.jcraft.jsch.Session;
+import com.jcraft.jsch.UserInfo;
 import org.eclipse.jgit.api.Git;
+import org.eclipse.jgit.api.TransportConfigCallback;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.lib.TextProgressMonitor;
+import org.eclipse.jgit.transport.JschConfigSessionFactory;
+import org.eclipse.jgit.transport.OpenSshConfig;
+import org.eclipse.jgit.transport.SshTransport;
+import org.eclipse.jgit.transport.Transport;
+import org.eclipse.jgit.transport.UsernamePasswordCredentialsProvider;
+import org.eclipse.jgit.util.FS;
 import org.lyeung.elwood.common.conveter.impl.ByteArrayConverterImpl;
 import org.lyeung.elwood.common.event.Event;
 import org.lyeung.elwood.common.event.EventListener;
@@ -32,10 +43,21 @@ public class GitCloneCommandImpl implements CloneCommand {
         validateLocalDirectory(localDirectory, cloneCommandParam);
 
         try {
-            Git.cloneRepository().setProgressMonitor(new TextProgressMonitor(new ProgressMonitorWriter(listeners)))
+            final org.eclipse.jgit.api.CloneCommand cloneCommand = Git.cloneRepository()
+                    .setProgressMonitor(new TextProgressMonitor(new ProgressMonitorWriter(listeners)))
                     .setURI(cloneCommandParam.getRemoteUri())
-                    .setDirectory(localDirectory)
-                    .call();
+                    .setDirectory(localDirectory);
+
+            if (cloneCommandParam.isUsernamePasswordAuthentication()) {
+                cloneCommand.setCredentialsProvider(new UsernamePasswordCredentialsProvider(
+                        cloneCommandParam.getUsername(), cloneCommandParam.getPassword()));
+            } else if (cloneCommandParam.isUsePublicKeyAuthentication()) {
+                cloneCommand.setTransportConfigCallback(new CustomTransportConfigCallback(cloneCommandParam));
+            } else {
+                // do-nothing
+            }
+
+            cloneCommand.call();
         } catch (GitAPIException e) {
             throw new CloneCommandException("unable to clone from remote uri", e, cloneCommandParam);
         }
@@ -76,6 +98,82 @@ public class GitCloneCommandImpl implements CloneCommand {
 
         @Override
         public void close() throws IOException {
+            // do-nothing
+        }
+    }
+
+    private static class CustomTransportConfigCallback implements TransportConfigCallback {
+
+        private final CloneCommandParam param;
+
+        public CustomTransportConfigCallback(CloneCommandParam param) {
+            this.param = param;
+        }
+
+        @Override
+        public void configure(Transport transport) {
+            SshTransport sshTransport = (SshTransport) transport;
+            sshTransport.setSshSessionFactory(new CustomIdentityFileJschConfigSessionFactory(param));
+        }
+    }
+
+    private static class CustomIdentityFileJschConfigSessionFactory extends JschConfigSessionFactory {
+
+        private final CloneCommandParam param;
+
+        public CustomIdentityFileJschConfigSessionFactory(CloneCommandParam param) {
+            this.param = param;
+        }
+
+        @Override
+        protected JSch getJSch(OpenSshConfig.Host hc, FS fs) throws JSchException {
+            final JSch jSch = super.getJSch(hc, fs);
+            jSch.addIdentity(param.getIdentityKey());
+
+            return jSch;
+        }
+
+        @Override
+        protected void configure(OpenSshConfig.Host hc, Session session) {
+            session.setUserInfo(new CustomUserInfo(param));
+        }
+    }
+
+    private static class CustomUserInfo implements UserInfo {
+
+        private final CloneCommandParam param;
+
+        public CustomUserInfo(CloneCommandParam param) {
+            this.param = param;
+        }
+
+        @Override
+        public String getPassphrase() {
+            return param.getPassphrase();
+        }
+
+        @Override
+        public String getPassword() {
+            return null;
+        }
+
+        @Override
+        public boolean promptPassword(String message) {
+            return false;
+        }
+
+        @Override
+        public boolean promptPassphrase(String message) {
+            return param.getAuthenticationType() == CloneCommandParam.AuthenticationType.PUBLIC_KEY_PASSPHRASE;
+        }
+
+        @Override
+        public boolean promptYesNo(String message) {
+            return false;
+        }
+
+        @Override
+        public void showMessage(String message) {
             // do-nothing
         }
     }

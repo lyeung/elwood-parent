@@ -12,7 +12,7 @@ import org.lyeung.elwood.vcs.command.CloneCommandParamBuilder;
 
 import java.io.File;
 import java.io.UnsupportedEncodingException;
-import java.util.Arrays;
+import java.util.Collections;
 
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
@@ -27,29 +27,27 @@ public class GitCloneCommandImplTest {
 
     private static final String LOCAL_DIR = "target/ng-sample";
 
-    private File localDir;
-
     @Before
     public void setUp() throws Exception {
-        localDir = new File(LOCAL_DIR);
+        final File localDir = new File(LOCAL_DIR);
         if (localDir.isDirectory() && localDir.exists()) {
             FileUtils.forceDelete(localDir);
         }
 
-        localDir.mkdir();
+        assertTrue(localDir.mkdir());
+        assertTrue(localDir.list().length == 0);
     }
 
     @Test
     public void testExecute() throws Exception {
-        assertTrue(localDir.list().length == 0);
-
         StringBuilder builder = new StringBuilder();
 
         final CloneCommandParam param = new CloneCommandParamBuilder()
                 .localDirectory(LOCAL_DIR)
                 .remoteUri(REMOTE_URI)
+                .authenticationType(CloneCommandParam.AuthenticationType.NONE)
                 .build();
-        final File directory = new GitCloneCommandImpl(Arrays.asList(new DefaultEventListener<>(
+        final File directory = new GitCloneCommandImpl(Collections.singletonList(new DefaultEventListener<>(
                 e -> {
                     try {
                         builder.append(new String(e.getEventData().getData(), EncodingConstants.UTF_8));
@@ -64,5 +62,34 @@ public class GitCloneCommandImplTest {
         final String result = builder.toString();
         assertTrue(result.contains("remote: Counting objects: 61"));
         assertTrue(result.contains("Updating references:    100% (1/1)"));
+    }
+
+    @Test
+    public void testExecutePublicKeyPassphraseAuthentication() {
+        StringBuilder builder = new StringBuilder();
+
+        final CloneCommandParam param = new CloneCommandParamBuilder()
+                .localDirectory(LOCAL_DIR)
+                .remoteUri("git@bitbucket.org:lyeung/elwood-parent.git")
+                .authenticationType(CloneCommandParam.AuthenticationType.PUBLIC_KEY_PASSPHRASE)
+                .identityKey("src/test/resources/ssh/id_rsa-elwood-project")
+                .passphrase(null)
+                .build();
+        final File directory = new GitCloneCommandImpl(Collections.singletonList(new DefaultEventListener<>(
+                e -> {
+                    try {
+                        builder.append(new String(e.getEventData().getData(), EncodingConstants.UTF_8));
+                    } catch (UnsupportedEncodingException e1) {
+                        fail("unsupported encoding");
+                    }
+                })))
+                .execute(param);
+
+        assertTrue(directory.list().length > 0);
+
+        final String result = builder.toString();
+        System.out.println(result);
+        assertTrue(result.contains("remote: Counting objects:"));
+        assertTrue(result.contains("Updating references:    100%"));
     }
 }
