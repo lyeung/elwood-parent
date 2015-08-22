@@ -1,5 +1,7 @@
 package org.lyeung.elwood.web.model;
 
+import org.lyeung.elwood.vcs.command.CloneCommandParam;
+
 /**
  * Created by lyeung on 3/08/2015.
  */
@@ -17,7 +19,13 @@ public class Article {
 
     private String environmentVars;
 
-//    private String workingDirectory;
+    private String sourceUrl;
+
+    private CloneCommandParam.AuthenticationType authenticationType;
+
+    private String identityKey;
+
+    private String passphrase;
 
     public String getKey() {
         return key;
@@ -67,11 +75,35 @@ public class Article {
         this.environmentVars = environmentVars;
     }
 
-//    public String getWorkingDirectory() {
-//        return workingDirectory;
-//    }
-//
-//    public void setWorkingDirectory(String workingDirectory) {
-//        this.workingDirectory = workingDirectory;
-//    }
+    public String getSourceUrl() {
+        return sourceUrl;
+    }
+
+    public void setSourceUrl(String sourceUrl) {
+        this.sourceUrl = sourceUrl;
+    }
+
+    public CloneCommandParam.AuthenticationType getAuthenticationType() {
+        return authenticationType;
+    }
+
+    public void setAuthenticationType(CloneCommandParam.AuthenticationType authenticationType) {
+        this.authenticationType = authenticationType;
+    }
+
+    public String getIdentityKey() {
+        return identityKey;
+    }
+
+    public void setIdentityKey(String identityKey) {
+        this.identityKey = identityKey;
+    }
+
+    public String getPassphrase() {
+        return passphrase;
+    }
+
+    public void setPassphrase(String passphrase) {
+        this.passphrase = passphrase;
+    }
 }

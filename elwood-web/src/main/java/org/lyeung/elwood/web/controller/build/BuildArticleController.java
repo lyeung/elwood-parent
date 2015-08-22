@@ -1,15 +1,19 @@
 package org.lyeung.elwood.web.controller.build;
 
-import org.lyeung.elwood.data.redis.domain.Build;
-import org.lyeung.elwood.data.redis.domain.Project;
-import org.lyeung.elwood.data.redis.repository.BuildRepository;
-import org.lyeung.elwood.data.redis.repository.ProjectRepository;
+import org.lyeung.elwood.executor.BuildExecutor;
+import org.lyeung.elwood.executor.BuildMapLog;
 import org.lyeung.elwood.web.controller.NavigationConstants;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * Created by lyeung on 4/08/2015.
@@ -19,16 +23,23 @@ import org.springframework.web.bind.annotation.RestController;
 public class BuildArticleController {
 
     @Autowired
-    private ProjectRepository projectRepository;
+    private BuildExecutor buildExecutor;
 
     @Autowired
-    private BuildRepository buildRepository;
+    private BuildMapLog buildMapLog;
 
-    @RequestMapping(value = "/{key}", method = RequestMethod.POST)
-    public void buildArticle(@PathVariable("key") String key) {
-        final Project project = projectRepository.getOne(key);
-        final Build build = buildRepository.getOne(key);
+    @RequestMapping(method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
+    public void buildArticle(@RequestBody KeyTuple keyTuple) {
+        buildExecutor.add(keyTuple.getKey());
+    }
 
-        // build here
+    @RequestMapping(value = "/{key}", method = RequestMethod.GET)
+    public ContentResponse getContentByKey(@PathVariable("key") String key) {
+        final Optional<List<String>> line = buildMapLog.get(key);
+        if (line.isPresent()) {
+            return new ContentResponse(line.get().stream().collect(Collectors.joining()));
+        }
+
+        return ContentResponse.EMPTY;
     }
 }

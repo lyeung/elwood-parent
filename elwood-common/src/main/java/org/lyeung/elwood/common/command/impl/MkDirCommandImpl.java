@@ -16,7 +16,8 @@ public class MkDirCommandImpl implements MkDirCommand {
         final File file = new File(param.getDirectory());
         final boolean success = file.mkdirs();
         if (!success) {
-            throw new MkDirCommandException("unable to make directory", param);
+            throw new MkDirCommandException("unable to make directory ["
+                    + param.getDirectory() + "]", param);
         }
 
         return file;

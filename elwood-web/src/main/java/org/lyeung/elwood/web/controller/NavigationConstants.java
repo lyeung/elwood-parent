@@ -8,6 +8,7 @@ public final class NavigationConstants {
     public static final String APP_INFO = "/appInfo";
     public static final String PROJECT = "/project";
     public static final String PROJECTS = "/projects";
+    public static final String VCS = "/vcs";
     public static final String ARICLE = "/article";
     public static final String RUN_ARTICLE = "/runArticle";
 

@@ -2,8 +2,8 @@ package org.lyeung.elwood.web.mapper.impl;
 
 import org.lyeung.elwood.data.redis.domain.Build;
 import org.lyeung.elwood.data.redis.domain.Project;
-import org.lyeung.elwood.web.model.Article;
 import org.lyeung.elwood.web.mapper.Mapper;
+import org.lyeung.elwood.web.model.Article;
 import org.lyeung.elwood.web.model.ProjectBuildTuple;
 
 /**
@@ -22,6 +22,10 @@ public class ArticleToProjectBuildTupleMapperImpl implements Mapper<Article, Pro
         project.setName(article.getName());
         project.setDescription(article.getDescription());
         project.setBuildFile(article.getBuildFile());
+        project.setSourceUrl(article.getSourceUrl());
+        project.setAuthenticationType(article.getAuthenticationType().name());
+        project.setIdentityKey(article.getIdentityKey());
+        project.setPassphrase(article.getPassphrase());
 
         return project;
     }
@@ -29,9 +33,9 @@ public class ArticleToProjectBuildTupleMapperImpl implements Mapper<Article, Pro
     private Build toBuild(Article article) {
         final Build build = new Build();
         build.setBuildCommand(article.getBuildCommand());
-        build.setKey(article.getKey());
+        build.setKey(article.getKey().toUpperCase());
         build.setEnvironmentVars(article.getEnvironmentVars());
-//        build.setWorkingDirectory(article.getWorkingDirectory());
+        build.setWorkingDirectory(article.getKey().toUpperCase());
 
         return build;
     }
