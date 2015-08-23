@@ -20,6 +20,7 @@ import org.lyeung.elwood.common.event.EventListener;
 import org.lyeung.elwood.vcs.command.CloneCommand;
 import org.lyeung.elwood.vcs.command.CloneCommandException;
 import org.lyeung.elwood.vcs.command.CloneCommandParam;
+import org.lyeung.elwood.vcs.command.CloneCommandParam.AuthenticationType;
 
 import java.io.File;
 import java.io.IOException;
@@ -188,8 +189,8 @@ public class GitCloneCommandImpl implements CloneCommand {
 
         @Override
         public boolean promptPassphrase(String message) {
-            return param.getAuthenticationType() ==
-                    CloneCommandParam.AuthenticationType.PUBLIC_KEY_PASSPHRASE;
+            return param.getAuthenticationType()
+                    == AuthenticationType.PUBLIC_KEY_PASSPHRASE;
         }
 
         @Override

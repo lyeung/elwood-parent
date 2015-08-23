@@ -46,7 +46,9 @@ public class RunBuildJobControllerTest {
     public void testRunBuildJob() {
         when(buildExecutor.add("KEY")).thenReturn(future);
 
-        controller.runBuildJob(new KeyTuple("KEY"));
+        final KeyTuple keyTuple = new KeyTuple();
+        keyTuple.setKey("KEY");
+        controller.runBuildJob(keyTuple);
 
         verify(buildExecutor).add(eq("KEY"));
         verifyNoMoreInteractions(buildExecutor);
