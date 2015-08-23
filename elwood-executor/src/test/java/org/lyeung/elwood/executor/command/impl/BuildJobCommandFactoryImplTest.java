@@ -30,7 +30,7 @@ public class BuildJobCommandFactoryImplTest {
 
     @Test
     public void testMakeCommand() {
-        assertNotNull(new BuildArticleCommandFactoryImpl(
+        assertNotNull(new BuildJobCommandFactoryImpl(
                 projectRepository, buildRepository, buildMapLog).makeCommand());
     }
 }

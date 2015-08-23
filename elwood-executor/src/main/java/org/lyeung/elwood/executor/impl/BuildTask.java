@@ -1,6 +1,6 @@
 package org.lyeung.elwood.executor.impl;
 
-import org.lyeung.elwood.executor.command.BuildArticleCommandFactory;
+import org.lyeung.elwood.executor.command.BuildJobCommandFactory;
 
 import java.util.concurrent.Callable;
 
@@ -9,18 +9,18 @@ import java.util.concurrent.Callable;
  */
 public class BuildTask implements Callable<Integer> {
 
-    private final BuildArticleCommandFactory buildArticleCommandFactory;
+    private final BuildJobCommandFactory buildJobCommandFactory;
 
     private final String key;
 
-    public BuildTask(BuildArticleCommandFactory buildArticleCommandFactory, String key) {
-        this.buildArticleCommandFactory = buildArticleCommandFactory;
+    public BuildTask(BuildJobCommandFactory buildJobCommandFactory, String key) {
+        this.buildJobCommandFactory = buildJobCommandFactory;
         this.key = key;
     }
 
     @Override
     public Integer call() throws Exception {
-        return buildArticleCommandFactory
+        return buildJobCommandFactory
                 .makeCommand()
                 .execute(key);
     }

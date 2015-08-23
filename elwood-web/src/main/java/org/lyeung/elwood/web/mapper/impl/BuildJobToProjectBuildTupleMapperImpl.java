@@ -9,7 +9,8 @@ import org.lyeung.elwood.web.model.ProjectBuildTuple;
 /**
  * Created by lyeung on 4/08/2015.
  */
-public class BuildJobToProjectBuildTupleMapperImpl implements Mapper<BuildJob, ProjectBuildTuple> {
+public class BuildJobToProjectBuildTupleMapperImpl
+        implements Mapper<BuildJob, ProjectBuildTuple> {
 
     @Override
     public ProjectBuildTuple map(BuildJob buildJob) {

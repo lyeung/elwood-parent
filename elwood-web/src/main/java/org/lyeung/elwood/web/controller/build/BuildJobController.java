@@ -37,13 +37,13 @@ public class BuildJobController {
 
     @RequestMapping(method = RequestMethod.POST)
     @ResponseStatus(HttpStatus.CREATED)
-    public BuildJob saveArticle(@RequestBody BuildJob buildJob) {
+    public BuildJob saveBuildJob(@RequestBody BuildJob buildJob) {
         return saveBuildJobCommand.execute(buildJob);
     }
 
     @RequestMapping(value = "/{key}", method = RequestMethod.DELETE)
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void removeProject(@PathVariable("key") String key) {
+    public void removeBuildJob(@PathVariable("key") String key) {
         deleteBuildJobCommand.execute(key);
     }
 }

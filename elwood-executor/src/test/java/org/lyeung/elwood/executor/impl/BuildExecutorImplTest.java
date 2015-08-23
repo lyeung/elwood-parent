@@ -6,7 +6,7 @@ import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 import org.lyeung.elwood.common.test.QuickTest;
 import org.lyeung.elwood.executor.BuildExecutor;
-import org.lyeung.elwood.executor.command.BuildArticleCommandFactory;
+import org.lyeung.elwood.executor.command.BuildJobCommandFactory;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.runners.MockitoJUnitRunner;
@@ -29,7 +29,7 @@ import static org.mockito.Mockito.when;
 public class BuildExecutorImplTest {
 
     @Mock
-    private  BuildArticleCommandFactory factory;
+    private BuildJobCommandFactory factory;
 
     @Mock
     private ExecutorService executorService;

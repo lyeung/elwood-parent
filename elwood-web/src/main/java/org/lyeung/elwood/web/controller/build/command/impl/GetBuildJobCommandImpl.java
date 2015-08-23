@@ -5,8 +5,8 @@ import org.lyeung.elwood.data.redis.domain.Project;
 import org.lyeung.elwood.data.redis.repository.BuildRepository;
 import org.lyeung.elwood.data.redis.repository.ProjectRepository;
 import org.lyeung.elwood.web.controller.build.command.GetBuildJobCommand;
+import org.lyeung.elwood.web.mapper.impl.ProjectBuildTupleToBuildJobMapperImpl;
 import org.lyeung.elwood.web.model.BuildJob;
-import org.lyeung.elwood.web.mapper.impl.ProjectBuildTupleToArticleMapperImpl;
 import org.lyeung.elwood.web.model.ProjectBuildTuple;
 
 /**
@@ -34,7 +34,7 @@ public class GetBuildJobCommandImpl implements GetBuildJobCommand {
 
         final Build build = buildRepository.getOne(key);
 
-        return new ProjectBuildTupleToArticleMapperImpl().map(
+        return new ProjectBuildTupleToBuildJobMapperImpl().map(
                 new ProjectBuildTuple(project, build));
     }
 }

@@ -29,7 +29,7 @@ public class RunBuildJobController {
     private BuildMapLog buildMapLog;
 
     @RequestMapping(method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
-    public void buildArticle(@RequestBody KeyTuple keyTuple) {
+    public void runBuildJob(@RequestBody KeyTuple keyTuple) {
         buildExecutor.add(keyTuple.getKey());
     }
 

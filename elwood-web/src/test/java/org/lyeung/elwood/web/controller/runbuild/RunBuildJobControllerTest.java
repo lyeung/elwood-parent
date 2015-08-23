@@ -43,10 +43,10 @@ public class RunBuildJobControllerTest {
     private Future<Integer> future;
 
     @Test
-    public void testBuildArticle() {
+    public void testRunBuildJob() {
         when(buildExecutor.add("KEY")).thenReturn(future);
 
-        controller.buildArticle(new KeyTuple("KEY"));
+        controller.runBuildJob(new KeyTuple("KEY"));
 
         verify(buildExecutor).add(eq("KEY"));
         verifyNoMoreInteractions(buildExecutor);

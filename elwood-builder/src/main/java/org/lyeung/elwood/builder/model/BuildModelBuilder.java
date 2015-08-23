@@ -32,6 +32,7 @@ public class BuildModelBuilder {
         this.workingDirectory = workingDirectory;
         return this;
     }
+
     public BuildModel build() {
         BuildModel buildModel = new BuildModel();
 

@@ -9,12 +9,16 @@ public class CloneCommandException extends SystemException {
 
     private final CloneCommandParam cloneCommandParam;
 
-    public CloneCommandException(String message, CloneCommandParam cloneCommandParam) {
+    public CloneCommandException(String message,
+        CloneCommandParam cloneCommandParam) {
+
         super(message);
         this.cloneCommandParam = cloneCommandParam;
     }
 
-    public CloneCommandException(String message, Throwable cause, CloneCommandParam cloneCommandParam) {
+    public CloneCommandException(String message, Throwable cause,
+        CloneCommandParam cloneCommandParam) {
+
         super(message, cause);
         this.cloneCommandParam = cloneCommandParam;
     }

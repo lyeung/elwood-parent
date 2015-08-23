@@ -9,8 +9,8 @@ public final class NavigationConstants {
     public static final String PROJECT = "/project";
     public static final String PROJECTS = "/projects";
     public static final String VCS = "/vcs";
-    public static final String ARICLE = "/article";
-    public static final String RUN_ARTICLE = "/runArticle";
+    public static final String BUILD_JOB = "/buildJob";
+    public static final String RUN_BUILD_JOB = "/runBuildJob";
 
     private NavigationConstants() {
         // do-nothing

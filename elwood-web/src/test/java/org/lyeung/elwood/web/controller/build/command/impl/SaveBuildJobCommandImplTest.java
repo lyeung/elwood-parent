@@ -8,7 +8,6 @@ import org.lyeung.elwood.common.test.QuickTest;
 import org.lyeung.elwood.data.redis.repository.BuildRepository;
 import org.lyeung.elwood.data.redis.repository.ProjectRepository;
 import org.lyeung.elwood.vcs.command.CloneCommandParam;
-import org.lyeung.elwood.web.controller.article.command.impl.SaveBuildJobCommandImpl;
 import org.lyeung.elwood.web.model.BuildJob;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -39,7 +38,7 @@ public class SaveBuildJobCommandImplTest {
     @Test
     public void testExecute() {
         impl = new SaveBuildJobCommandImpl(projectRepository, buildRepository);
-        final BuildJob buildJob = impl.execute(createArticle());
+        final BuildJob buildJob = impl.execute(createBuildJob());
         assertEquals("KEY", buildJob.getKey());
         assertEquals("name", buildJob.getName());
         assertEquals("description", buildJob.getDescription());
@@ -53,7 +52,7 @@ public class SaveBuildJobCommandImplTest {
         assertEquals("passphrase", buildJob.getPassphrase());
     }
 
-    private BuildJob createArticle() {
+    private BuildJob createBuildJob() {
         final BuildJob buildJob = new BuildJob();
         buildJob.setKey("key");
         buildJob.setName("name");

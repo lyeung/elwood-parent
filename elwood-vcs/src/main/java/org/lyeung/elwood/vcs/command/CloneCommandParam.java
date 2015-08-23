@@ -38,6 +38,7 @@ public class CloneCommandParam {
     public boolean isUsernamePasswordAuthentication() {
         return getAuthenticationType() == AuthenticationType.USERNAME_PASSWORD;
     }
+
     public boolean isUsePublicKeyAuthentication() {
         return getAuthenticationType() == AuthenticationType.PUBLIC_KEY_PASSPHRASE;
     }

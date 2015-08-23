@@ -6,12 +6,12 @@ import org.lyeung.elwood.data.redis.repository.BuildRepository;
 import org.lyeung.elwood.data.redis.repository.ProjectRepository;
 import org.lyeung.elwood.data.redis.repository.impl.BuildRepositoryImpl;
 import org.lyeung.elwood.data.redis.repository.impl.ProjectRepositoryImpl;
-import org.lyeung.elwood.web.controller.article.command.DeleteArticleCommand;
-import org.lyeung.elwood.web.controller.article.command.GetArticleCommand;
-import org.lyeung.elwood.web.controller.article.command.SaveArticleCommand;
-import org.lyeung.elwood.web.controller.article.command.impl.DeleteArticleCommandImpl;
-import org.lyeung.elwood.web.controller.article.command.impl.GetArticleCommandImpl;
-import org.lyeung.elwood.web.controller.article.command.impl.SaveArticleCommandImpl;
+import org.lyeung.elwood.web.controller.build.command.DeleteBuildJobCommand;
+import org.lyeung.elwood.web.controller.build.command.GetBuildJobCommand;
+import org.lyeung.elwood.web.controller.build.command.SaveBuildJobCommand;
+import org.lyeung.elwood.web.controller.build.command.impl.DeleteBuildJobCommandImpl;
+import org.lyeung.elwood.web.controller.build.command.impl.GetBuildJobCommandImpl;
+import org.lyeung.elwood.web.controller.build.command.impl.SaveBuildJobCommandImpl;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
@@ -66,17 +66,17 @@ public class ElwoodRepositoryConfiguraiton {
     }
 
     @Bean
-    public GetArticleCommand getArticleCommand() {
-        return new GetArticleCommandImpl(projectRepository(), buildRepository());
+    public GetBuildJobCommand getJobCommand() {
+        return new GetBuildJobCommandImpl(projectRepository(), buildRepository());
     }
 
     @Bean
-    public SaveArticleCommand saveArticleCommand() {
-        return new SaveArticleCommandImpl(projectRepository(), buildRepository());
+    public SaveBuildJobCommand saveJobCommand() {
+        return new SaveBuildJobCommandImpl(projectRepository(), buildRepository());
     }
 
     @Bean
-    public DeleteArticleCommand deleteArticleCommand() {
-        return new DeleteArticleCommandImpl(projectRepository(), buildRepository());
+    public DeleteBuildJobCommand deleteJobCommand() {
+        return new DeleteBuildJobCommandImpl(projectRepository(), buildRepository());
     }
 }

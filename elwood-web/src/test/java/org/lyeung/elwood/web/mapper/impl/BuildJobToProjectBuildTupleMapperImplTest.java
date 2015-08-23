@@ -14,12 +14,12 @@ import static org.junit.Assert.assertEquals;
  */
 public class BuildJobToProjectBuildTupleMapperImplTest {
 
-    private final ArticleToProjectBuildTupleMapperImpl impl
-            = new ArticleToProjectBuildTupleMapperImpl();
+    private final BuildJobToProjectBuildTupleMapperImpl impl
+            = new BuildJobToProjectBuildTupleMapperImpl();
 
     @Test
     public void testMap() {
-        final ProjectBuildTuple tuple = impl.map(createArticle());
+        final ProjectBuildTuple tuple = impl.map(createBuildJob());
         final Project project = tuple.getProject();
         assertEquals("KEY", project.getKey());
         assertEquals("name", project.getName());
@@ -40,7 +40,7 @@ public class BuildJobToProjectBuildTupleMapperImplTest {
         assertEquals("KEY", build.getKey());
     }
 
-    private BuildJob createArticle() {
+    private BuildJob createBuildJob() {
         final BuildJob buildJob = new BuildJob();
         buildJob.setKey("key");
         buildJob.setName("name");

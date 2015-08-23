@@ -19,7 +19,7 @@ import org.lyeung.elwood.data.redis.repository.BuildRepository;
 import org.lyeung.elwood.data.redis.repository.ProjectRepository;
 import org.lyeung.elwood.executor.BuildMapLog;
 import org.lyeung.elwood.executor.command.BuildJobCommand;
-import org.lyeung.elwood.executor.command.BuildArticleException;
+import org.lyeung.elwood.executor.command.BuildJobException;
 import org.lyeung.elwood.vcs.command.CloneCommand;
 import org.lyeung.elwood.vcs.command.CloneCommandParam;
 import org.lyeung.elwood.vcs.command.CloneCommandParamBuilder;
@@ -164,7 +164,7 @@ public class BuildJobCommandImpl implements BuildJobCommand {
                 write(content, file);
                 buildMapLog.append(key, content);
             } catch (UnsupportedEncodingException e) {
-                throw new BuildArticleException(
+                throw new BuildJobException(
                         "unable to clone source", e, key);
             }
         }
@@ -173,7 +173,7 @@ public class BuildJobCommandImpl implements BuildJobCommand {
             try (FileWriter fileWriter = new FileWriter(file, true)) {
                 fileWriter.write(content);
             } catch (IOException e) {
-                throw new BuildArticleException(
+                throw new BuildJobException(
                         "unable to write to file", e, key);
             }
         }
@@ -204,7 +204,7 @@ public class BuildJobCommandImpl implements BuildJobCommand {
                 write(content, file);
                 buildMapLog.append(key, content);
             } catch (UnsupportedEncodingException e) {
-                throw new BuildArticleException(
+                throw new BuildJobException(
                         "unsupported encoding", e, key);
             }
         }
@@ -213,7 +213,7 @@ public class BuildJobCommandImpl implements BuildJobCommand {
             try (FileWriter fileWriter = new FileWriter(file, true)) {
                 fileWriter.write(content);
             } catch (IOException e) {
-                throw new BuildArticleException(
+                throw new BuildJobException(
                         "unable to write to file", e, key);
             }
         }

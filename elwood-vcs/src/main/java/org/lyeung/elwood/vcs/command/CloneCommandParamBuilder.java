@@ -29,7 +29,9 @@ public class CloneCommandParamBuilder {
         return this;
     }
 
-    public CloneCommandParamBuilder authenticationType(CloneCommandParam.AuthenticationType authenticationType) {
+    public CloneCommandParamBuilder authenticationType(
+            CloneCommandParam.AuthenticationType authenticationType) {
+
         this.authenticationType = authenticationType;
         return this;
     }

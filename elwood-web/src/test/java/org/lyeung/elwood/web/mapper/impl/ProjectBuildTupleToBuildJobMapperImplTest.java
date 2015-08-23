@@ -14,8 +14,8 @@ import static org.junit.Assert.assertEquals;
  */
 public class ProjectBuildTupleToBuildJobMapperImplTest {
 
-    private final ProjectBuildTupleToArticleMapperImpl impl =
-            new ProjectBuildTupleToArticleMapperImpl();
+    private final ProjectBuildTupleToBuildJobMapperImpl impl =
+            new ProjectBuildTupleToBuildJobMapperImpl();
 
     @Test
     public void testMap() {

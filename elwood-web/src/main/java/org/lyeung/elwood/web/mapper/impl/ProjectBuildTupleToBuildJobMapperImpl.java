@@ -15,10 +15,10 @@ public class ProjectBuildTupleToBuildJobMapperImpl
 
     @Override
     public BuildJob map(ProjectBuildTuple tuple) {
-        return toArticle(tuple.getProject(), tuple.getBuild());
+        return toBuildJob(tuple.getProject(), tuple.getBuild());
     }
 
-    private BuildJob toArticle(Project project, Build build) {
+    private BuildJob toBuildJob(Project project, Build build) {
         final BuildJob buildJob = new BuildJob();
         buildJob.setKey(project.getKey());
         buildJob.setName(project.getName());

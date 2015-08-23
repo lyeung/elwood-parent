@@ -33,45 +33,59 @@ public class GitCloneCommandImpl implements CloneCommand {
 
     private final List<EventListener<GitCloneEventData>> listeners;
 
-    public GitCloneCommandImpl(List<EventListener<GitCloneEventData>> listeners) {
+    public GitCloneCommandImpl(
+            List<EventListener<GitCloneEventData>> listeners) {
+
         this.listeners = listeners;
     }
 
     @Override
     public File execute(CloneCommandParam cloneCommandParam) {
-        final File localDirectory = new File(cloneCommandParam.getLocalDirectory());
+        final File localDirectory =
+                new File(cloneCommandParam.getLocalDirectory());
         validateLocalDirectory(localDirectory, cloneCommandParam);
 
         try {
-            final org.eclipse.jgit.api.CloneCommand cloneCommand = Git.cloneRepository()
-                    .setProgressMonitor(new TextProgressMonitor(new ProgressMonitorWriter(listeners)))
-                    .setURI(cloneCommandParam.getRemoteUri())
-                    .setDirectory(localDirectory);
+            final org.eclipse.jgit.api.CloneCommand cloneCommand =
+                    Git.cloneRepository()
+                            .setProgressMonitor(new TextProgressMonitor(
+                                    new ProgressMonitorWriter(listeners)))
+                            .setURI(cloneCommandParam.getRemoteUri())
+                            .setDirectory(localDirectory);
 
             if (cloneCommandParam.isUsernamePasswordAuthentication()) {
-                cloneCommand.setCredentialsProvider(new UsernamePasswordCredentialsProvider(
-                        cloneCommandParam.getUsername(), cloneCommandParam.getPassword()));
+                cloneCommand.setCredentialsProvider(
+                        new UsernamePasswordCredentialsProvider(
+                                cloneCommandParam.getUsername(),
+                                cloneCommandParam.getPassword()));
             } else if (cloneCommandParam.isUsePublicKeyAuthentication()) {
-                cloneCommand.setTransportConfigCallback(new CustomTransportConfigCallback(cloneCommandParam));
+                cloneCommand.setTransportConfigCallback(
+                        new CustomTransportConfigCallback(cloneCommandParam));
             } else {
                 // do-nothing
             }
 
             cloneCommand.call();
         } catch (GitAPIException e) {
-            throw new CloneCommandException("unable to clone from remote uri", e, cloneCommandParam);
+            throw new CloneCommandException("unable to clone from remote uri",
+                    e, cloneCommandParam);
         }
 
         return localDirectory;
     }
 
-    private void validateLocalDirectory(File localDirectory, CloneCommandParam cloneCommandParam) {
+    private void validateLocalDirectory(
+            File localDirectory, CloneCommandParam cloneCommandParam) {
+
         if (!localDirectory.exists()) {
-            throw new CloneCommandException("local directory does not exist", cloneCommandParam);
+            throw new CloneCommandException(
+                    "local directory does not exist", cloneCommandParam);
         }
 
         if (!localDirectory.isDirectory()) {
-            throw new CloneCommandException("local directory is not a directory attribute", cloneCommandParam);
+            throw new CloneCommandException(
+                    "local directory is not a directory attribute",
+                    cloneCommandParam);
         }
     }
 
@@ -79,7 +93,9 @@ public class GitCloneCommandImpl implements CloneCommand {
 
         private final List<EventListener<GitCloneEventData>> listeners;
 
-        public ProgressMonitorWriter(List<EventListener<GitCloneEventData>> listeners) {
+        public ProgressMonitorWriter(
+                List<EventListener<GitCloneEventData>> listeners) {
+
             this.listeners = listeners;
         }
 
@@ -87,8 +103,9 @@ public class GitCloneCommandImpl implements CloneCommand {
         public void write(char[] cbuf, int off, int len) throws IOException {
             final char[] buffer = new char[len - off];
             System.arraycopy(cbuf, off, buffer, 0, len - off);
-            listeners.forEach(e -> e.handleEvent(new Event<>(new GitCloneEventData(
-                    new ByteArrayConverterImpl().convert(buffer)))));
+            listeners.forEach(e -> e.handleEvent(
+                    new Event<>(new GitCloneEventData(
+                            new ByteArrayConverterImpl().convert(buffer)))));
         }
 
         @Override
@@ -102,7 +119,8 @@ public class GitCloneCommandImpl implements CloneCommand {
         }
     }
 
-    private static class CustomTransportConfigCallback implements TransportConfigCallback {
+    private static class CustomTransportConfigCallback
+            implements TransportConfigCallback {
 
         private final CloneCommandParam param;
 
@@ -113,20 +131,26 @@ public class GitCloneCommandImpl implements CloneCommand {
         @Override
         public void configure(Transport transport) {
             SshTransport sshTransport = (SshTransport) transport;
-            sshTransport.setSshSessionFactory(new CustomIdentityFileJschConfigSessionFactory(param));
+            sshTransport.setSshSessionFactory(
+                    new CustomIdentityFileJschConfigSessionFactory(param));
         }
     }
 
-    private static class CustomIdentityFileJschConfigSessionFactory extends JschConfigSessionFactory {
+    private static class CustomIdentityFileJschConfigSessionFactory
+            extends JschConfigSessionFactory {
 
         private final CloneCommandParam param;
 
-        public CustomIdentityFileJschConfigSessionFactory(CloneCommandParam param) {
+        public CustomIdentityFileJschConfigSessionFactory(
+                CloneCommandParam param) {
+
             this.param = param;
         }
 
         @Override
-        protected JSch getJSch(OpenSshConfig.Host hc, FS fs) throws JSchException {
+        protected JSch getJSch(OpenSshConfig.Host hc, FS fs)
+                throws JSchException {
+
             final JSch jSch = super.getJSch(hc, fs);
             jSch.addIdentity(param.getIdentityKey());
 
@@ -164,7 +188,8 @@ public class GitCloneCommandImpl implements CloneCommand {
 
         @Override
         public boolean promptPassphrase(String message) {
-            return param.getAuthenticationType() == CloneCommandParam.AuthenticationType.PUBLIC_KEY_PASSPHRASE;
+            return param.getAuthenticationType() ==
+                    CloneCommandParam.AuthenticationType.PUBLIC_KEY_PASSPHRASE;
         }
 
         @Override

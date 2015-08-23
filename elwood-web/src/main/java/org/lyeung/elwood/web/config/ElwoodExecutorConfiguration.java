@@ -4,13 +4,14 @@ import org.lyeung.elwood.data.redis.repository.BuildRepository;
 import org.lyeung.elwood.data.redis.repository.ProjectRepository;
 import org.lyeung.elwood.executor.BuildExecutor;
 import org.lyeung.elwood.executor.BuildMapLog;
-import org.lyeung.elwood.executor.command.BuildArticleCommandFactory;
-import org.lyeung.elwood.executor.command.impl.BuildArticleCommandFactoryImpl;
+import org.lyeung.elwood.executor.command.BuildJobCommandFactory;
+import org.lyeung.elwood.executor.command.impl.BuildJobCommandFactoryImpl;
 import org.lyeung.elwood.executor.impl.BuildExecutorImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -37,13 +38,18 @@ public class ElwoodExecutorConfiguration {
 
     @Bean
     public BuildExecutor buildExecutor() {
-        return new BuildExecutorImpl(buildArticleCommandFactory(),
-                new ThreadPoolExecutor(CORE_POOL_SIZE, MAX_POOL_SIZE, KEEP_ALIVE_IN_SECONDS,
-                        TimeUnit.SECONDS, new LinkedBlockingQueue<>(QUEUE_CAPACITY),
-                        new ThreadPoolExecutor.AbortPolicy()));
+        return new BuildExecutorImpl(buildJobCommandFactory(), executorService());
     }
 
-    private BuildArticleCommandFactory buildArticleCommandFactory() {
-        return new BuildArticleCommandFactoryImpl(projectRepository, buildRepository, buildMapLog);
+    private BuildJobCommandFactory buildJobCommandFactory() {
+        return new BuildJobCommandFactoryImpl(
+                projectRepository, buildRepository, buildMapLog);
+    }
+
+    private ExecutorService executorService() {
+        return new ThreadPoolExecutor(CORE_POOL_SIZE,
+                MAX_POOL_SIZE, KEEP_ALIVE_IN_SECONDS,
+                TimeUnit.SECONDS, new LinkedBlockingQueue<>(QUEUE_CAPACITY),
+                new ThreadPoolExecutor.AbortPolicy());
     }
 }

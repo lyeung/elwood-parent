@@ -10,9 +10,12 @@ import java.util.List;
 /**
  * Created by lyeung on 1/08/2015.
  */
-public class BuildRepositoryImpl extends AbstractRepository<Build, String> implements BuildRepository {
+public class BuildRepositoryImpl extends AbstractRepository<Build, String>
+        implements BuildRepository {
 
-    public BuildRepositoryImpl(String domainKey, RedisTemplate<String, Build> template) {
+    public BuildRepositoryImpl(
+            String domainKey, RedisTemplate<String, Build> template) {
+
         super(domainKey, template);
     }
 
