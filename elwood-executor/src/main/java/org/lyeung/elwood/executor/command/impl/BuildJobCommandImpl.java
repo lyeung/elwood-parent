@@ -20,6 +20,7 @@ import org.lyeung.elwood.data.redis.repository.ProjectRepository;
 import org.lyeung.elwood.executor.BuildMapLog;
 import org.lyeung.elwood.executor.command.BuildJobCommand;
 import org.lyeung.elwood.executor.command.BuildJobException;
+import org.lyeung.elwood.executor.command.KeyCountTuple;
 import org.lyeung.elwood.vcs.command.CloneCommand;
 import org.lyeung.elwood.vcs.command.CloneCommandParam;
 import org.lyeung.elwood.vcs.command.CloneCommandParamBuilder;
@@ -56,11 +57,13 @@ public class BuildJobCommandImpl implements BuildJobCommand {
     }
 
     @Override
-    public Integer execute(String key) {
+    public Integer execute(KeyCountTuple keyCountTuple) {
+        final String key = keyCountTuple.getKey();
+
         final Project project = projectRepository.getOne(key);
         final Build build = buildRepository.getOne(key);
 
-        final File targetDir = mkDir(build);
+        final File targetDir = mkDir(build, keyCountTuple);
         final File elwoodLog = new File(targetDir, ELWOOD_LOG);
         final File checkedOutDir = checkOutSource(
                 key, project, targetDir, elwoodLog);
@@ -70,10 +73,10 @@ public class BuildJobCommandImpl implements BuildJobCommand {
         return result;
     }
 
-    private File mkDir(Build build) {
+    private File mkDir(Build build, KeyCountTuple keyCountTuple) {
         final MkDirCommand mkDirCommand = new MkDirCommandImpl();
         return mkDirCommand.execute(new MkDirCommandParamBuilder()
-                .directory(getTargetDirectory(build))
+                .directory(getTargetDirectory(build, keyCountTuple))
                 .build());
     }
 
@@ -135,8 +138,9 @@ public class BuildJobCommandImpl implements BuildJobCommand {
         return projectModel;
     }
 
-    private String getTargetDirectory(Build build) {
-        return WORKSPACE_DIR + "/" + build.getWorkingDirectory();
+    private String getTargetDirectory(Build build, KeyCountTuple keyCountTuple) {
+        return WORKSPACE_DIR + "/" + build.getWorkingDirectory() + "/"
+                + keyCountTuple.getKey() + "-" + keyCountTuple.getCount();
     }
 
     private static class GitCloneBuildMapWriter

@@ -62,6 +62,7 @@ public class BuildRepositoryImplTest extends AbstractRepositoryTest {
         impl.save(ModelStereotypeUtil.createBuild("PRJ-200"));
 
         final List<Build> builds = impl.findAll();
+        assertEquals(2, builds.size());
         assertTrue(isContains("PRJ-100", builds));
         assertTrue(isContains("PRJ-200", builds));
         assertFalse(isContains("PRJ-300", builds));

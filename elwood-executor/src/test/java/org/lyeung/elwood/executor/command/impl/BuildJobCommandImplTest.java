@@ -11,6 +11,7 @@ import org.lyeung.elwood.data.redis.domain.Project;
 import org.lyeung.elwood.data.redis.repository.BuildRepository;
 import org.lyeung.elwood.data.redis.repository.ProjectRepository;
 import org.lyeung.elwood.executor.BuildMapLog;
+import org.lyeung.elwood.executor.command.KeyCountTuple;
 import org.lyeung.elwood.vcs.command.CloneCommandParam;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -44,7 +45,11 @@ public class BuildJobCommandImplTest {
 
     @Before
     public void setUp() throws IOException {
-        FileUtils.forceDelete(new File("/tmp/workspace"));
+        final File dir = new File("/tmp/workspace");
+        if (dir.exists() && dir.isDirectory()) {
+            FileUtils.forceDelete(dir);
+        }
+
         MockitoAnnotations.initMocks(this);
         impl = new BuildJobCommandImpl(projectRepository, buildRepository, buildMapLog);
     }
@@ -54,7 +59,7 @@ public class BuildJobCommandImplTest {
         when(projectRepository.getOne(KEY)).thenReturn(createProject());
         when(buildRepository.getOne(KEY)).thenReturn(createBuild());
 
-        final Integer resultStatus = impl.execute(KEY);
+        final Integer resultStatus = impl.execute(new KeyCountTuple(KEY, 10L));
         assertEquals(0, resultStatus.intValue());
     }
 

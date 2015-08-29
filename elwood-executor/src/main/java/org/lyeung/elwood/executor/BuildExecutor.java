@@ -7,5 +7,5 @@ import java.util.concurrent.Future;
  */
 public interface BuildExecutor {
 
-    Future<Integer> add(String key);
+    Future<Integer> add(String key, long count);
 }

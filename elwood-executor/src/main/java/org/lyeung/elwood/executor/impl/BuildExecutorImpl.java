@@ -21,7 +21,7 @@ public class BuildExecutorImpl implements BuildExecutor {
     }
 
     @Override
-    public Future<Integer> add(String key) {
-        return executorService.submit(new BuildTask(factory, key));
+    public Future<Integer> add(String key, long count) {
+        return executorService.submit(new BuildTask(factory, key, count));
     }
 }

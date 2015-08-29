@@ -1,7 +1,9 @@
 package org.lyeung.elwood.web.controller.runbuild;
 
+import org.lyeung.elwood.data.redis.repository.BuildCountRepository;
 import org.lyeung.elwood.executor.BuildExecutor;
 import org.lyeung.elwood.executor.BuildMapLog;
+import org.lyeung.elwood.executor.command.IncrementBuildCountCommand;
 import org.lyeung.elwood.web.controller.NavigationConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -28,9 +30,13 @@ public class RunBuildJobController {
     @Autowired
     private BuildMapLog buildMapLog;
 
+    @Autowired
+    private IncrementBuildCountCommand incrementBuildCountCommand;
+
     @RequestMapping(method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE)
     public void runBuildJob(@RequestBody KeyTuple keyTuple) {
-        buildExecutor.add(keyTuple.getKey());
+        final Long count = incrementBuildCountCommand.execute(keyTuple.getKey());
+        buildExecutor.add(keyTuple.getKey(), count);
     }
 
     @RequestMapping(value = "/{key}", method = RequestMethod.GET)

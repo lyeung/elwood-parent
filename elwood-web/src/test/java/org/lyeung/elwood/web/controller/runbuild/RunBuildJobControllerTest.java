@@ -6,6 +6,7 @@ import org.junit.runner.RunWith;
 import org.lyeung.elwood.common.test.QuickTest;
 import org.lyeung.elwood.executor.BuildExecutor;
 import org.lyeung.elwood.executor.BuildMapLog;
+import org.lyeung.elwood.executor.command.IncrementBuildCountCommand;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
@@ -30,6 +31,8 @@ import static org.mockito.Mockito.when;
 @RunWith(MockitoJUnitRunner.class)
 public class RunBuildJobControllerTest {
 
+    private static final String KEY = "KEY";
+
     @InjectMocks
     private RunBuildJobController controller;
 
@@ -40,17 +43,22 @@ public class RunBuildJobControllerTest {
     private BuildMapLog buildMapLog;
 
     @Mock
+    private IncrementBuildCountCommand incrementBuildCountCommand;
+
+    @Mock
     private Future<Integer> future;
 
     @Test
     public void testRunBuildJob() {
-        when(buildExecutor.add("KEY")).thenReturn(future);
+        when(incrementBuildCountCommand.execute(KEY)).thenReturn(2L);
+        when(buildExecutor.add(KEY, 2L)).thenReturn(future);
 
         final KeyTuple keyTuple = new KeyTuple();
         keyTuple.setKey("KEY");
         controller.runBuildJob(keyTuple);
 
-        verify(buildExecutor).add(eq("KEY"));
+        verify(incrementBuildCountCommand).execute(eq(KEY));
+        verify(buildExecutor).add(eq(KEY), eq(2L));
         verifyNoMoreInteractions(buildExecutor);
         verifyZeroInteractions(buildMapLog);
     }
@@ -58,17 +66,17 @@ public class RunBuildJobControllerTest {
     @Test
     public void testGetContentByKey() {
         List<String> content = Arrays.asList("hello", "world");
-        when(buildMapLog.get("KEY")).thenReturn(Optional.of(content));
+        when(buildMapLog.get(KEY)).thenReturn(Optional.of(content));
 
-        final ContentResponse response = controller.getContentByKey("KEY");
+        final ContentResponse response = controller.getContentByKey(KEY);
         assertEquals("helloworld", response.getContent());
     }
 
     @Test
     public void testEmptyGetContentByKey() {
-        when(buildMapLog.get("KEY")).thenReturn(Optional.<List<String>>empty());
+        when(buildMapLog.get(KEY)).thenReturn(Optional.<List<String>>empty());
 
-        final ContentResponse response = controller.getContentByKey("KEY");
+        final ContentResponse response = controller.getContentByKey(KEY);
         assertNull(response.getContent());
     }
 }

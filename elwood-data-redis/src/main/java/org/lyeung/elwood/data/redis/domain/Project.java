@@ -3,9 +3,7 @@ package org.lyeung.elwood.data.redis.domain;
 /**
  * Created by lyeung on 29/07/2015.
  */
-public class Project {
-
-    private String key;
+public class Project extends AbstractDomain {
 
     private String name;
 
@@ -20,14 +18,6 @@ public class Project {
     private String identityKey;
 
     private String passphrase;
-
-    public String getKey() {
-        return key;
-    }
-
-    public void setKey(String key) {
-        this.key = key;
-    }
 
     public String getName() {
         return name;
