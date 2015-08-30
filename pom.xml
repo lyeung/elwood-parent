@@ -189,6 +189,8 @@
                 </configuration>
                 <executions>
                     <execution>
+                        <id>failsafe-integration-tests</id>
+                        <phase>integration-test</phase>
                         <goals>
                             <goal>integration-test</goal>
                         </goals>
@@ -197,6 +199,13 @@
                                 <include>**/*.class</include>
                             </includes>
                         </configuration>
+                    </execution>
+                    <execution>
+                        <id>failsafe-verify</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>verify</goal>
+                        </goals>
                     </execution>
                 </executions>
             </plugin>
@@ -213,7 +222,7 @@
                             <encoding>UTF-8</encoding>
                             <consoleOutput>true</consoleOutput>
                             <failsOnError>true</failsOnError>
-                            <linkXRef>true</linkXRef>
+                            <!--<linkXRef>true</linkXRef>-->
                         </configuration>
                         <goals>
                             <goal>check</goal>
