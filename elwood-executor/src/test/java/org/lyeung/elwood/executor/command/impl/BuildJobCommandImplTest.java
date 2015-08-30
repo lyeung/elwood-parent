@@ -94,7 +94,7 @@ public class BuildJobCommandImplTest {
         project.setKey(KEY);
         project.setPassphrase(null);
         project.setSourceUrl("git@bitbucket.org:lyeung/elwood-parent.git");
-        project.setIdentityKey("/Users/lyeung/.ssh/id_rsa-elwood-project");
+        project.setIdentityKey("src/test/resources/ssh-keys/id_rsa-elwood-project");
         project.setAuthenticationType(CloneCommandParam.AuthenticationType
                 .PUBLIC_KEY_PASSPHRASE.name());
 
