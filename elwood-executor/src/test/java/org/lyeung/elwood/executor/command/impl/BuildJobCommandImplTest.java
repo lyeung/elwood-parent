@@ -20,6 +20,7 @@ package org.lyeung.elwood.executor.command.impl;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
@@ -46,9 +47,10 @@ import static org.mockito.Mockito.when;
  */
 @Category(SlowTest.class)
 @RunWith(MockitoJUnitRunner.class)
+@Ignore
 public class BuildJobCommandImplTest {
 
-    private static final String KEY = "KEY123";
+    private static final String KEY = "KEY" + System.currentTimeMillis();
 
     private BuildJobCommandImpl impl;
 

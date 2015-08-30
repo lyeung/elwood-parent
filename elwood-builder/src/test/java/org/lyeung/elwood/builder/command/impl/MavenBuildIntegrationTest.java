@@ -19,6 +19,7 @@
 package org.lyeung.elwood.builder.command.impl;
 
 import org.apache.commons.io.FileUtils;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.lyeung.elwood.builder.model.BuildModel;
@@ -52,6 +53,14 @@ public class MavenBuildIntegrationTest {
     private static final Logger LOGGER = LoggerFactory.getLogger(MavenBuildIntegrationTest.class);
 
     private static final String LOCAL_DIR = "target/test-sample-artifact";
+
+    @Before
+    public void setUp() throws IOException {
+        final File localDir = new File(LOCAL_DIR);
+        if (localDir.isDirectory() && localDir.exists()) {
+            FileUtils.forceDelete(localDir);
+        }
+    }
 
     @Test
     public void testExecute() throws IOException {
