@@ -19,7 +19,9 @@
 package org.lyeung.elwood.executor.command.impl;
 
 import org.apache.commons.io.FileUtils;
+import org.junit.Assume;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
@@ -46,7 +48,7 @@ import static org.mockito.Mockito.when;
  */
 @Category(SlowTest.class)
 @RunWith(MockitoJUnitRunner.class)
-//@Ignore
+@Ignore
 public class BuildJobCommandImplTest {
 
     private static final String KEY = "KEY" + System.currentTimeMillis();
@@ -64,6 +66,7 @@ public class BuildJobCommandImplTest {
 
     @Before
     public void setUp() throws IOException {
+        assumeCiEnvironment();
         final File dir = new File("/tmp/workspace");
         if (dir.exists() && dir.isDirectory()) {
             FileUtils.forceDelete(dir);
@@ -71,6 +74,17 @@ public class BuildJobCommandImplTest {
 
         MockitoAnnotations.initMocks(this);
         impl = new BuildJobCommandImpl(projectRepository, buildRepository, buildMapLog);
+    }
+
+    private void assumeCiEnvironment() {
+        final Boolean skipRecursiveBuild = Boolean.valueOf(
+                System.getenv("elwood.skipRecursiveBuild"));
+
+        Assume.assumeFalse(skipRecursiveBuild);
+        final String userHome = System.getProperty("user.home", "");
+        Assume.assumeTrue(!userHome.equals(""));
+        final File privateKey = new File(userHome + "/.ssh/id_rsa-elwood-project");
+        Assume.assumeTrue(privateKey.exists() && privateKey.isFile());
     }
 
     @Test
