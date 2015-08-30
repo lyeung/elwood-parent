@@ -52,6 +52,7 @@ public class ShellCommandExecutorImpl implements ShellCommandExecutor {
                     break;
                 }
 
+                System.out.println(">>>>>>>>>>\n" + new String(buf) + "\n<<<<<<<<<<");
                 executorListeners.forEach(
                         e -> e.handleEvent(
                                 new Event<>(new ShellCommandExecutorEventData(copyBuf(buf, bytesRead)))));

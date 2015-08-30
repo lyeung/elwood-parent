@@ -57,7 +57,7 @@ import java.util.function.Consumer;
  */
 public class BuildJobCommandImpl implements BuildJobCommand {
 
-    private static final String WORKSPACE_DIR = "/tmp/workspace";
+    private static final String WORKSPACE_DIR = "~/dump";
     private static final String ELWOOD_LOG = "elwood.log";
 
     private final ProjectRepository projectRepository;
