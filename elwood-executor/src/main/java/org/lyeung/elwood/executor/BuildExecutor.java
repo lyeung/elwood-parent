@@ -18,6 +18,8 @@
 
 package org.lyeung.elwood.executor;
 
+import org.lyeung.elwood.executor.command.KeyCountTuple;
+
 import java.util.concurrent.Future;
 
 /**
@@ -25,5 +27,5 @@ import java.util.concurrent.Future;
  */
 public interface BuildExecutor {
 
-    Future<Integer> add(String key, long count);
+    Future<Integer> add(KeyCountTuple keyCountTuple);
 }

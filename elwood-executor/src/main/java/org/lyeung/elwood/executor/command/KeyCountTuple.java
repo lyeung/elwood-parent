@@ -18,18 +18,23 @@
 
 package org.lyeung.elwood.executor.command;
 
+import java.io.Serializable;
+
 /**
  * Created by lyeung on 30/08/2015.
  */
-public class KeyCountTuple {
+public class KeyCountTuple implements Serializable {
 
     private final String key;
 
     private final long count;
 
+    private final String stringRepresentation;
+
     public KeyCountTuple(String key, long count) {
         this.key = key.toUpperCase();
         this.count = count;
+        stringRepresentation = key + "-" + count;
     }
 
     public String getKey() {
@@ -40,4 +45,33 @@ public class KeyCountTuple {
         return count;
     }
 
+    private String getStringRepresentation() {
+        return stringRepresentation;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+
+        if (obj == null || getClass() != obj.getClass()) {
+            return false;
+        }
+
+        KeyCountTuple tuple = (KeyCountTuple) obj;
+
+        return stringRepresentation.equals(tuple.stringRepresentation);
+
+    }
+
+    @Override
+    public int hashCode() {
+        return stringRepresentation.hashCode();
+    }
+
+    @Override
+    public String toString() {
+        return getStringRepresentation();
+    }
 }

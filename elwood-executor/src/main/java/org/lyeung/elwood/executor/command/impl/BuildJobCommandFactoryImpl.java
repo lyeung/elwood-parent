@@ -18,9 +18,6 @@
 
 package org.lyeung.elwood.executor.command.impl;
 
-import org.lyeung.elwood.data.redis.repository.BuildRepository;
-import org.lyeung.elwood.data.redis.repository.ProjectRepository;
-import org.lyeung.elwood.executor.BuildMapLog;
 import org.lyeung.elwood.executor.command.BuildJobCommand;
 import org.lyeung.elwood.executor.command.BuildJobCommandFactory;
 
@@ -29,24 +26,15 @@ import org.lyeung.elwood.executor.command.BuildJobCommandFactory;
  */
 public class BuildJobCommandFactoryImpl implements BuildJobCommandFactory {
 
-    private final ProjectRepository projectRepository;
+    private final BuildJobCommandImpl.Param param;
 
-    private final BuildRepository buildRepository;
-
-    private final BuildMapLog buildMapLog;
-
-    public BuildJobCommandFactoryImpl(ProjectRepository projectRepository,
-                                      BuildRepository buildRepository, BuildMapLog buildMapLog) {
-
-        this.projectRepository = projectRepository;
-        this.buildRepository = buildRepository;
-        this.buildMapLog = buildMapLog;
+    public BuildJobCommandFactoryImpl(BuildJobCommandImpl.Param param) {
+        this.param = param;
     }
 
     @Override
     public BuildJobCommand makeCommand() {
-        return new BuildJobCommandImpl(
-                projectRepository, buildRepository, buildMapLog);
+        return new BuildJobCommandImpl(param);
     }
 
 }

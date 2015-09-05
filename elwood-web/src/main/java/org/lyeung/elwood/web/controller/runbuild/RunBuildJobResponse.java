@@ -16,27 +16,24 @@
  *
  */
 
-package org.lyeung.elwood.executor.command.impl;
+package org.lyeung.elwood.web.controller.runbuild;
 
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
-import org.junit.runner.RunWith;
-import org.lyeung.elwood.common.test.QuickTest;
-import org.mockito.runners.MockitoJUnitRunner;
-
-import static org.junit.Assert.assertNotNull;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import org.lyeung.elwood.executor.command.KeyCountTuple;
 
 /**
- * Created by lyeung on 20/08/2015.
+ * Created by lyeung on 2/09/2015.
  */
-@Category(QuickTest.class)
-@RunWith(MockitoJUnitRunner.class)
-public class BuildJobCommandFactoryImplTest {
+public class RunBuildJobResponse {
 
-    private BuildJobCommandImpl.Param param;
+    private KeyCountTuple keyCountTuple;
 
-    @Test
-    public void testMakeCommand() {
-        assertNotNull(new BuildJobCommandFactoryImpl(param).makeCommand());
+    @JsonCreator
+    public RunBuildJobResponse(KeyCountTuple keyCountTuple) {
+        this.keyCountTuple = keyCountTuple;
+    }
+
+    public KeyCountTuple getKeyCountTuple() {
+        return keyCountTuple;
     }
 }

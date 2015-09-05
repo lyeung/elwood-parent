@@ -42,7 +42,7 @@ import static org.mockito.Mockito.when;
 @RunWith(MockitoJUnitRunner.class)
 public class ProjectBuilderCommandImplTest {
 
-    private ProjectBuilderCommand<Process, Integer> command;
+    private ProjectBuilderCommand command;
 
     @Mock
     private ShellCommandExecutor shellCommandExecutor;

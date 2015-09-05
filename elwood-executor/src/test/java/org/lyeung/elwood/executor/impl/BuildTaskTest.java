@@ -47,6 +47,10 @@ public class BuildTaskTest {
 
     private static final String KEY = "key";
 
+    private static final long COUNT = 10L;
+
+    private static final KeyCountTuple KEY_COUNT_TUPLE = new KeyCountTuple(KEY, COUNT);
+
     @Mock
     private BuildJobCommandFactory factory;
 
@@ -63,7 +67,7 @@ public class BuildTaskTest {
         when(factory.makeCommand()).thenReturn(command);
         when(command.execute(any(KeyCountTuple.class))).thenReturn(1);
 
-        final BuildTask task = new BuildTask(factory, KEY, 10);
+        final BuildTask task = new BuildTask(factory, KEY_COUNT_TUPLE);
         assertEquals(1, task.call().intValue());
 
         verify(factory).makeCommand();

@@ -26,7 +26,7 @@ import org.lyeung.elwood.common.command.ShellCommandExecutor;
 /**
  * Created by lyeung on 9/07/2015.
  */
-public class ProjectBuilderCommandImpl implements ProjectBuilderCommand<Process, Integer> {
+public class ProjectBuilderCommandImpl implements ProjectBuilderCommand {
 
     private ShellCommandExecutor command;
 

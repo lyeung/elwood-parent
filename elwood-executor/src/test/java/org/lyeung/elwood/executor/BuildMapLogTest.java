@@ -21,6 +21,7 @@ package org.lyeung.elwood.executor;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.lyeung.elwood.common.test.QuickTest;
+import org.lyeung.elwood.executor.command.KeyCountTuple;
 
 import java.util.List;
 import java.util.Optional;
@@ -36,33 +37,36 @@ import static org.junit.Assert.assertTrue;
 public class BuildMapLogTest {
 
     private static final String KEY = "KEY";
-    private BuildMapLog buildMapLog;
+
+    private static final KeyCountTuple KEY_COUNT_TUPLE = new KeyCountTuple(KEY, 1);
+
+    private BuildMapLog<KeyCountTuple> buildMapLog;
 
     @Test
     public void testAppend() throws Exception {
-        buildMapLog = new BuildMapLog(2);
-        assertFalse(buildMapLog.get(KEY).isPresent());
+        buildMapLog = new BuildMapLog<>(2);
+        assertFalse(buildMapLog.getContent(KEY_COUNT_TUPLE).isPresent());
 
-        buildMapLog.append(KEY, "line0");
-        Optional<List<String>> result = buildMapLog.get(KEY);
+        buildMapLog.append(KEY_COUNT_TUPLE, "line0");
+        Optional<List<String>> result = buildMapLog.getContent(KEY_COUNT_TUPLE);
         assertTrue(result.isPresent());
         assertEquals(1, result.get().size());
         assertEquals("line0", result.get().get(0));
 
-        buildMapLog.append(KEY, "line1");
-        result = buildMapLog.get(KEY);
+        buildMapLog.append(KEY_COUNT_TUPLE, "line1");
+        result = buildMapLog.getContent(KEY_COUNT_TUPLE);
         assertEquals(2, result.get().size());
         assertEquals("line0", result.get().get(0));
         assertEquals("line1", result.get().get(1));
 
-        buildMapLog.append(KEY, "line2");
-        result = buildMapLog.get(KEY);
+        buildMapLog.append(KEY_COUNT_TUPLE, "line2");
+        result = buildMapLog.getContent(KEY_COUNT_TUPLE);
         assertEquals(2, result.get().size());
         assertEquals("line1", result.get().get(0));
         assertEquals("line2", result.get().get(1));
 
-        buildMapLog.append(KEY, "line3");
-        result = buildMapLog.get(KEY);
+        buildMapLog.append(KEY_COUNT_TUPLE, "line3");
+        result = buildMapLog.getContent(KEY_COUNT_TUPLE);
         assertEquals(2, result.get().size());
         assertEquals("line2", result.get().get(0));
         assertEquals("line3", result.get().get(1));
@@ -70,15 +74,15 @@ public class BuildMapLogTest {
 
     @Test
     public void testGet() {
-        buildMapLog = new BuildMapLog(5);
+        buildMapLog = new BuildMapLog<>(5);
 
-        buildMapLog.append(KEY, "line0");
-        buildMapLog.append(KEY, "line1");
-        buildMapLog.append(KEY, "line2");
-        buildMapLog.append(KEY, "line3");
-        buildMapLog.append(KEY, "line4");
+        buildMapLog.append(KEY_COUNT_TUPLE, "line0");
+        buildMapLog.append(KEY_COUNT_TUPLE, "line1");
+        buildMapLog.append(KEY_COUNT_TUPLE, "line2");
+        buildMapLog.append(KEY_COUNT_TUPLE, "line3");
+        buildMapLog.append(KEY_COUNT_TUPLE, "line4");
 
-        final Optional<List<String>> result = buildMapLog.get(KEY);
+        final Optional<List<String>> result = buildMapLog.getContent(KEY_COUNT_TUPLE);
         assertTrue(result.isPresent());
         assertEquals(5, result.get().size());
         assertEquals("line0", result.get().get(0));

@@ -49,7 +49,7 @@ import static org.mockito.Mockito.when;
 @RunWith(MockitoJUnitRunner.class)
 public class ProcessBuilderCommandImplTest {
 
-    private ProcessBuilderCommand<BuildModel, Process> command;
+    private ProcessBuilderCommand command;
 
     @Mock
     private ShellCommand shellCommand;
@@ -57,13 +57,11 @@ public class ProcessBuilderCommandImplTest {
     @Mock
     private Process process;
 
-    private ShellCommandParamBuilder paramBuilder;
-
     private BuildModel buildModel;
 
     @Before
     public void setUp() {
-        paramBuilder = new ShellCommandParamBuilder();
+        ShellCommandParamBuilder paramBuilder = new ShellCommandParamBuilder();
         command = new ProcessBuilderCommandImpl(shellCommand, paramBuilder);
         buildModel = ModelStereotypeUtil.createBuildModel("echo hello", ModelStereotypeUtil.createProjectModel());
     }
@@ -76,8 +74,8 @@ public class ProcessBuilderCommandImplTest {
 
         verify(shellCommand).execute(argThat(new ArgumentMatcher<ShellCommandParam>() {
             @Override
-            public boolean matches(Object o) {
-                ShellCommandParam param = (ShellCommandParam) o;
+            public boolean matches(Object obj) {
+                ShellCommandParam param = (ShellCommandParam) obj;
                 return param.isRedirectErrorStream()
                         && param.getCommand().equals(buildModel.getBuildCommand())
                         && param.getEnvironmentVars().equals(buildModel.getEnvironmentVars())

@@ -29,7 +29,7 @@ import org.lyeung.elwood.common.command.ShellCommandParamBuilder;
 /**
  * Created by lyeung on 9/07/15.
  */
-public class ProcessBuilderCommandImpl implements ProcessBuilderCommand<BuildModel, Process> {
+public class ProcessBuilderCommandImpl implements ProcessBuilderCommand {
 
     private final ShellCommand shellCommand;
 

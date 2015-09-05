@@ -16,27 +16,15 @@
  *
  */
 
-package org.lyeung.elwood.executor.command.impl;
+package org.lyeung.elwood.executor.command;
 
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
-import org.junit.runner.RunWith;
-import org.lyeung.elwood.common.test.QuickTest;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.lyeung.elwood.common.command.Command;
 
-import static org.junit.Assert.assertNotNull;
+import java.io.File;
 
 /**
- * Created by lyeung on 20/08/2015.
+ * Created by lyeung on 1/09/2015.
  */
-@Category(QuickTest.class)
-@RunWith(MockitoJUnitRunner.class)
-public class BuildJobCommandFactoryImplTest {
-
-    private BuildJobCommandImpl.Param param;
-
-    @Test
-    public void testMakeCommand() {
-        assertNotNull(new BuildJobCommandFactoryImpl(param).makeCommand());
-    }
+public interface FileCreatorCommand extends Command<File, File> {
+    // do-nothing
 }

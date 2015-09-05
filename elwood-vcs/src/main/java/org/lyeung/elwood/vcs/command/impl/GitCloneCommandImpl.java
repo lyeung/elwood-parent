@@ -52,9 +52,7 @@ public class GitCloneCommandImpl implements CloneCommand {
 
     private final List<EventListener<GitCloneEventData>> listeners;
 
-    public GitCloneCommandImpl(
-            List<EventListener<GitCloneEventData>> listeners) {
-
+    public GitCloneCommandImpl(List<EventListener<GitCloneEventData>> listeners) {
         this.listeners = listeners;
     }
 

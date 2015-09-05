@@ -30,28 +30,21 @@ public class BuildTask implements Callable<Integer> {
 
     private final BuildJobCommandFactory buildJobCommandFactory;
 
-    private final String key;
+    private final KeyCountTuple keyCountTuple;
 
-    private final long count;
-
-    public BuildTask(BuildJobCommandFactory buildJobCommandFactory, String key, long count) {
+    public BuildTask(BuildJobCommandFactory buildJobCommandFactory, KeyCountTuple keyCountTuple) {
         this.buildJobCommandFactory = buildJobCommandFactory;
-        this.key = key;
-        this.count = count;
+        this.keyCountTuple = keyCountTuple;
     }
 
-    public String getKey() {
-        return key;
-    }
-
-    public long getCount() {
-        return count;
+    public KeyCountTuple getKeyCountTuple() {
+        return keyCountTuple;
     }
 
     @Override
     public Integer call() throws Exception {
         return buildJobCommandFactory
                 .makeCommand()
-                .execute(new KeyCountTuple(key, count));
+                .execute(keyCountTuple);
     }
 }

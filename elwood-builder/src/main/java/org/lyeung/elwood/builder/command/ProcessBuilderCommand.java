@@ -24,6 +24,6 @@ import org.lyeung.elwood.common.command.Command;
 /**
  * Created by lyeung on 10/07/2015.
  */
-public interface ProcessBuilderCommand<IN extends BuildModel, OUT extends Process> extends Command<IN, OUT> {
+public interface ProcessBuilderCommand extends Command<BuildModel, Process> {
    // do-nothing
 }

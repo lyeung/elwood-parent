@@ -20,6 +20,7 @@ package org.lyeung.elwood.executor.impl;
 
 import org.lyeung.elwood.executor.BuildExecutor;
 import org.lyeung.elwood.executor.command.BuildJobCommandFactory;
+import org.lyeung.elwood.executor.command.KeyCountTuple;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
@@ -39,7 +40,7 @@ public class BuildExecutorImpl implements BuildExecutor {
     }
 
     @Override
-    public Future<Integer> add(String key, long count) {
-        return executorService.submit(new BuildTask(factory, key, count));
+    public Future<Integer> add(KeyCountTuple keyCountTuple) {
+        return executorService.submit(new BuildTask(factory, keyCountTuple));
     }
 }

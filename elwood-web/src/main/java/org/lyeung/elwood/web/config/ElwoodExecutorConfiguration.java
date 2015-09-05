@@ -18,13 +18,21 @@
 
 package org.lyeung.elwood.web.config;
 
+import org.lyeung.elwood.builder.command.impl.ProcessBuilderCommandFactoryImpl;
+import org.lyeung.elwood.builder.command.impl.ProjectBuilderCommandFactoryImpl;
+import org.lyeung.elwood.common.command.impl.MkDirCommandFactoryImpl;
 import org.lyeung.elwood.data.redis.repository.BuildRepository;
+import org.lyeung.elwood.data.redis.repository.BuildResultRepository;
 import org.lyeung.elwood.data.redis.repository.ProjectRepository;
 import org.lyeung.elwood.executor.BuildExecutor;
 import org.lyeung.elwood.executor.BuildMapLog;
 import org.lyeung.elwood.executor.command.BuildJobCommandFactory;
 import org.lyeung.elwood.executor.command.impl.BuildJobCommandFactoryImpl;
+import org.lyeung.elwood.executor.command.impl.BuildJobCommandImpl;
+import org.lyeung.elwood.executor.command.impl.CheckoutDirCreatorCommandFactoryImpl;
+import org.lyeung.elwood.executor.command.impl.ElwoodLogFileCreatorCommandFactoryImpl;
 import org.lyeung.elwood.executor.impl.BuildExecutorImpl;
+import org.lyeung.elwood.vcs.command.impl.GitCloneCommandFactoryImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -52,6 +60,9 @@ public class ElwoodExecutorConfiguration {
     BuildRepository buildRepository;
 
     @Autowired
+    private BuildResultRepository buildResultRepository;
+
+    @Autowired
     private BuildMapLog buildMapLog;
 
     @Bean
@@ -60,8 +71,17 @@ public class ElwoodExecutorConfiguration {
     }
 
     private BuildJobCommandFactory buildJobCommandFactory() {
-        return new BuildJobCommandFactoryImpl(
-                projectRepository, buildRepository, buildMapLog);
+        return new BuildJobCommandFactoryImpl(new BuildJobCommandImpl.Param()
+                .buildRepository(buildRepository)
+                .projectRepository(projectRepository)
+                .buildResultRepository(buildResultRepository)
+                .buildMapLog(buildMapLog)
+                .mkDirCommandFactory(new MkDirCommandFactoryImpl())
+                .checkOutDirCreatorCommandFactory(new CheckoutDirCreatorCommandFactoryImpl())
+                .elwoodLogFileCreatorCommandFactory(new ElwoodLogFileCreatorCommandFactoryImpl())
+                .cloneCommandFactory(new GitCloneCommandFactoryImpl())
+                .processBuilderCommandFactory(new ProcessBuilderCommandFactoryImpl())
+                .projectBuilderCommandFactory(new ProjectBuilderCommandFactoryImpl()));
     }
 
     private ExecutorService executorService() {

@@ -18,29 +18,33 @@
 
 package org.lyeung.elwood.executor;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.Future;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
 /**
  * Created by lyeung on 6/08/2015.
  */
-public class BuildMapLog {
+public class BuildMapLog<K extends Serializable> {
 
     private final int bufferLines;
 
-    private final Map<String, BlockingQueue<String>> map = new ConcurrentHashMap<>();
+    private final Map<K, BlockingQueue<String>> map = new ConcurrentHashMap<>();
+
+    private final Map<K, Future<Integer>> futureMap = new ConcurrentHashMap<>();
 
     public BuildMapLog(int bufferLines) {
         this.bufferLines = bufferLines;
     }
 
-    public void append(String key, String content) {
+    public void append(K key, String content) {
         map.putIfAbsent(key, new LinkedBlockingQueue<>(bufferLines));
 
         final BlockingQueue<String> queue = map.get(key);
@@ -66,7 +70,7 @@ public class BuildMapLog {
         }
     }
 
-    public Optional<List<String>> get(String key) {
+    public Optional<List<String>> getContent(K key) {
         final BlockingQueue<String> list = map.get(key);
         if (list == null) {
             return Optional.empty();
@@ -75,4 +79,23 @@ public class BuildMapLog {
         return Optional.of(new ArrayList<>(list));
     }
 
+    public boolean removeContent(K key) {
+        return map.remove(key) != null;
+    }
+
+    public Optional<Boolean> isFutureDone(K key) {
+        if (!futureMap.containsKey(key)) {
+            return Optional.empty();
+        }
+
+        return Optional.of(futureMap.get(key).isDone());
+    }
+
+    public Future<Integer> addFuture(K key, Future<Integer> future) {
+        return futureMap.putIfAbsent(key, future);
+    }
+
+    public boolean removeFuture(K key) {
+        return futureMap.remove(key) != null;
+    }
 }

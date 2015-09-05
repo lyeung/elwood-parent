@@ -16,27 +16,17 @@
  *
  */
 
-package org.lyeung.elwood.executor.command.impl;
+package org.lyeung.elwood.vcs.command;
 
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
-import org.junit.runner.RunWith;
-import org.lyeung.elwood.common.test.QuickTest;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.lyeung.elwood.common.event.EventListener;
+import org.lyeung.elwood.vcs.command.impl.GitCloneEventData;
 
-import static org.junit.Assert.assertNotNull;
+import java.util.List;
 
 /**
- * Created by lyeung on 20/08/2015.
+ * Created by lyeung on 1/09/2015.
  */
-@Category(QuickTest.class)
-@RunWith(MockitoJUnitRunner.class)
-public class BuildJobCommandFactoryImplTest {
+public interface CloneCommandFactory {
 
-    private BuildJobCommandImpl.Param param;
-
-    @Test
-    public void testMakeCommand() {
-        assertNotNull(new BuildJobCommandFactoryImpl(param).makeCommand());
-    }
+    CloneCommand makeCommand(List<EventListener<GitCloneEventData>> listeners);
 }

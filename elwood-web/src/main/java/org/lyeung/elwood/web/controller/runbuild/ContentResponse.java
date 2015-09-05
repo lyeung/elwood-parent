@@ -18,25 +18,40 @@
 
 package org.lyeung.elwood.web.controller.runbuild;
 
+import org.lyeung.elwood.web.controller.runbuild.enums.ContentResponseStatus;
+
+import java.net.URL;
+
 /**
  * Created by lyeung on 13/08/2015.
  */
 public class ContentResponse {
 
-    public static ContentResponse EMPTY = new ContentResponse();
+    private final ContentResponseStatus status;
 
     private String content;
 
-    private ContentResponse() {
-        // do-nothing
+    private URL redirectUrl;
+
+    public ContentResponse(ContentResponseStatus status, String content) {
+        this.status = status;
+        this.content = content;
     }
 
-    public ContentResponse(String content) {
-        this.content = content;
+    public ContentResponse(ContentResponseStatus status, URL redirectUrl) {
+        this.status = status;
+        this.redirectUrl = redirectUrl;
     }
 
     public String getContent() {
         return content;
     }
 
+    public ContentResponseStatus getStatus() {
+        return status;
+    }
+
+    public URL getRedirectUrl() {
+        return redirectUrl;
+    }
 }

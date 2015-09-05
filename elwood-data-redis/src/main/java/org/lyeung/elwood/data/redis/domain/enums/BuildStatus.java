@@ -25,5 +25,7 @@ public enum BuildStatus {
 
     SUCCEEDED,
 
+    IN_PROGRESS,
+
     FAILED
 }

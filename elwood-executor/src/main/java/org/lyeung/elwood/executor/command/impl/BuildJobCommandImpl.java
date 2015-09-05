@@ -18,38 +18,44 @@
 
 package org.lyeung.elwood.executor.command.impl;
 
-import org.lyeung.elwood.builder.command.impl.ProcessBuilderCommandImpl;
-import org.lyeung.elwood.builder.command.impl.ProjectBuilderCommandImpl;
+import org.lyeung.elwood.builder.command.ProcessBuilderCommandFactory;
+import org.lyeung.elwood.builder.command.ProjectBuilderCommandFactory;
 import org.lyeung.elwood.builder.model.BuildModel;
 import org.lyeung.elwood.builder.model.ProjectModel;
-import org.lyeung.elwood.common.command.MkDirCommand;
+import org.lyeung.elwood.common.command.MkDirCommandFactory;
 import org.lyeung.elwood.common.command.MkDirCommandParamBuilder;
 import org.lyeung.elwood.common.command.ShellCommandParamBuilder;
 import org.lyeung.elwood.common.command.event.impl.ShellCommandExecutorEventData;
-import org.lyeung.elwood.common.command.impl.MkDirCommandImpl;
 import org.lyeung.elwood.common.command.impl.ShellCommandExecutorImpl;
 import org.lyeung.elwood.common.command.impl.ShellCommandImpl;
 import org.lyeung.elwood.common.event.Event;
 import org.lyeung.elwood.common.event.impl.DefaultEventListener;
 import org.lyeung.elwood.data.redis.domain.Build;
+import org.lyeung.elwood.data.redis.domain.BuildResult;
 import org.lyeung.elwood.data.redis.domain.Project;
+import org.lyeung.elwood.data.redis.domain.enums.BuildStatus;
 import org.lyeung.elwood.data.redis.repository.BuildRepository;
+import org.lyeung.elwood.data.redis.repository.BuildResultRepository;
 import org.lyeung.elwood.data.redis.repository.ProjectRepository;
 import org.lyeung.elwood.executor.BuildMapLog;
 import org.lyeung.elwood.executor.command.BuildJobCommand;
 import org.lyeung.elwood.executor.command.BuildJobException;
+import org.lyeung.elwood.executor.command.CheckoutDirCreatorCommandFactory;
+import org.lyeung.elwood.executor.command.ElwoodLogFileCreatorCommandFactory;
 import org.lyeung.elwood.executor.command.KeyCountTuple;
 import org.lyeung.elwood.vcs.command.CloneCommand;
+import org.lyeung.elwood.vcs.command.CloneCommandFactory;
 import org.lyeung.elwood.vcs.command.CloneCommandParam;
 import org.lyeung.elwood.vcs.command.CloneCommandParamBuilder;
-import org.lyeung.elwood.vcs.command.impl.GitCloneCommandImpl;
 import org.lyeung.elwood.vcs.command.impl.GitCloneEventData;
 
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.util.Collections;
+import java.util.Date;
 import java.util.function.Consumer;
 
 /**
@@ -59,57 +65,67 @@ public class BuildJobCommandImpl implements BuildJobCommand {
 
     private static final String WORKSPACE_DIR = "/tmp/workspace";
 
-    private static final String ELWOOD_LOG = "elwood.log";
+    private final Param param;
 
-    private final ProjectRepository projectRepository;
-
-    private final BuildRepository buildRepository;
-
-    private final BuildMapLog buildMapLog;
-
-    public BuildJobCommandImpl(ProjectRepository projectRepository,
-                               BuildRepository buildRepository, BuildMapLog buildMapLog) {
-
-        this.projectRepository = projectRepository;
-        this.buildRepository = buildRepository;
-        this.buildMapLog = buildMapLog;
+    public BuildJobCommandImpl(Param param) {
+        this.param = param;
     }
 
     @Override
     public Integer execute(KeyCountTuple keyCountTuple) {
         final String key = keyCountTuple.getKey();
 
-        final Project project = projectRepository.getOne(key);
-        final Build build = buildRepository.getOne(key);
+        final Project project = param.projectRepository.getOne(key);
+        final Build build = param.buildRepository.getOne(key);
 
         final File targetDir = mkDir(build, keyCountTuple);
-        final File elwoodLog = new File(targetDir, ELWOOD_LOG);
-        final File checkedOutDir = checkOutSource(
-                key, project, targetDir, elwoodLog);
+        final File elwoodLog = createElwoodLog(targetDir);
+        final File checkedOutDir = checkOutSource(keyCountTuple, project, targetDir, elwoodLog);
         final Process process = createProcess(project, build, checkedOutDir);
-        final Integer result = buildProject(key, process, elwoodLog);
+        final Integer result = buildProject(keyCountTuple, process, elwoodLog);
+
+        final BuildResult buildResult = param.buildResultRepository.getOne(
+                keyCountTuple.toString());
+        buildResult.setBuildStatus(getBuildStatus(result));
+        buildResult.setFinishRunDate(new Date());
+        param.buildResultRepository.save(buildResult);
+
+        final boolean removedFuture = param.buildMapLog.removeFuture(keyCountTuple);
+        assert removedFuture;
+
+        final boolean removedContent = param.buildMapLog.removeContent(keyCountTuple);
+        assert removedContent;
 
         return result;
     }
 
-    private File mkDir(Build build, KeyCountTuple keyCountTuple) {
-        final MkDirCommand mkDirCommand = new MkDirCommandImpl();
-        return mkDirCommand.execute(new MkDirCommandParamBuilder()
-                .directory(getTargetDirectory(build, keyCountTuple))
-                .build());
+    private BuildStatus getBuildStatus(Integer result) {
+        if (result != 0) {
+            return BuildStatus.FAILED;
+        }
+
+        return BuildStatus.SUCCEEDED;
     }
 
-    private File checkOutSource(String key, Project project, File targetDir,
-        File elwoodLog) {
+    private File createElwoodLog(File targetDir) {
+        return param.elwoodLogFileCreatorCommandFactory.makeCommand().execute(targetDir);
+    }
 
-        final CloneCommand cloneCommand = new GitCloneCommandImpl(
+    private File mkDir(Build build, KeyCountTuple keyCountTuple) {
+        return param.mkDirCommandFactory.createMkDirCommand()
+                .execute(new MkDirCommandParamBuilder()
+                        .directory(getTargetDirectory(build, keyCountTuple))
+                        .build());
+    }
+
+    private File checkOutSource(KeyCountTuple keyCountTuple, Project project, File targetDir, File elwoodLog) {
+        final CloneCommand cloneCommand = param.cloneCommandFactory.makeCommand(
                 Collections.singletonList(new DefaultEventListener<>(
                         new GitCloneBuildMapWriter(
-                                key, buildMapLog, elwoodLog))));
+                                keyCountTuple, param.buildMapLog, elwoodLog))));
 
-        final File checkedOutDir = new File(targetDir.getAbsoluteFile()
-                + "/code");
-        checkedOutDir.mkdirs();
+        final File checkedOutDir = param.checkoutDirCreatorCommandFactory
+                .makeCommand().execute(targetDir);
 
         return cloneCommand.execute(new CloneCommandParamBuilder()
                 .localDirectory(checkedOutDir.getAbsolutePath())
@@ -123,16 +139,16 @@ public class BuildJobCommandImpl implements BuildJobCommand {
     }
 
     private Process createProcess(Project project, Build build, File checkedOutDir) {
-        return new ProcessBuilderCommandImpl(new ShellCommandImpl(),
+        return param.processBuilderCommandFactory.makeCommand(new ShellCommandImpl(),
                 new ShellCommandParamBuilder()).execute(
                 toBuildModel(project, build, checkedOutDir));
     }
 
-    private Integer buildProject(String key, Process process, File elwoodLog) {
-        return new ProjectBuilderCommandImpl(new ShellCommandExecutorImpl(
+    private Integer buildProject(KeyCountTuple keyCountTuple, Process process, File elwoodLog) {
+        return param.projectBuilderCommandFactory.makeCommand(new ShellCommandExecutorImpl(
                 Collections.singletonList(new DefaultEventListener<>(
                         new ShellCommandBuildMapWriter(
-                                key, buildMapLog, elwoodLog)))))
+                                keyCountTuple, param.buildMapLog, elwoodLog)))))
                 .execute(process);
     }
 
@@ -159,21 +175,19 @@ public class BuildJobCommandImpl implements BuildJobCommand {
 
     private String getTargetDirectory(Build build, KeyCountTuple keyCountTuple) {
         return WORKSPACE_DIR + "/" + build.getWorkingDirectory() + "/"
-                + keyCountTuple.getKey() + "-" + keyCountTuple.getCount();
+                + keyCountTuple.toString();
     }
 
-    private static class GitCloneBuildMapWriter
+    private static class GitCloneBuildMapWriter<K extends Serializable>
             implements Consumer<Event<GitCloneEventData>> {
 
-        private final String key;
+        private final K key;
 
         private final BuildMapLog buildMapLog;
 
         private final File file;
 
-        public GitCloneBuildMapWriter(String key, BuildMapLog buildMapLog,
-            File file) {
-
+        public GitCloneBuildMapWriter(K key, BuildMapLog buildMapLog, File file) {
             this.key = key;
             this.buildMapLog = buildMapLog;
             this.file = file;
@@ -184,11 +198,12 @@ public class BuildJobCommandImpl implements BuildJobCommand {
             final byte[] data = event.getEventData().getData();
             try {
                 final String content = new String(data, "UTF-8");
+                System.out.println(content);
                 write(content, file);
                 buildMapLog.append(key, content);
             } catch (UnsupportedEncodingException e) {
                 throw new BuildJobException(
-                        "unable to clone source", e, key);
+                        "unable to clone source", e, key.toString());
             }
         }
 
@@ -197,23 +212,21 @@ public class BuildJobCommandImpl implements BuildJobCommand {
                 fileWriter.write(content);
             } catch (IOException e) {
                 throw new BuildJobException(
-                        "unable to write to file", e, key);
+                        "unable to write to file", e, key.toString());
             }
         }
     }
 
-    private static class ShellCommandBuildMapWriter
+    private static class ShellCommandBuildMapWriter<K extends Serializable>
             implements Consumer<Event<ShellCommandExecutorEventData>> {
 
-        private final String key;
+        private final K key;
 
         private final BuildMapLog buildMapLog;
 
         private final File file;
 
-        public ShellCommandBuildMapWriter(String key, BuildMapLog buildMapLog,
-            File file) {
-
+        public ShellCommandBuildMapWriter(K key, BuildMapLog buildMapLog, File file) {
             this.key = key;
             this.buildMapLog = buildMapLog;
             this.file = file;
@@ -224,11 +237,12 @@ public class BuildJobCommandImpl implements BuildJobCommand {
             final byte[] data = event.getEventData().getData();
             try {
                 final String content = new String(data, "UTF-8");
+                System.out.println(content);
                 write(content, file);
                 buildMapLog.append(key, content);
             } catch (UnsupportedEncodingException e) {
                 throw new BuildJobException(
-                        "unsupported encoding", e, key);
+                        "unsupported encoding", e, key.toString());
             }
         }
 
@@ -237,8 +251,86 @@ public class BuildJobCommandImpl implements BuildJobCommand {
                 fileWriter.write(content);
             } catch (IOException e) {
                 throw new BuildJobException(
-                        "unable to write to file", e, key);
+                        "unable to write to file", e, key.toString());
             }
+        }
+    }
+
+
+    public static class Param {
+
+        private ProjectRepository projectRepository;
+
+        private BuildRepository buildRepository;
+
+        private BuildResultRepository buildResultRepository;
+
+        private BuildMapLog buildMapLog;
+
+        private MkDirCommandFactory mkDirCommandFactory;
+
+        private CheckoutDirCreatorCommandFactory checkoutDirCreatorCommandFactory;
+
+        private ElwoodLogFileCreatorCommandFactory elwoodLogFileCreatorCommandFactory;
+
+        private CloneCommandFactory cloneCommandFactory;
+
+        private ProcessBuilderCommandFactory processBuilderCommandFactory;
+
+        private ProjectBuilderCommandFactory projectBuilderCommandFactory;
+
+        public Param projectRepository(ProjectRepository projectRepository) {
+            this.projectRepository = projectRepository;
+            return this;
+        }
+
+        public Param buildRepository(BuildRepository buildRepository) {
+            this.buildRepository = buildRepository;
+            return this;
+        }
+
+        public Param buildResultRepository(BuildResultRepository buildResultRepository) {
+            this.buildResultRepository = buildResultRepository;
+            return this;
+        }
+
+        public Param buildMapLog(BuildMapLog buildMapLog) {
+            this.buildMapLog = buildMapLog;
+            return this;
+        }
+
+        public Param mkDirCommandFactory(MkDirCommandFactory mkDirCommandFactory) {
+            this.mkDirCommandFactory = mkDirCommandFactory;
+            return this;
+        }
+
+        public Param checkOutDirCreatorCommandFactory(
+                CheckoutDirCreatorCommandFactory checkoutDirCreatorCommandFactory) {
+            this.checkoutDirCreatorCommandFactory = checkoutDirCreatorCommandFactory;
+            return this;
+        }
+
+        public Param elwoodLogFileCreatorCommandFactory(
+                ElwoodLogFileCreatorCommandFactory elwoodLogFileCreatorCommandFactory) {
+            this.elwoodLogFileCreatorCommandFactory = elwoodLogFileCreatorCommandFactory;
+            return this;
+        }
+
+        public Param cloneCommandFactory(CloneCommandFactory cloneCommandFactory) {
+            this.cloneCommandFactory = cloneCommandFactory;
+            return this;
+        }
+
+        public Param processBuilderCommandFactory(
+                ProcessBuilderCommandFactory processBuilderCommandFactory) {
+            this.processBuilderCommandFactory = processBuilderCommandFactory;
+            return this;
+        }
+
+        public Param projectBuilderCommandFactory(
+                ProjectBuilderCommandFactory projectBuilderCommandFactory) {
+            this.projectBuilderCommandFactory = projectBuilderCommandFactory;
+            return this;
         }
     }
 }

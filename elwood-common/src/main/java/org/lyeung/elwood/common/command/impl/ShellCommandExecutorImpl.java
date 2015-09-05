@@ -38,7 +38,8 @@ public class ShellCommandExecutorImpl implements ShellCommandExecutor {
 
     private List<EventListener<ShellCommandExecutorEventData>> executorListeners;
 
-    public ShellCommandExecutorImpl(List<EventListener<ShellCommandExecutorEventData>> executorListeners) {
+    public ShellCommandExecutorImpl(
+            List<EventListener<ShellCommandExecutorEventData>> executorListeners) {
         this.executorListeners = executorListeners;
     }
 
@@ -52,10 +53,9 @@ public class ShellCommandExecutorImpl implements ShellCommandExecutor {
                     break;
                 }
 
-                System.out.println(">>>>>>>>>>\n" + new String(buf) + "\n<<<<<<<<<<");
                 executorListeners.forEach(
-                        e -> e.handleEvent(
-                                new Event<>(new ShellCommandExecutorEventData(copyBuf(buf, bytesRead)))));
+                        e -> e.handleEvent(new Event<>(
+                                new ShellCommandExecutorEventData(copyBuf(buf, bytesRead)))));
             }
             return process.waitFor();
         } catch (IOException e) {

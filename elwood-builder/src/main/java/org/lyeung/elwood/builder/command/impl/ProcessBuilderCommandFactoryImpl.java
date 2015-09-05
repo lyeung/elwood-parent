@@ -16,27 +16,20 @@
  *
  */
 
-package org.lyeung.elwood.executor.command.impl;
+package org.lyeung.elwood.builder.command.impl;
 
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
-import org.junit.runner.RunWith;
-import org.lyeung.elwood.common.test.QuickTest;
-import org.mockito.runners.MockitoJUnitRunner;
-
-import static org.junit.Assert.assertNotNull;
+import org.lyeung.elwood.builder.command.ProcessBuilderCommandFactory;
+import org.lyeung.elwood.common.command.ShellCommand;
+import org.lyeung.elwood.common.command.ShellCommandParamBuilder;
 
 /**
- * Created by lyeung on 20/08/2015.
+ * Created by lyeung on 1/09/2015.
  */
-@Category(QuickTest.class)
-@RunWith(MockitoJUnitRunner.class)
-public class BuildJobCommandFactoryImplTest {
+public class ProcessBuilderCommandFactoryImpl implements ProcessBuilderCommandFactory {
 
-    private BuildJobCommandImpl.Param param;
-
-    @Test
-    public void testMakeCommand() {
-        assertNotNull(new BuildJobCommandFactoryImpl(param).makeCommand());
+    @Override
+    public ProcessBuilderCommandImpl makeCommand(
+            ShellCommand shellCommand, ShellCommandParamBuilder shellCommandParamBuilder) {
+        return new ProcessBuilderCommandImpl(shellCommand, shellCommandParamBuilder);
     }
 }

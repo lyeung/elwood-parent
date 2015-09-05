@@ -25,6 +25,7 @@ import org.junit.runner.RunWith;
 import org.lyeung.elwood.common.test.QuickTest;
 import org.lyeung.elwood.executor.BuildExecutor;
 import org.lyeung.elwood.executor.command.BuildJobCommandFactory;
+import org.lyeung.elwood.executor.command.KeyCountTuple;
 import org.mockito.ArgumentMatcher;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -50,6 +51,10 @@ public class BuildExecutorImplTest {
 
     private static final String KEY = "key";
 
+    private static final long COUNT = 10L;
+
+    private static final KeyCountTuple KEY_COUNT_TUPLE = new KeyCountTuple(KEY, COUNT);
+
     @Mock
     private BuildJobCommandFactory factory;
 
@@ -59,8 +64,6 @@ public class BuildExecutorImplTest {
     @Mock
     private Future<Integer> future;
 
-    private BuildExecutor buildExecutor;
-
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
@@ -69,14 +72,15 @@ public class BuildExecutorImplTest {
     @Test
     public void testAdd() {
         when(executorService.submit(any(BuildTask.class))).thenReturn(future);
-        buildExecutor = new BuildExecutorImpl(factory, executorService);
-        assertEquals(future, buildExecutor.add(KEY, 10L));
+        final BuildExecutor buildExecutor = new BuildExecutorImpl(factory, executorService);
+        assertEquals(future, buildExecutor.add(KEY_COUNT_TUPLE));
 
         verify(executorService).submit(argThat(new ArgumentMatcher<BuildTask>() {
             @Override
             public boolean matches(Object argument) {
                 final BuildTask buildTask = (BuildTask) argument;
-                return buildTask.getKey().equals(KEY) && buildTask.getCount() == 10L;
+                return buildTask.getKeyCountTuple().getKey().equals(KEY.toUpperCase())
+                        && buildTask.getKeyCountTuple().getCount() == 10L;
             }
         }));
 
