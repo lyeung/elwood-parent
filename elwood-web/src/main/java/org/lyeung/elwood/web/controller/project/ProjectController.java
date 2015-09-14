@@ -31,6 +31,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Collections;
+import java.util.Optional;
 
 /**
  * Created by lyeung on 1/08/2015.
@@ -44,7 +45,12 @@ public class ProjectController {
 
     @RequestMapping(value = "/{key}", method = RequestMethod.GET)
     public Project getByKey(@PathVariable("key") String key) {
-        return projectRepository.getOne(key);
+        final Optional<Project> result = projectRepository.getOne(key);
+        if (result.isPresent()) {
+            return result.get();
+        }
+
+        return null;
     }
 
     @RequestMapping(method = RequestMethod.POST)

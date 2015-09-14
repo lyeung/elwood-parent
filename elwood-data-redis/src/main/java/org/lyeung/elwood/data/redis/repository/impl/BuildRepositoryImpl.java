@@ -20,21 +20,44 @@ package org.lyeung.elwood.data.redis.repository.impl;
 
 import org.lyeung.elwood.data.redis.domain.Build;
 import org.lyeung.elwood.data.redis.repository.BuildRepository;
-import org.springframework.data.redis.core.HashOperations;
-import org.springframework.data.redis.core.RedisTemplate;
+import org.lyeung.elwood.data.redis.repository.HashRepository;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Created by lyeung on 1/08/2015.
  */
-public class BuildRepositoryImpl extends AbstractRepository<Build, String>
-        implements BuildRepository {
+public class BuildRepositoryImpl implements BuildRepository {
 
-    public BuildRepositoryImpl(
-            String domainKey, RedisTemplate<String, Build> template) {
+    private final String hashKey;
 
-        super(domainKey, template);
+    private final HashRepository<Build, String, String> repository;
+
+    public BuildRepositoryImpl(String hashKey,
+        HashRepository<Build, String, String> repository) {
+
+        this.hashKey = hashKey;
+        this.repository = repository;
     }
 
+    @Override
+    public Optional<Build> getOne(String objectKey) {
+        return repository.getOne(hashKey, objectKey);
+    }
+
+    @Override
+    public void save(Build build) {
+        repository.save(hashKey, build.getKey(), build);
+    }
+
+    @Override
+    public void delete(List<String> objectKeys) {
+        repository.delete(hashKey, objectKeys);
+    }
+
+    @Override
+    public List<Build> findAll(long start, long end) {
+        return repository.findAll(hashKey, start, end);
+    }
 }

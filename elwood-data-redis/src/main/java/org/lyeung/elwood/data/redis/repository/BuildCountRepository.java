@@ -18,10 +18,19 @@
 
 package org.lyeung.elwood.data.redis.repository;
 
+import java.util.List;
+import java.util.Set;
+
 /**
  * Created by lyeung on 24/08/2015.
  */
-public interface BuildCountRepository extends CountRepository<String> {
+public interface BuildCountRepository {
 
-    // do-nothing
+    Long incrementBy(String objectKey, long delta);
+
+    Long getCount(String objectKey);
+
+    Set<String> findAll();
+
+    void delete(List<String> objectKeys);
 }

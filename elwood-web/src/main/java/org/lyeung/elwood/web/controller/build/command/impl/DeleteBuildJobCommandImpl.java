@@ -25,6 +25,7 @@ import org.lyeung.elwood.web.controller.build.command.DeleteBuildJobCommand;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Created by lyeung on 3/08/2015.
@@ -44,10 +45,10 @@ public class DeleteBuildJobCommandImpl implements DeleteBuildJobCommand {
 
     @Override
     public String execute(String key) {
-        final Project project = projectRepository.getOne(key);
-        if (project != null) {
+        final Optional<Project> project = projectRepository.getOne(key);
+        if (project.isPresent()) {
             final List<String> keyList = Collections.singletonList(
-                    project.getKey());
+                    project.get().getKey());
 
             projectRepository.delete(keyList);
             buildRepository.delete(keyList);

@@ -37,6 +37,6 @@ public class ProjectsController {
 
     @RequestMapping(method = RequestMethod.GET)
     public ProjectsResult getAllProjects() {
-        return new ProjectsResult(projectRepository.findAll());
+        return new ProjectsResult(projectRepository.findAll(0, -1));
     }
 }

@@ -25,13 +25,13 @@ import java.util.Set;
 /**
  * Created by lyeung on 29/08/2015.
  */
-public interface CountRepository<K extends Serializable> {
+public interface CountRepository<HK extends Serializable, OK extends Serializable> {
 
-    Long incrementBy(K key, long delta);
+    Long incrementBy(HK hashKey, OK objectKey, long delta);
 
-    Long getCount(K key);
+    Long getCount(HK hashKey, OK objectKey);
 
-    Set<K> findAll();
+    Set<OK> findAll(HK hashKey);
 
-    void delete(List<K> keys);
+    void delete(HK hashKey, List<OK> objectKeys);
 }

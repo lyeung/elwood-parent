@@ -29,6 +29,7 @@ public final class NavigationConstants {
     public static final String VCS = "/vcs";
     public static final String BUILD_JOB = "/buildJob";
     public static final String RUN_BUILD_JOB = "/runBuildJob";
+    public static final String BUILD_RESULT = "/buildResult";
 
     private NavigationConstants() {
         // do-nothing

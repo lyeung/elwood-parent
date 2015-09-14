@@ -56,6 +56,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
+import static java.util.Optional.of;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
@@ -146,8 +147,8 @@ public class BuildJobCommandImplTest {
 
     @Test
     public void testExecute() {
-        when(projectRepository.getOne(KEY)).thenReturn(createProject());
-        when(buildRepository.getOne(KEY)).thenReturn(createBuild());
+        when(projectRepository.getOne(KEY)).thenReturn(of(createProject()));
+        when(buildRepository.getOne(KEY)).thenReturn(of(createBuild()));
 
         // mkdir command
         when(mkDirCommandFactory.createMkDirCommand()).thenReturn(mkDirCommand);
@@ -181,8 +182,8 @@ public class BuildJobCommandImplTest {
 
         // build result repository
         final BuildResult buildResult = new BuildResult();
-        when(buildResultRepository.getOne(new KeyCountTuple(KEY, 10L).toString()))
-                .thenReturn(buildResult);
+        when(buildResultRepository.getOne(KEY, new KeyCountTuple(KEY, 10L).toString()))
+                .thenReturn(of(buildResult));
 
         when(buildMapLog.removeFuture(new KeyCountTuple(KEY, 10L))).thenReturn(true);
         when(buildMapLog.removeContent(new KeyCountTuple(KEY, 10L))).thenReturn(true);

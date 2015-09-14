@@ -95,7 +95,7 @@ public class RunBuildJobControllerTest {
         assertEquals(KEY_COUNT_TUPLE, response.getKeyCountTuple());
 
         verify(incrementBuildCountCommand).execute(eq(KEY));
-        verify(buildResultRepository).save(argThat(new ArgumentMatcher<BuildResult>() {
+        verify(buildResultRepository).save(eq(KEY), argThat(new ArgumentMatcher<BuildResult>() {
             @Override
             public boolean matches(Object argument) {
                 final BuildResult buildResult = (BuildResult) argument;
@@ -115,7 +115,8 @@ public class RunBuildJobControllerTest {
     @Test
     public void testGetContentByKey() throws MalformedURLException {
         when(buildMapLog.isFutureDone(KEY_COUNT_TUPLE)).thenReturn(of(false));
-        when(buildMapLog.getContent(KEY_COUNT_TUPLE)).thenReturn(of(Arrays.asList("hello", "world")));
+        when(buildMapLog.getContent(KEY_COUNT_TUPLE)).thenReturn(
+                of(Arrays.asList("hello", "world")));
 
         final ContentResponse response = controller.getContentByKey(KEY, 2L);
         assertEquals(ContentResponseStatus.RUNNING, response.getStatus());
@@ -134,7 +135,8 @@ public class RunBuildJobControllerTest {
         when(buildMapLog.getContent(KEY_COUNT_TUPLE)).thenReturn(empty());
 
         final BuildResult buildResult = createBuildResult(KEY_COUNT_TUPLE, BuildStatus.IN_PROGRESS);
-        when(buildResultRepository.getOne(KEY_COUNT_TUPLE.toString())).thenReturn(buildResult);
+        when(buildResultRepository.getOne(KEY, KEY_COUNT_TUPLE.toString()))
+                .thenReturn(of(buildResult));
 
         final ContentResponse response = controller.getContentByKey(KEY, 2L);
         assertEquals(ContentResponseStatus.RUNNING, response.getStatus());
@@ -143,7 +145,7 @@ public class RunBuildJobControllerTest {
 
         verify(buildMapLog).isFutureDone(eq(KEY_COUNT_TUPLE));
         verify(buildMapLog).getContent(eq(KEY_COUNT_TUPLE));
-        verify(buildResultRepository).getOne(eq(KEY_COUNT_TUPLE.toString()));
+        verify(buildResultRepository).getOne(eq(KEY), eq(KEY_COUNT_TUPLE.toString()));
         verifyNoMoreInteractions(buildMapLog);
         verifyNoMoreInteractions(buildResultRepository);
     }
@@ -151,8 +153,7 @@ public class RunBuildJobControllerTest {
     @Test
     public void testGetUnknownContentByKey() throws MalformedURLException {
         when(buildMapLog.isFutureDone(KEY_COUNT_TUPLE)).thenReturn(empty());
-
-        when(buildResultRepository.getOne(KEY_COUNT_TUPLE.toString())).thenReturn(null);
+        when(buildResultRepository.getOne(KEY, KEY_COUNT_TUPLE.toString())).thenReturn(empty());
 
         final ContentResponse response = controller.getContentByKey(KEY, 2L);
         assertEquals(ContentResponseStatus.UNKNOWN, response.getStatus());
@@ -160,7 +161,9 @@ public class RunBuildJobControllerTest {
         assertNull(response.getRedirectUrl());
 
         verify(buildMapLog).isFutureDone(eq(KEY_COUNT_TUPLE));
+        verify(buildResultRepository).getOne(eq(KEY), eq(KEY_COUNT_TUPLE.toString()));
         verifyNoMoreInteractions(buildMapLog);
+        verifyNoMoreInteractions(buildResultRepository);
     }
 
     @Test
@@ -168,7 +171,8 @@ public class RunBuildJobControllerTest {
         when(buildMapLog.isFutureDone(KEY_COUNT_TUPLE)).thenReturn(empty());
 
         final BuildResult buildResult = createBuildResult(KEY_COUNT_TUPLE, BuildStatus.SUCCEEDED);
-        when(buildResultRepository.getOne(KEY_COUNT_TUPLE.toString())).thenReturn(buildResult);
+        when(buildResultRepository.getOne(KEY, KEY_COUNT_TUPLE.toString()))
+                .thenReturn(of(buildResult));
 
         final ContentResponse response = controller.getContentByKey(KEY, 2L);
         assertEquals(ContentResponseStatus.SUCCESS, response.getStatus());
@@ -177,7 +181,9 @@ public class RunBuildJobControllerTest {
                 response.getRedirectUrl().toExternalForm());
 
         verify(buildMapLog).isFutureDone(eq(KEY_COUNT_TUPLE));
+        verify(buildResultRepository).getOne(eq(KEY), eq(KEY_COUNT_TUPLE.toString()));
         verifyNoMoreInteractions(buildMapLog);
+        verifyNoMoreInteractions(buildResultRepository);
     }
 
     @Test
@@ -185,7 +191,8 @@ public class RunBuildJobControllerTest {
         when(buildMapLog.isFutureDone(KEY_COUNT_TUPLE)).thenReturn(empty());
 
         final BuildResult buildResult = createBuildResult(KEY_COUNT_TUPLE, BuildStatus.FAILED);
-        when(buildResultRepository.getOne(KEY_COUNT_TUPLE.toString())).thenReturn(buildResult);
+        when(buildResultRepository.getOne(KEY, KEY_COUNT_TUPLE.toString()))
+                .thenReturn(of(buildResult));
 
         final ContentResponse response = controller.getContentByKey(KEY, 2L);
         assertEquals(ContentResponseStatus.FAILED, response.getStatus());
@@ -194,7 +201,9 @@ public class RunBuildJobControllerTest {
                 response.getRedirectUrl().toExternalForm());
 
         verify(buildMapLog).isFutureDone(eq(KEY_COUNT_TUPLE));
+        verify(buildResultRepository).getOne(eq(KEY), eq(KEY_COUNT_TUPLE.toString()));
         verifyNoMoreInteractions(buildMapLog);
+        verifyNoMoreInteractions(buildResultRepository);
     }
 
     @Test
@@ -203,7 +212,8 @@ public class RunBuildJobControllerTest {
         when(buildMapLog.getContent(KEY_COUNT_TUPLE)).thenReturn(empty());
 
         final BuildResult buildResult = createBuildResult(KEY_COUNT_TUPLE, BuildStatus.FAILED);
-        when(buildResultRepository.getOne(KEY_COUNT_TUPLE.toString())).thenReturn(buildResult);
+        when(buildResultRepository.getOne(KEY, KEY_COUNT_TUPLE.toString()))
+                .thenReturn(of(buildResult));
 
         final ContentResponse response = controller.getContentByKey(KEY, 2L);
         assertEquals(ContentResponseStatus.FAILED, response.getStatus());
@@ -213,7 +223,7 @@ public class RunBuildJobControllerTest {
 
         verify(buildMapLog).isFutureDone(eq(KEY_COUNT_TUPLE));
         verify(buildMapLog).getContent(KEY_COUNT_TUPLE);
-        verify(buildResultRepository).getOne(eq(KEY_COUNT_TUPLE.toString()));
+        verify(buildResultRepository).getOne(eq(KEY), eq(KEY_COUNT_TUPLE.toString()));
 
         verifyZeroInteractions(buildMapLog);
         verifyZeroInteractions(buildResultRepository);
@@ -231,6 +241,7 @@ public class RunBuildJobControllerTest {
 
         verify(buildMapLog).isFutureDone(eq(KEY_COUNT_TUPLE));
         verifyNoMoreInteractions(buildMapLog);
+        verifyZeroInteractions(buildResultRepository);
     }
 
     private BuildResult createBuildResult(KeyCountTuple keyCountTuple, BuildStatus status) {

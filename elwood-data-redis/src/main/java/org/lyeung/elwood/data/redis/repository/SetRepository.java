@@ -19,18 +19,17 @@
 package org.lyeung.elwood.data.redis.repository;
 
 import java.io.Serializable;
-import java.util.List;
+import java.util.Set;
 
 /**
- * Created by lyeung on 1/08/2015.
+ * Created by lyeung on 8/09/2015.
  */
-public interface CrudRepository<T, K extends Serializable> {
+public interface SetRepository<HV, HK extends Serializable> {
 
-    T getOne(K key);
+    Set<HV> findAll(HK hashKey, long start, long end);
 
-    void save(T domain);
+    Long save(HK hashKey, HV value);
 
-    void delete(List<K> keys);
+    Long delete(HK hashKey, HV values);
 
-    List<T> findAll();
 }

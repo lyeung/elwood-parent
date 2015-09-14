@@ -25,12 +25,11 @@ import org.lyeung.elwood.common.test.SlowTest;
 import org.lyeung.elwood.data.redis.domain.Project;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 /**
@@ -43,12 +42,13 @@ public class ProjectRepositoryImplTest extends AbstractRepositoryTest {
 
     @Before
     public void setUp() {
-        impl = new ProjectRepositoryImpl("test:project", redisTemplate(Project.class));
+        impl = new ProjectRepositoryImpl("test/project",
+                new RedisHashRepositoryImpl<>(redisTemplate(Project.class)));
         deleteAll();
     }
 
     private void deleteAll() {
-        impl.delete(impl.findAll().stream().map(p -> p.getKey()).collect(Collectors.toList()));
+        impl.delete(impl.findAll(0, -1).stream().map(p -> p.getKey()).collect(Collectors.toList()));
     }
 
     @Test
@@ -56,12 +56,12 @@ public class ProjectRepositoryImplTest extends AbstractRepositoryTest {
         Project project = ModelStereotypeUtil.createProject("PRJ-100");
         impl.save(project);
 
-        final Project loadedProject = impl.getOne("PRJ-100");
-        assertNotNull(loadedProject);
-        assertEquals("PRJ-100", loadedProject.getKey());
-        assertEquals("Project PRJ-100", loadedProject.getName());
-        assertEquals("Project PRJ-100 description", loadedProject.getDescription());
-        assertEquals("pom.xml", loadedProject.getBuildFile());
+        final Optional<Project> loadedProject = impl.getOne("PRJ-100");
+        assertTrue(loadedProject.isPresent());
+        assertEquals("PRJ-100", loadedProject.get().getKey());
+        assertEquals("Project PRJ-100", loadedProject.get().getName());
+        assertEquals("Project PRJ-100 description", loadedProject.get().getDescription());
+        assertEquals("pom.xml", loadedProject.get().getBuildFile());
     }
 
     @Test
@@ -72,9 +72,9 @@ public class ProjectRepositoryImplTest extends AbstractRepositoryTest {
         Project project2 = ModelStereotypeUtil.createProject("PRJ-200");
         impl.save(project2);
 
-        assertNotNull(impl.getOne("PRJ-100"));
-        assertNotNull(impl.getOne("PRJ-200"));
-        assertNull(impl.getOne("PRJ-300"));
+        assertTrue(impl.getOne("PRJ-100").isPresent());
+        assertTrue(impl.getOne("PRJ-200").isPresent());
+        assertFalse(impl.getOne("PRJ-300").isPresent());
     }
 
     @Test
@@ -82,7 +82,7 @@ public class ProjectRepositoryImplTest extends AbstractRepositoryTest {
         impl.save(ModelStereotypeUtil.createProject("PRJ-100"));
         impl.save(ModelStereotypeUtil.createProject("PRJ-200"));
 
-        final List<Project> result = impl.findAll();
+        final List<Project> result = impl.findAll(0, -1);
         assertEquals(2, result.size());
         assertTrue(isContains("PRJ-100", result));
         assertTrue(isContains("PRJ-200", result));
@@ -95,7 +95,7 @@ public class ProjectRepositoryImplTest extends AbstractRepositoryTest {
         impl.save(ModelStereotypeUtil.createProject("PRJ-200"));
 
         deleteAll();
-        assertEquals(0, impl.findAll().size());
+        assertEquals(0, impl.findAll(0, -1).size());
     }
 
     private boolean isContains(String key, List<Project> projects) {

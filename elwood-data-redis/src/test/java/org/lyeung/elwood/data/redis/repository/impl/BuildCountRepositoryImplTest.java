@@ -39,22 +39,19 @@ import static org.junit.Assert.assertTrue;
 @Category(SlowTest.class)
 public class BuildCountRepositoryImplTest extends AbstractRepositoryTest {
 
+    private static final String HASH_KEY = "test:buildCount";
+
     private BuildCountRepositoryImpl impl;
 
     @Before
     public void setUp() {
         final RedisTemplate<String, Long> template = redisCountTemplate();
-        impl = new BuildCountRepositoryImpl("test:buildCount", template);
+        impl = new BuildCountRepositoryImpl(HASH_KEY, new CountRepositoryImpl<>(template));
         deleteAll();
     }
 
     private void deleteAll() {
         impl.delete(impl.findAll().stream().collect(Collectors.toList()));
-    }
-
-    @Test
-    public void getDomainKey() {
-        assertEquals("test:buildCount", impl.getDomainKey());
     }
 
     @Test

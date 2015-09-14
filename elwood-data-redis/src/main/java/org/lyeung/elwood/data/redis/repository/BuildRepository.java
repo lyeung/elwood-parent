@@ -20,9 +20,19 @@ package org.lyeung.elwood.data.redis.repository;
 
 import org.lyeung.elwood.data.redis.domain.Build;
 
+import java.util.List;
+import java.util.Optional;
+
 /**
  * Created by lyeung on 1/08/2015.
  */
-public interface BuildRepository extends CrudRepository<Build, String> {
-    // do-nothing
+public interface BuildRepository {
+
+    Optional<Build> getOne(String objectKey);
+
+    void save(Build build);
+
+    void delete(List<String> objectKeys);
+
+    List<Build> findAll(long start, long end);
 }

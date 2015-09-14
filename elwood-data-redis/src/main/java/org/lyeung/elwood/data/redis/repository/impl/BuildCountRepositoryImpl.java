@@ -19,16 +19,42 @@
 package org.lyeung.elwood.data.redis.repository.impl;
 
 import org.lyeung.elwood.data.redis.repository.BuildCountRepository;
-import org.springframework.data.redis.core.RedisTemplate;
+import org.lyeung.elwood.data.redis.repository.CountRepository;
+
+import java.util.List;
+import java.util.Set;
 
 /**
  * Created by lyeung on 24/08/2015.
  */
-public class BuildCountRepositoryImpl extends AbstractCountRepository<String>
-        implements BuildCountRepository {
+public class BuildCountRepositoryImpl implements BuildCountRepository {
 
-    public BuildCountRepositoryImpl(String domainKey, RedisTemplate<String, Long> template) {
-        super(domainKey, template);
+    private final String hashKey;
+
+    private final CountRepository<String, String> repository;
+
+    public BuildCountRepositoryImpl(String hashKey, CountRepository<String, String> repository) {
+        this.hashKey = hashKey;
+        this.repository = repository;
     }
 
+    @Override
+    public Long incrementBy(String objectKey, long delta) {
+        return repository.incrementBy(hashKey, objectKey, delta);
+    }
+
+    @Override
+    public Long getCount(String objectKey) {
+        return repository.getCount(hashKey, objectKey);
+    }
+
+    @Override
+    public Set<String> findAll() {
+        return repository.findAll(hashKey);
+    }
+
+    @Override
+    public void delete(List<String> objectKeys) {
+        repository.delete(hashKey, objectKeys);
+    }
 }

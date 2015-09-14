@@ -25,12 +25,11 @@ import org.lyeung.elwood.common.test.SlowTest;
 import org.lyeung.elwood.data.redis.domain.Build;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 /**
@@ -43,12 +42,13 @@ public class BuildRepositoryImplTest extends AbstractRepositoryTest {
 
     @Before
     public void setUp() {
-        impl = new BuildRepositoryImpl("test:build", redisTemplate(Build.class));
+        impl = new BuildRepositoryImpl("test/build",
+                new RedisHashRepositoryImpl<>(redisTemplate(Build.class)));
         deleteAll();
     }
 
     private void deleteAll() {
-        impl.delete(impl.findAll().stream().map(p -> p.getKey()).collect(Collectors.toList()));
+        impl.delete(impl.findAll(0, -1).stream().map(p -> p.getKey()).collect(Collectors.toList()));
     }
 
     @Test
@@ -56,12 +56,12 @@ public class BuildRepositoryImplTest extends AbstractRepositoryTest {
         final Build build = ModelStereotypeUtil.createBuild("PRJ-100");
         impl.save(build);
 
-        final Build loadedBuild = impl.getOne("PRJ-100");
-        assertNotNull(loadedBuild);
-        assertEquals("PRJ-100", loadedBuild.getKey());
-        assertEquals("workingDirectory", loadedBuild.getWorkingDirectory());
-        assertEquals("buildDirectory", loadedBuild.getBuildCommand());
-        assertEquals("environmentVars", loadedBuild.getEnvironmentVars());
+        final Optional<Build> loadedBuild = impl.getOne("PRJ-100");
+        assertTrue(loadedBuild.isPresent());
+        assertEquals("PRJ-100", loadedBuild.get().getKey());
+        assertEquals("workingDirectory", loadedBuild.get().getWorkingDirectory());
+        assertEquals("buildDirectory", loadedBuild.get().getBuildCommand());
+        assertEquals("environmentVars", loadedBuild.get().getEnvironmentVars());
     }
 
     @Test
@@ -69,9 +69,9 @@ public class BuildRepositoryImplTest extends AbstractRepositoryTest {
         impl.save(ModelStereotypeUtil.createBuild("PRJ-100"));
         impl.save(ModelStereotypeUtil.createBuild("PRJ-200"));
 
-        assertNotNull(impl.getOne("PRJ-100"));
-        assertNotNull(impl.getOne("PRJ-200"));
-        assertNull(impl.getOne("PRJ-300"));
+        assertTrue(impl.getOne("PRJ-100").isPresent());
+        assertTrue(impl.getOne("PRJ-200").isPresent());
+        assertFalse(impl.getOne("PRJ-300").isPresent());
     }
 
     @Test
@@ -79,7 +79,7 @@ public class BuildRepositoryImplTest extends AbstractRepositoryTest {
         impl.save(ModelStereotypeUtil.createBuild("PRJ-100"));
         impl.save(ModelStereotypeUtil.createBuild("PRJ-200"));
 
-        final List<Build> builds = impl.findAll();
+        final List<Build> builds = impl.findAll(0, -1);
         assertEquals(2, builds.size());
         assertTrue(isContains("PRJ-100", builds));
         assertTrue(isContains("PRJ-200", builds));
@@ -92,7 +92,7 @@ public class BuildRepositoryImplTest extends AbstractRepositoryTest {
         impl.save(ModelStereotypeUtil.createBuild("PRJ-200"));
 
         deleteAll();
-        assertEquals(0, impl.findAll().size());
+        assertEquals(0, impl.findAll(0, -1).size());
     }
 
     private boolean isContains(String key, List<Build> builds) {

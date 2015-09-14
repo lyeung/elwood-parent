@@ -27,6 +27,8 @@ import org.lyeung.elwood.web.mapper.impl.ProjectBuildTupleToBuildJobMapperImpl;
 import org.lyeung.elwood.web.model.BuildJob;
 import org.lyeung.elwood.web.model.ProjectBuildTuple;
 
+import java.util.Optional;
+
 /**
  * Created by lyeung on 3/08/2015.
  */
@@ -45,14 +47,17 @@ public class GetBuildJobCommandImpl implements GetBuildJobCommand {
 
     @Override
     public BuildJob execute(String key) {
-        final Project project = projectRepository.getOne(key);
-        if (project == null) {
+        final Optional<Project> project = projectRepository.getOne(key);
+        if (!project.isPresent()) {
             return null;
         }
 
-        final Build build = buildRepository.getOne(key);
+        final Optional<Build> build = buildRepository.getOne(key);
+        if (!build.isPresent()) {
+            return null;
+        }
 
         return new ProjectBuildTupleToBuildJobMapperImpl().map(
-                new ProjectBuildTuple(project, build));
+                new ProjectBuildTuple(project.get(), build.get()));
     }
 }

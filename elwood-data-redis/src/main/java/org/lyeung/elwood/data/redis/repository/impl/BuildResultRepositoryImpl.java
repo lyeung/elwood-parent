@@ -20,17 +20,40 @@ package org.lyeung.elwood.data.redis.repository.impl;
 
 import org.lyeung.elwood.data.redis.domain.BuildResult;
 import org.lyeung.elwood.data.redis.repository.BuildResultRepository;
-import org.springframework.data.redis.core.RedisTemplate;
+import org.lyeung.elwood.data.redis.repository.HashRepository;
+
+import java.util.List;
+import java.util.Optional;
 
 /**
  * Created by lyeung on 24/08/2015.
  */
-public class BuildResultRepositoryImpl extends AbstractRepository<BuildResult, String>
-        implements BuildResultRepository {
+public class BuildResultRepositoryImpl implements BuildResultRepository {
 
-    public BuildResultRepositoryImpl(String domainKey,
-                                     RedisTemplate<String, BuildResult> template) {
+    private final HashRepository<BuildResult, String, String> repository;
 
-        super(domainKey, template);
+    public BuildResultRepositoryImpl(HashRepository<BuildResult, String, String> repository) {
+        this.repository = repository;
+    }
+
+    @Override
+    public List<BuildResult> findAll(String hashKey, long start, long end) {
+        return repository.findAll(hashKey, start, end);
+    }
+
+    @Override
+    public void save(String hashKey, BuildResult value) {
+        repository.save(hashKey, value.getKey(), value);
+    }
+
+    @Override
+    public void delete(String hashKey, List<String> objectKeys) {
+        repository.delete(hashKey, objectKeys);
+
+    }
+
+    @Override
+    public Optional<BuildResult> getOne(String hashKey, String objectKey) {
+        return repository.getOne(hashKey, objectKey);
     }
 }

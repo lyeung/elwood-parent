@@ -18,25 +18,13 @@
 
 package org.lyeung.elwood.data.redis.repository;
 
-import org.lyeung.elwood.data.redis.domain.BuildResult;
-
-import java.util.List;
-import java.util.Optional;
+import java.io.Serializable;
 
 /**
- * Created by lyeung on 23/08/2015.
+ * Created by lyeung on 8/09/2015.
  */
-public interface BuildResultRepository {
+public interface ZsetRepository<HV, HK extends Serializable>
+        extends SetRepository<HV, HK> {
 
-    List<BuildResult> findAll(String hashKey, long start, long end);
-
-    void save(String hashKey, BuildResult value);
-
-    void delete(String hashKey, List<String> objectKeys);
-
-//    void delete(String hashKey, BuildResult values);
-
-//    double score(BuildResult value);
-
-    Optional<BuildResult> getOne(String hashKey, String objectKey);
+    double score(HV value);
 }

@@ -56,6 +56,7 @@ import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.util.Collections;
 import java.util.Date;
+import java.util.Optional;
 import java.util.function.Consumer;
 
 /**
@@ -75,20 +76,27 @@ public class BuildJobCommandImpl implements BuildJobCommand {
     public Integer execute(KeyCountTuple keyCountTuple) {
         final String key = keyCountTuple.getKey();
 
-        final Project project = param.projectRepository.getOne(key);
-        final Build build = param.buildRepository.getOne(key);
+        final Optional<Project> project = param.projectRepository.getOne(key);
+        if (!project.isPresent()) {
+            return null;
+        }
+        final Optional<Build> build = param.buildRepository.getOne(key);
 
-        final File targetDir = mkDir(build, keyCountTuple);
+        final File targetDir = mkDir(build.get(), keyCountTuple);
         final File elwoodLog = createElwoodLog(targetDir);
-        final File checkedOutDir = checkOutSource(keyCountTuple, project, targetDir, elwoodLog);
-        final Process process = createProcess(project, build, checkedOutDir);
+        final File checkedOutDir = checkOutSource(
+                keyCountTuple, project.get(), targetDir, elwoodLog);
+        final Process process = createProcess(project.get(), build.get(), checkedOutDir);
         final Integer result = buildProject(keyCountTuple, process, elwoodLog);
 
-        final BuildResult buildResult = param.buildResultRepository.getOne(
-                keyCountTuple.toString());
-        buildResult.setBuildStatus(getBuildStatus(result));
-        buildResult.setFinishRunDate(new Date());
-        param.buildResultRepository.save(buildResult);
+        final Optional<BuildResult> buildResult = param.buildResultRepository.getOne(
+                keyCountTuple.getKey(), keyCountTuple.toString());
+        if (!buildResult.isPresent()) {
+            return null;
+        }
+        buildResult.get().setBuildStatus(getBuildStatus(result));
+        buildResult.get().setFinishRunDate(new Date());
+        param.buildResultRepository.save("buildResult", buildResult.get());
 
         final boolean removedFuture = param.buildMapLog.removeFuture(keyCountTuple);
         assert removedFuture;
@@ -118,7 +126,8 @@ public class BuildJobCommandImpl implements BuildJobCommand {
                         .build());
     }
 
-    private File checkOutSource(KeyCountTuple keyCountTuple, Project project, File targetDir, File elwoodLog) {
+    private File checkOutSource(
+            KeyCountTuple keyCountTuple, Project project, File targetDir, File elwoodLog) {
         final CloneCommand cloneCommand = param.cloneCommandFactory.makeCommand(
                 Collections.singletonList(new DefaultEventListener<>(
                         new GitCloneBuildMapWriter(

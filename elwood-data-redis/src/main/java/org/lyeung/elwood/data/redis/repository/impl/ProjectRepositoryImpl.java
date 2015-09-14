@@ -19,17 +19,45 @@
 package org.lyeung.elwood.data.redis.repository.impl;
 
 import org.lyeung.elwood.data.redis.domain.Project;
+import org.lyeung.elwood.data.redis.repository.HashRepository;
 import org.lyeung.elwood.data.redis.repository.ProjectRepository;
-import org.springframework.data.redis.core.RedisTemplate;
+
+import java.util.List;
+import java.util.Optional;
 
 /**
  * Created by lyeung on 29/07/2015.
  */
-public class ProjectRepositoryImpl extends AbstractRepository<Project, String>
-        implements ProjectRepository {
+public class ProjectRepositoryImpl implements ProjectRepository {
 
-    public ProjectRepositoryImpl(String domainKey, RedisTemplate<String, Project> template) {
-        super(domainKey, template);
+    private final String hashKey;
+
+    private final HashRepository<Project, String, String> repository;
+
+    public ProjectRepositoryImpl(String hashKey,
+        HashRepository<Project, String, String> repository) {
+
+        this.hashKey = hashKey;
+        this.repository = repository;
     }
 
+    @Override
+    public Optional<Project> getOne(String objectKey) {
+        return repository.getOne(hashKey, objectKey);
+    }
+
+    @Override
+    public void save(Project project) {
+        repository.save(hashKey, project.getKey(), project);
+    }
+
+    @Override
+    public void delete(List<String> objectKeys) {
+        repository.delete(hashKey, objectKeys);
+    }
+
+    @Override
+    public List<Project> findAll(long start, long end) {
+        return repository.findAll(hashKey, start, end);
+    }
 }

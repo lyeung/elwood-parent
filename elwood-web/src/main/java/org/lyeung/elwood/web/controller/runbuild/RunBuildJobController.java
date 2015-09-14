@@ -69,10 +69,10 @@ public class RunBuildJobController {
         final KeyCountTuple keyCountTuple = new KeyCountTuple(keyTuple.getKey(), count);
 
         BuildResult buildResult = createBuildResult(keyCountTuple);
-        buildResultRepository.save(buildResult);
+        buildResultRepository.save(keyCountTuple.getKey(), buildResult);
 
         final Future<Integer> previousFuture = buildMapLog.addFuture(keyCountTuple,
-                buildExecutor.add(new KeyCountTuple(keyTuple.getKey(), count)));
+                buildExecutor.add(keyCountTuple));
 
         if (previousFuture != null) {
             throw new IllegalStateException(
@@ -184,16 +184,17 @@ public class RunBuildJobController {
         }
 
         private ContentResponseStatus getContentResponseStatus() {
-            final BuildResult buildResult = buildResultRepository.getOne(keyCountTuple.toString());
-            if (buildResult == null) {
+            final Optional<BuildResult> buildResult = buildResultRepository.getOne(
+                    keyCountTuple.getKey(), keyCountTuple.toString());
+            if (!buildResult.isPresent()) {
                 return ContentResponseStatus.UNKNOWN;
             }
 
-            if (buildResult.getBuildStatus() == BuildStatus.SUCCEEDED) {
+            if (buildResult.get().getBuildStatus() == BuildStatus.SUCCEEDED) {
                 return ContentResponseStatus.SUCCESS;
             }
 
-            if (buildResult.getBuildStatus() == BuildStatus.FAILED) {
+            if (buildResult.get().getBuildStatus() == BuildStatus.FAILED) {
                 return ContentResponseStatus.FAILED;
             }
 

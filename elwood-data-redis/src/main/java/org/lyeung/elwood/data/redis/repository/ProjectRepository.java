@@ -20,9 +20,19 @@ package org.lyeung.elwood.data.redis.repository;
 
 import org.lyeung.elwood.data.redis.domain.Project;
 
+import java.util.List;
+import java.util.Optional;
+
 /**
  * Created by lyeung on 29/07/2015.
  */
-public interface ProjectRepository extends CrudRepository<Project, String> {
-    // do-nothing
+public interface ProjectRepository {
+
+    Optional<Project> getOne(String objectKey);
+
+    void save(Project project);
+
+    void delete(List<String> objectKeys);
+
+    List<Project> findAll(long start, long end);
 }

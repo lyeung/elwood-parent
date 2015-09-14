@@ -24,11 +24,14 @@ import org.lyeung.elwood.data.redis.domain.Project;
 import org.lyeung.elwood.data.redis.repository.BuildCountRepository;
 import org.lyeung.elwood.data.redis.repository.BuildRepository;
 import org.lyeung.elwood.data.redis.repository.BuildResultRepository;
+import org.lyeung.elwood.data.redis.repository.HashRepository;
 import org.lyeung.elwood.data.redis.repository.ProjectRepository;
 import org.lyeung.elwood.data.redis.repository.impl.BuildCountRepositoryImpl;
 import org.lyeung.elwood.data.redis.repository.impl.BuildRepositoryImpl;
 import org.lyeung.elwood.data.redis.repository.impl.BuildResultRepositoryImpl;
+import org.lyeung.elwood.data.redis.repository.impl.CountRepositoryImpl;
 import org.lyeung.elwood.data.redis.repository.impl.ProjectRepositoryImpl;
+import org.lyeung.elwood.data.redis.repository.impl.RedisHashRepositoryImpl;
 import org.lyeung.elwood.executor.command.IncrementBuildCountCommand;
 import org.lyeung.elwood.executor.command.impl.IncrementBuildCountCommandImpl;
 import org.lyeung.elwood.web.controller.build.command.DeleteBuildJobCommand;
@@ -78,7 +81,7 @@ public class ElwoodRepositoryConfiguraiton {
 
     private <K, V> RedisTemplate<K, V> redisCountTemplate() {
         RedisTemplate<K, V> template = createRedisTemplate();
-        template.setDefaultSerializer(new GenericToStringSerializer<Object>(Object.class));
+        template.setDefaultSerializer(new GenericToStringSerializer<>(Object.class));
         template.afterPropertiesSet();
         return template;
     }
@@ -95,22 +98,27 @@ public class ElwoodRepositoryConfiguraiton {
 
     @Bean
     public ProjectRepository projectRepository() {
-        return new ProjectRepositoryImpl("project", redisTemplate(Project.class));
+        return new ProjectRepositoryImpl("project",
+                new RedisHashRepositoryImpl<>(redisTemplate(Project.class)));
     }
 
     @Bean
     public BuildRepository buildRepository() {
-        return new BuildRepositoryImpl("build", redisTemplate(Build.class));
+        return new BuildRepositoryImpl("build",
+                new RedisHashRepositoryImpl<>(redisTemplate(Build.class)));
     }
 
     @Bean
     public BuildCountRepository buildCountRepository() {
-        return new BuildCountRepositoryImpl("buildCount", redisCountTemplate());
+        return new BuildCountRepositoryImpl("buildCount",
+                new CountRepositoryImpl<>(redisCountTemplate()));
     }
 
     @Bean
     public BuildResultRepository buildResultRepository() {
-        return new BuildResultRepositoryImpl("buildResult", redisTemplate(BuildResult.class));
+        final HashRepository<BuildResult, String, String> repository =
+                new RedisHashRepositoryImpl<>(redisTemplate(BuildResult.class));
+        return new BuildResultRepositoryImpl(repository);
     }
 
     @Bean
