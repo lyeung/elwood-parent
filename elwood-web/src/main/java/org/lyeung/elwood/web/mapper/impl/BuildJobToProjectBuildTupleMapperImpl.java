@@ -19,7 +19,9 @@
 package org.lyeung.elwood.web.mapper.impl;
 
 import org.lyeung.elwood.data.redis.domain.Build;
+import org.lyeung.elwood.data.redis.domain.BuildKey;
 import org.lyeung.elwood.data.redis.domain.Project;
+import org.lyeung.elwood.data.redis.domain.ProjectKey;
 import org.lyeung.elwood.web.mapper.Mapper;
 import org.lyeung.elwood.web.model.BuildJob;
 import org.lyeung.elwood.web.model.ProjectBuildTuple;
@@ -37,7 +39,7 @@ public class BuildJobToProjectBuildTupleMapperImpl
 
     private Project toProject(BuildJob buildJob) {
         final Project project = new Project();
-        project.setKey(buildJob.getKey().toUpperCase());
+        project.setKey(new ProjectKey(buildJob.getKey().toUpperCase()));
         project.setName(buildJob.getName());
         project.setDescription(buildJob.getDescription());
         project.setBuildFile(buildJob.getBuildFile());
@@ -52,7 +54,7 @@ public class BuildJobToProjectBuildTupleMapperImpl
     private Build toBuild(BuildJob buildJob) {
         final Build build = new Build();
         build.setBuildCommand(buildJob.getBuildCommand());
-        build.setKey(buildJob.getKey().toUpperCase());
+        build.setKey(new BuildKey(buildJob.getKey().toUpperCase()));
         build.setEnvironmentVars(buildJob.getEnvironmentVars());
         build.setWorkingDirectory(buildJob.getKey().toUpperCase());
 

@@ -21,7 +21,7 @@ package org.lyeung.elwood.data.redis.domain;
 /**
  * Created by lyeung on 29/07/2015.
  */
-public class Project extends AbstractDomain {
+public class Project extends AbstractDomain<ProjectKey> {
 
     private String name;
 

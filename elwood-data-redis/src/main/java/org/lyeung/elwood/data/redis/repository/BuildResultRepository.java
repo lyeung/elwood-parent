@@ -18,7 +18,9 @@
 
 package org.lyeung.elwood.data.redis.repository;
 
+import org.lyeung.elwood.data.redis.domain.BuildKey;
 import org.lyeung.elwood.data.redis.domain.BuildResult;
+import org.lyeung.elwood.data.redis.domain.BuildResultKey;
 
 import java.util.List;
 import java.util.Optional;
@@ -28,15 +30,15 @@ import java.util.Optional;
  */
 public interface BuildResultRepository {
 
-    List<BuildResult> findAll(String hashKey, long start, long end);
+    List<BuildResult> findAll(BuildKey buildKey, long start, long end);
 
-    void save(String hashKey, BuildResult value);
+    void save(BuildResult value);
 
-    void delete(String hashKey, List<String> objectKeys);
+    void delete(List<BuildResultKey> objectKeys);
 
 //    void delete(String hashKey, BuildResult values);
 
 //    double score(BuildResult value);
 
-    Optional<BuildResult> getOne(String hashKey, String objectKey);
+    Optional<BuildResult> getOne(BuildResultKey objectKey);
 }

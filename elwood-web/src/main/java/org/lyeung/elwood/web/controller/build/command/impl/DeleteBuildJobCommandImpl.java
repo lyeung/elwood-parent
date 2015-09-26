@@ -18,7 +18,9 @@
 
 package org.lyeung.elwood.web.controller.build.command.impl;
 
+import org.lyeung.elwood.data.redis.domain.BuildKey;
 import org.lyeung.elwood.data.redis.domain.Project;
+import org.lyeung.elwood.data.redis.domain.ProjectKey;
 import org.lyeung.elwood.data.redis.repository.BuildRepository;
 import org.lyeung.elwood.data.redis.repository.ProjectRepository;
 import org.lyeung.elwood.web.controller.build.command.DeleteBuildJobCommand;
@@ -44,14 +46,15 @@ public class DeleteBuildJobCommandImpl implements DeleteBuildJobCommand {
     }
 
     @Override
-    public String execute(String key) {
-        final Optional<Project> project = projectRepository.getOne(key);
+    public BuildKey execute(BuildKey key) {
+        final Optional<Project> project = projectRepository.getOne(
+                new ProjectKey(key.toStringValue()));
         if (project.isPresent()) {
-            final List<String> keyList = Collections.singletonList(
+            final List<ProjectKey> keyList = Collections.singletonList(
                     project.get().getKey());
 
             projectRepository.delete(keyList);
-            buildRepository.delete(keyList);
+            buildRepository.delete(Collections.singletonList(key));
         }
 
         return key;

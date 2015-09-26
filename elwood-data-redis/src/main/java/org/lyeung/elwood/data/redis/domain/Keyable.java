@@ -18,18 +18,14 @@
 
 package org.lyeung.elwood.data.redis.domain;
 
+import java.io.Serializable;
+
 /**
- * Created by lyeung on 24/08/2015.
+ * Created by lyeung on 23/09/2015.
  */
-public class AbstractDomain<K extends Keyable> {
+public interface Keyable extends Serializable {
 
-    private K key;
+    String getKey();
 
-    public K getKey() {
-        return key;
-    }
-
-    public void setKey(K key) {
-        this.key = key;
-    }
+    String toStringValue();
 }

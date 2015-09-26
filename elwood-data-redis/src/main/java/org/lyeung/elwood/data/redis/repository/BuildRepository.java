@@ -19,6 +19,7 @@
 package org.lyeung.elwood.data.redis.repository;
 
 import org.lyeung.elwood.data.redis.domain.Build;
+import org.lyeung.elwood.data.redis.domain.BuildKey;
 
 import java.util.List;
 import java.util.Optional;
@@ -28,11 +29,11 @@ import java.util.Optional;
  */
 public interface BuildRepository {
 
-    Optional<Build> getOne(String objectKey);
+    Optional<Build> getOne(BuildKey buildKey);
 
     void save(Build build);
 
-    void delete(List<String> objectKeys);
+    void delete(List<BuildKey> objectKeys);
 
     List<Build> findAll(long start, long end);
 }

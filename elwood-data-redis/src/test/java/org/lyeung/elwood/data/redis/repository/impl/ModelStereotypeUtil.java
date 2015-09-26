@@ -19,14 +19,16 @@
 package org.lyeung.elwood.data.redis.repository.impl;
 
 import org.lyeung.elwood.data.redis.domain.Build;
+import org.lyeung.elwood.data.redis.domain.BuildKey;
 import org.lyeung.elwood.data.redis.domain.BuildResult;
+import org.lyeung.elwood.data.redis.domain.BuildResultKey;
 import org.lyeung.elwood.data.redis.domain.Project;
+import org.lyeung.elwood.data.redis.domain.ProjectKey;
 import org.lyeung.elwood.data.redis.domain.enums.BuildStatus;
 
 import java.time.LocalDateTime;
 import java.time.Month;
 import java.time.ZoneId;
-import java.time.ZoneOffset;
 import java.util.Date;
 
 /**
@@ -38,17 +40,17 @@ public final class ModelStereotypeUtil {
         // do-nothing
     }
 
-    public static Project createProject(String key) {
+    public static Project createProject(ProjectKey key) {
         Project project = new Project();
         project.setKey(key);
-        project.setName("Project " + key);
-        project.setDescription("Project " + key + " description");
+        project.setName("Project " + key.toStringValue());
+        project.setDescription("Project " + key.toStringValue() + " description");
         project.setBuildFile("pom.xml");
 
         return project;
     }
 
-    public static Build createBuild(String key) {
+    public static Build createBuild(BuildKey key) {
         final Build build = new Build();
         build.setKey(key);
         build.setWorkingDirectory("workingDirectory");
@@ -58,7 +60,7 @@ public final class ModelStereotypeUtil {
         return build;
     }
 
-    public static BuildResult createBuildResult(String key) {
+    public static BuildResult createBuildResult(BuildResultKey key) {
         final LocalDateTime finishRunDate = LocalDateTime.of(2015, Month.AUGUST, 29, 23, 30);
 
         final BuildResult buildResult = new BuildResult();

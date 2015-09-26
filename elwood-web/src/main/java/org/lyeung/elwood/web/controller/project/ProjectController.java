@@ -19,10 +19,13 @@
 package org.lyeung.elwood.web.controller.project;
 
 import org.lyeung.elwood.data.redis.domain.Project;
+import org.lyeung.elwood.data.redis.domain.ProjectKey;
 import org.lyeung.elwood.data.redis.repository.ProjectRepository;
 import org.lyeung.elwood.web.controller.NavigationConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -45,7 +48,7 @@ public class ProjectController {
 
     @RequestMapping(value = "/{key}", method = RequestMethod.GET)
     public Project getByKey(@PathVariable("key") String key) {
-        final Optional<Project> result = projectRepository.getOne(key);
+        final Optional<Project> result = projectRepository.getOne(new ProjectKey(key));
         if (result.isPresent()) {
             return result.get();
         }
@@ -55,14 +58,15 @@ public class ProjectController {
 
     @RequestMapping(method = RequestMethod.POST)
     @ResponseStatus(HttpStatus.CREATED)
-    public Project saveProject(@RequestBody Project project) {
+    public ResponseEntity<Project> saveProject(
+            @RequestBody Project project, BindingResult bindingResult) {
         projectRepository.save(project);
-        return project;
+        return new ResponseEntity<>(project, HttpStatus.OK);
     }
 
     @RequestMapping(value = "/{key}", method = RequestMethod.DELETE)
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void removeProject(@PathVariable("key") String key) {
-        projectRepository.delete(Collections.singletonList(key));
+        projectRepository.delete(Collections.singletonList(new ProjectKey(key)));
     }
 }

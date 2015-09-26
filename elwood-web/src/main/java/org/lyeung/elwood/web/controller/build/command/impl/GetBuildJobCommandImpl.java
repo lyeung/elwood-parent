@@ -19,7 +19,9 @@
 package org.lyeung.elwood.web.controller.build.command.impl;
 
 import org.lyeung.elwood.data.redis.domain.Build;
+import org.lyeung.elwood.data.redis.domain.BuildKey;
 import org.lyeung.elwood.data.redis.domain.Project;
+import org.lyeung.elwood.data.redis.domain.ProjectKey;
 import org.lyeung.elwood.data.redis.repository.BuildRepository;
 import org.lyeung.elwood.data.redis.repository.ProjectRepository;
 import org.lyeung.elwood.web.controller.build.command.GetBuildJobCommand;
@@ -47,12 +49,12 @@ public class GetBuildJobCommandImpl implements GetBuildJobCommand {
 
     @Override
     public BuildJob execute(String key) {
-        final Optional<Project> project = projectRepository.getOne(key);
+        final Optional<Project> project = projectRepository.getOne(new ProjectKey(key));
         if (!project.isPresent()) {
             return null;
         }
 
-        final Optional<Build> build = buildRepository.getOne(key);
+        final Optional<Build> build = buildRepository.getOne(new BuildKey(key));
         if (!build.isPresent()) {
             return null;
         }

@@ -25,7 +25,7 @@ import java.util.Date;
 /**
  * Created by lyeung on 23/08/2015.
  */
-public class BuildResult extends AbstractDomain {
+public class BuildResult extends AbstractDomain<BuildResultKey> {
 
     private BuildStatus buildStatus;
 

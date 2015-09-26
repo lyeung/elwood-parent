@@ -20,9 +20,8 @@ package org.lyeung.elwood.data.redis.repository.impl;
 
 import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.GenericToStringSerializer;
-import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
-import org.springframework.data.redis.serializer.StringRedisSerializer;
 import redis.clients.jedis.JedisPoolConfig;
 
 /**
@@ -33,7 +32,7 @@ public abstract class AbstractRepositoryTest {
     <K, V> RedisTemplate<K, V> redisTemplate(Class<V> clazz) {
         final RedisTemplate<K, V> template = new RedisTemplate<>();
         template.setConnectionFactory(jedisConnectionFactory());
-        template.setDefaultSerializer(new Jackson2JsonRedisSerializer<>(clazz));
+        template.setDefaultSerializer(new GenericJackson2JsonRedisSerializer());
         template.afterPropertiesSet();
         return template;
     }

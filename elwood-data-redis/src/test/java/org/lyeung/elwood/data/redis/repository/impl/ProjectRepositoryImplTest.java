@@ -23,6 +23,7 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.lyeung.elwood.common.test.SlowTest;
 import org.lyeung.elwood.data.redis.domain.Project;
+import org.lyeung.elwood.data.redis.domain.ProjectKey;
 
 import java.util.List;
 import java.util.Optional;
@@ -53,52 +54,52 @@ public class ProjectRepositoryImplTest extends AbstractRepositoryTest {
 
     @Test
     public void testGetOneAndSave() {
-        Project project = ModelStereotypeUtil.createProject("PRJ-100");
+        Project project = ModelStereotypeUtil.createProject(new ProjectKey("PRJ"));
         impl.save(project);
 
-        final Optional<Project> loadedProject = impl.getOne("PRJ-100");
+        final Optional<Project> loadedProject = impl.getOne(new ProjectKey("PRJ"));
         assertTrue(loadedProject.isPresent());
-        assertEquals("PRJ-100", loadedProject.get().getKey());
-        assertEquals("Project PRJ-100", loadedProject.get().getName());
-        assertEquals("Project PRJ-100 description", loadedProject.get().getDescription());
+        assertEquals("PRJ", loadedProject.get().getKey().toStringValue());
+        assertEquals("Project PRJ", loadedProject.get().getName());
+        assertEquals("Project PRJ description", loadedProject.get().getDescription());
         assertEquals("pom.xml", loadedProject.get().getBuildFile());
     }
 
     @Test
     public void testSave() {
-        Project project1 = ModelStereotypeUtil.createProject("PRJ-100");
+        Project project1 = ModelStereotypeUtil.createProject(new ProjectKey("PRJ"));
         impl.save(project1);
 
-        Project project2 = ModelStereotypeUtil.createProject("PRJ-200");
+        Project project2 = ModelStereotypeUtil.createProject(new ProjectKey("PRJ2"));
         impl.save(project2);
 
-        assertTrue(impl.getOne("PRJ-100").isPresent());
-        assertTrue(impl.getOne("PRJ-200").isPresent());
-        assertFalse(impl.getOne("PRJ-300").isPresent());
+        assertTrue(impl.getOne(new ProjectKey("PRJ")).isPresent());
+        assertTrue(impl.getOne(new ProjectKey("PRJ2")).isPresent());
+        assertFalse(impl.getOne(new ProjectKey("PRJ3")).isPresent());
     }
 
     @Test
     public void testFindAll() {
-        impl.save(ModelStereotypeUtil.createProject("PRJ-100"));
-        impl.save(ModelStereotypeUtil.createProject("PRJ-200"));
+        impl.save(ModelStereotypeUtil.createProject(new ProjectKey("PRJ")));
+        impl.save(ModelStereotypeUtil.createProject(new ProjectKey("PRJ2")));
 
         final List<Project> result = impl.findAll(0, -1);
         assertEquals(2, result.size());
-        assertTrue(isContains("PRJ-100", result));
-        assertTrue(isContains("PRJ-200", result));
-        assertFalse(isContains("PRJ-300", result));
+        assertTrue(isContains(new ProjectKey("PRJ"), result));
+        assertTrue(isContains(new ProjectKey("PRJ2"), result));
+        assertFalse(isContains(new ProjectKey("PRJ3"), result));
     }
 
     @Test
     public void testDelete() {
-        impl.save(ModelStereotypeUtil.createProject("PRJ-100"));
-        impl.save(ModelStereotypeUtil.createProject("PRJ-200"));
+        impl.save(ModelStereotypeUtil.createProject(new ProjectKey("PRJ")));
+        impl.save(ModelStereotypeUtil.createProject(new ProjectKey("PRJ2")));
 
         deleteAll();
         assertEquals(0, impl.findAll(0, -1).size());
     }
 
-    private boolean isContains(String key, List<Project> projects) {
+    private boolean isContains(ProjectKey key, List<Project> projects) {
         return projects.stream().map(p -> p.getKey()).filter(k -> k.equals(key)).count() > 0;
     }
 }

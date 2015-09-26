@@ -20,7 +20,9 @@ package org.lyeung.elwood.web.mapper.impl;
 
 import org.junit.Test;
 import org.lyeung.elwood.data.redis.domain.Build;
+import org.lyeung.elwood.data.redis.domain.BuildKey;
 import org.lyeung.elwood.data.redis.domain.Project;
+import org.lyeung.elwood.data.redis.domain.ProjectKey;
 import org.lyeung.elwood.vcs.command.CloneCommandParam;
 import org.lyeung.elwood.web.model.BuildJob;
 import org.lyeung.elwood.web.model.ProjectBuildTuple;
@@ -55,7 +57,7 @@ public class ProjectBuildTupleToBuildJobMapperImplTest {
 
     private Project createProject() {
         final Project project = new Project();
-        project.setKey("KEY");
+        project.setKey(new ProjectKey("KEY"));
         project.setName("name");
         project.setDescription("description");
         project.setBuildFile("buildFile");
@@ -73,7 +75,7 @@ public class ProjectBuildTupleToBuildJobMapperImplTest {
         build.setEnvironmentVars("envVars");
         build.setWorkingDirectory("/tmp/workingDir");
         build.setBuildCommand("buildCommand");
-        build.setKey("KEY");
+        build.setKey(new BuildKey("KEY"));
 
         return build;
     }

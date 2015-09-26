@@ -18,6 +18,7 @@
 
 package org.lyeung.elwood.web.controller.build;
 
+import org.lyeung.elwood.data.redis.domain.BuildKey;
 import org.lyeung.elwood.web.controller.NavigationConstants;
 import org.lyeung.elwood.web.controller.build.command.DeleteBuildJobCommand;
 import org.lyeung.elwood.web.controller.build.command.GetBuildJobCommand;
@@ -62,6 +63,6 @@ public class BuildJobController {
     @RequestMapping(value = "/{key}", method = RequestMethod.DELETE)
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void removeBuildJob(@PathVariable("key") String key) {
-        deleteBuildJobCommand.execute(key);
+        deleteBuildJobCommand.execute(new BuildKey(key));
     }
 }

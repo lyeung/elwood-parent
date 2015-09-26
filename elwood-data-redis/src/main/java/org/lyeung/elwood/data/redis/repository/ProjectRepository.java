@@ -19,6 +19,7 @@
 package org.lyeung.elwood.data.redis.repository;
 
 import org.lyeung.elwood.data.redis.domain.Project;
+import org.lyeung.elwood.data.redis.domain.ProjectKey;
 
 import java.util.List;
 import java.util.Optional;
@@ -28,11 +29,11 @@ import java.util.Optional;
  */
 public interface ProjectRepository {
 
-    Optional<Project> getOne(String objectKey);
+    Optional<Project> getOne(ProjectKey projectKey);
 
     void save(Project project);
 
-    void delete(List<String> objectKeys);
+    void delete(List<ProjectKey> projectKeys);
 
     List<Project> findAll(long start, long end);
 }

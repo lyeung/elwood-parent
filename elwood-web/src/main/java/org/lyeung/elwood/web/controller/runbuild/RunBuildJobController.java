@@ -18,7 +18,9 @@
 
 package org.lyeung.elwood.web.controller.runbuild;
 
+import org.lyeung.elwood.data.redis.domain.BuildKey;
 import org.lyeung.elwood.data.redis.domain.BuildResult;
+import org.lyeung.elwood.data.redis.domain.BuildResultKey;
 import org.lyeung.elwood.data.redis.domain.enums.BuildStatus;
 import org.lyeung.elwood.data.redis.repository.BuildResultRepository;
 import org.lyeung.elwood.executor.BuildExecutor;
@@ -69,7 +71,7 @@ public class RunBuildJobController {
         final KeyCountTuple keyCountTuple = new KeyCountTuple(keyTuple.getKey(), count);
 
         BuildResult buildResult = createBuildResult(keyCountTuple);
-        buildResultRepository.save(keyCountTuple.getKey(), buildResult);
+        buildResultRepository.save(buildResult);
 
         final Future<Integer> previousFuture = buildMapLog.addFuture(keyCountTuple,
                 buildExecutor.add(keyCountTuple));
@@ -85,7 +87,8 @@ public class RunBuildJobController {
 
     private BuildResult createBuildResult(KeyCountTuple keyCountTuple) {
         BuildResult buildResult = new BuildResult();
-        buildResult.setKey(keyCountTuple.toString());
+        buildResult.setKey(new BuildResultKey(new BuildKey(
+                keyCountTuple.getKey()), keyCountTuple.getCount()));
         buildResult.setStartRunDate(new Date());
         buildResult.setBuildStatus(BuildStatus.IN_PROGRESS);
 
@@ -155,19 +158,19 @@ public class RunBuildJobController {
                 final Optional<List<String>> content = buildMapLog.getContent(keyCountTuple);
                 if (content.isPresent()) {
                     List<String> lines = getLines(content);
-                    return new ContentResponse(ContentResponseStatus.RUNNING, lines.stream()
-                            .collect(Collectors.joining()));
+                    return new ContentResponse(keyCountTuple, ContentResponseStatus.RUNNING,
+                            lines.stream().collect(Collectors.joining()));
                 }
 
                 return getEmptyContentResponse();
             }
 
-            return new ContentResponse(ContentResponseStatus.SUCCESS, getViewUrl());
+            return new ContentResponse(keyCountTuple, ContentResponseStatus.SUCCESS, getViewUrl());
         }
 
         private ContentResponse getEmptyContentResponse() throws MalformedURLException {
             final ContentResponseStatus status = getContentResponseStatus();
-            return new ContentResponse(status, getViewUrl(status));
+            return new ContentResponse(keyCountTuple, status, getViewUrl(status));
         }
 
         private URL getViewUrl() throws MalformedURLException {
@@ -185,7 +188,8 @@ public class RunBuildJobController {
 
         private ContentResponseStatus getContentResponseStatus() {
             final Optional<BuildResult> buildResult = buildResultRepository.getOne(
-                    keyCountTuple.getKey(), keyCountTuple.toString());
+                    new BuildResultKey(new BuildKey(keyCountTuple.getKey()),
+                            keyCountTuple.getCount()));
             if (!buildResult.isPresent()) {
                 return ContentResponseStatus.UNKNOWN;
             }

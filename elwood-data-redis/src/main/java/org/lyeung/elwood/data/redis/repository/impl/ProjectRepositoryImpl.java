@@ -19,11 +19,13 @@
 package org.lyeung.elwood.data.redis.repository.impl;
 
 import org.lyeung.elwood.data.redis.domain.Project;
+import org.lyeung.elwood.data.redis.domain.ProjectKey;
 import org.lyeung.elwood.data.redis.repository.HashRepository;
 import org.lyeung.elwood.data.redis.repository.ProjectRepository;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * Created by lyeung on 29/07/2015.
@@ -42,18 +44,20 @@ public class ProjectRepositoryImpl implements ProjectRepository {
     }
 
     @Override
-    public Optional<Project> getOne(String objectKey) {
-        return repository.getOne(hashKey, objectKey);
+    public Optional<Project> getOne(ProjectKey projectKey) {
+        return repository.getOne(hashKey, projectKey.toStringValue());
     }
 
     @Override
     public void save(Project project) {
-        repository.save(hashKey, project.getKey(), project);
+        repository.save(hashKey, project.getKey().toStringValue(), project);
     }
 
     @Override
-    public void delete(List<String> objectKeys) {
-        repository.delete(hashKey, objectKeys);
+    public void delete(List<ProjectKey> projectKeys) {
+        final List<String> keys = projectKeys.stream()
+                .map(k -> k.toStringValue()).collect(Collectors.toList());
+        repository.delete(hashKey, keys);
     }
 
     @Override

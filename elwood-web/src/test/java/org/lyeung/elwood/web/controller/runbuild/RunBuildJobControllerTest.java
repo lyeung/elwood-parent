@@ -22,7 +22,9 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 import org.lyeung.elwood.common.test.QuickTest;
+import org.lyeung.elwood.data.redis.domain.BuildKey;
 import org.lyeung.elwood.data.redis.domain.BuildResult;
+import org.lyeung.elwood.data.redis.domain.BuildResultKey;
 import org.lyeung.elwood.data.redis.domain.enums.BuildStatus;
 import org.lyeung.elwood.data.redis.repository.BuildResultRepository;
 import org.lyeung.elwood.executor.BuildExecutor;
@@ -95,11 +97,11 @@ public class RunBuildJobControllerTest {
         assertEquals(KEY_COUNT_TUPLE, response.getKeyCountTuple());
 
         verify(incrementBuildCountCommand).execute(eq(KEY));
-        verify(buildResultRepository).save(eq(KEY), argThat(new ArgumentMatcher<BuildResult>() {
+        verify(buildResultRepository).save(argThat(new ArgumentMatcher<BuildResult>() {
             @Override
             public boolean matches(Object argument) {
                 final BuildResult buildResult = (BuildResult) argument;
-                return buildResult.getKey().equals(KEY_COUNT_TUPLE.toString())
+                return buildResult.getKey().equals(new BuildResultKey(new BuildKey("KEY"), 2L))
                         && buildResult.getBuildStatus() == BuildStatus.IN_PROGRESS
                         && buildResult.getStartRunDate() != null
                         && buildResult.getFinishRunDate() == null;
@@ -135,7 +137,9 @@ public class RunBuildJobControllerTest {
         when(buildMapLog.getContent(KEY_COUNT_TUPLE)).thenReturn(empty());
 
         final BuildResult buildResult = createBuildResult(KEY_COUNT_TUPLE, BuildStatus.IN_PROGRESS);
-        when(buildResultRepository.getOne(KEY, KEY_COUNT_TUPLE.toString()))
+        final BuildResultKey key = new BuildResultKey(
+                new BuildKey(KEY_COUNT_TUPLE.getKey()), KEY_COUNT_TUPLE.getCount());
+        when(buildResultRepository.getOne(key))
                 .thenReturn(of(buildResult));
 
         final ContentResponse response = controller.getContentByKey(KEY, 2L);
@@ -145,7 +149,7 @@ public class RunBuildJobControllerTest {
 
         verify(buildMapLog).isFutureDone(eq(KEY_COUNT_TUPLE));
         verify(buildMapLog).getContent(eq(KEY_COUNT_TUPLE));
-        verify(buildResultRepository).getOne(eq(KEY), eq(KEY_COUNT_TUPLE.toString()));
+        verify(buildResultRepository).getOne(eq(key));
         verifyNoMoreInteractions(buildMapLog);
         verifyNoMoreInteractions(buildResultRepository);
     }
@@ -153,7 +157,9 @@ public class RunBuildJobControllerTest {
     @Test
     public void testGetUnknownContentByKey() throws MalformedURLException {
         when(buildMapLog.isFutureDone(KEY_COUNT_TUPLE)).thenReturn(empty());
-        when(buildResultRepository.getOne(KEY, KEY_COUNT_TUPLE.toString())).thenReturn(empty());
+        final BuildResultKey key = new BuildResultKey(new BuildKey(KEY_COUNT_TUPLE.getKey()),
+                KEY_COUNT_TUPLE.getCount());
+        when(buildResultRepository.getOne(key)).thenReturn(empty());
 
         final ContentResponse response = controller.getContentByKey(KEY, 2L);
         assertEquals(ContentResponseStatus.UNKNOWN, response.getStatus());
@@ -161,7 +167,7 @@ public class RunBuildJobControllerTest {
         assertNull(response.getRedirectUrl());
 
         verify(buildMapLog).isFutureDone(eq(KEY_COUNT_TUPLE));
-        verify(buildResultRepository).getOne(eq(KEY), eq(KEY_COUNT_TUPLE.toString()));
+        verify(buildResultRepository).getOne(eq(key));
         verifyNoMoreInteractions(buildMapLog);
         verifyNoMoreInteractions(buildResultRepository);
     }
@@ -171,7 +177,9 @@ public class RunBuildJobControllerTest {
         when(buildMapLog.isFutureDone(KEY_COUNT_TUPLE)).thenReturn(empty());
 
         final BuildResult buildResult = createBuildResult(KEY_COUNT_TUPLE, BuildStatus.SUCCEEDED);
-        when(buildResultRepository.getOne(KEY, KEY_COUNT_TUPLE.toString()))
+        final BuildResultKey key = new BuildResultKey(
+                new BuildKey(KEY_COUNT_TUPLE.getKey()), KEY_COUNT_TUPLE.getCount());
+        when(buildResultRepository.getOne(key))
                 .thenReturn(of(buildResult));
 
         final ContentResponse response = controller.getContentByKey(KEY, 2L);
@@ -181,7 +189,7 @@ public class RunBuildJobControllerTest {
                 response.getRedirectUrl().toExternalForm());
 
         verify(buildMapLog).isFutureDone(eq(KEY_COUNT_TUPLE));
-        verify(buildResultRepository).getOne(eq(KEY), eq(KEY_COUNT_TUPLE.toString()));
+        verify(buildResultRepository).getOne(eq(key));
         verifyNoMoreInteractions(buildMapLog);
         verifyNoMoreInteractions(buildResultRepository);
     }
@@ -191,7 +199,9 @@ public class RunBuildJobControllerTest {
         when(buildMapLog.isFutureDone(KEY_COUNT_TUPLE)).thenReturn(empty());
 
         final BuildResult buildResult = createBuildResult(KEY_COUNT_TUPLE, BuildStatus.FAILED);
-        when(buildResultRepository.getOne(KEY, KEY_COUNT_TUPLE.toString()))
+        final BuildResultKey key = new BuildResultKey(
+                new BuildKey(KEY_COUNT_TUPLE.getKey()), KEY_COUNT_TUPLE.getCount());
+        when(buildResultRepository.getOne(key))
                 .thenReturn(of(buildResult));
 
         final ContentResponse response = controller.getContentByKey(KEY, 2L);
@@ -201,7 +211,7 @@ public class RunBuildJobControllerTest {
                 response.getRedirectUrl().toExternalForm());
 
         verify(buildMapLog).isFutureDone(eq(KEY_COUNT_TUPLE));
-        verify(buildResultRepository).getOne(eq(KEY), eq(KEY_COUNT_TUPLE.toString()));
+        verify(buildResultRepository).getOne(eq(key));
         verifyNoMoreInteractions(buildMapLog);
         verifyNoMoreInteractions(buildResultRepository);
     }
@@ -212,7 +222,9 @@ public class RunBuildJobControllerTest {
         when(buildMapLog.getContent(KEY_COUNT_TUPLE)).thenReturn(empty());
 
         final BuildResult buildResult = createBuildResult(KEY_COUNT_TUPLE, BuildStatus.FAILED);
-        when(buildResultRepository.getOne(KEY, KEY_COUNT_TUPLE.toString()))
+        final BuildResultKey key = new BuildResultKey(
+                new BuildKey(KEY_COUNT_TUPLE.getKey()), KEY_COUNT_TUPLE.getCount());
+        when(buildResultRepository.getOne(key))
                 .thenReturn(of(buildResult));
 
         final ContentResponse response = controller.getContentByKey(KEY, 2L);
@@ -223,7 +235,7 @@ public class RunBuildJobControllerTest {
 
         verify(buildMapLog).isFutureDone(eq(KEY_COUNT_TUPLE));
         verify(buildMapLog).getContent(KEY_COUNT_TUPLE);
-        verify(buildResultRepository).getOne(eq(KEY), eq(KEY_COUNT_TUPLE.toString()));
+        verify(buildResultRepository).getOne(eq(key));
 
         verifyZeroInteractions(buildMapLog);
         verifyZeroInteractions(buildResultRepository);
@@ -249,7 +261,8 @@ public class RunBuildJobControllerTest {
         buildResult.setBuildStatus(status);
         buildResult.setStartRunDate(new Date());
         buildResult.setFinishRunDate(new Date());
-        buildResult.setKey(keyCountTuple.toString());
+        buildResult.setKey(new BuildResultKey(new BuildKey(keyCountTuple.getKey()),
+                keyCountTuple.getCount()));
 
         return buildResult;
     }

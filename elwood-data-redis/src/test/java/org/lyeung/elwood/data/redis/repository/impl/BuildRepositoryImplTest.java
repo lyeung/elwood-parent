@@ -23,6 +23,7 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.lyeung.elwood.common.test.SlowTest;
 import org.lyeung.elwood.data.redis.domain.Build;
+import org.lyeung.elwood.data.redis.domain.BuildKey;
 
 import java.util.List;
 import java.util.Optional;
@@ -53,12 +54,12 @@ public class BuildRepositoryImplTest extends AbstractRepositoryTest {
 
     @Test
     public void testGetOneAndSave() {
-        final Build build = ModelStereotypeUtil.createBuild("PRJ-100");
+        final Build build = ModelStereotypeUtil.createBuild(new BuildKey("PRJ"));
         impl.save(build);
 
-        final Optional<Build> loadedBuild = impl.getOne("PRJ-100");
+        final Optional<Build> loadedBuild = impl.getOne(new BuildKey("PRJ"));
         assertTrue(loadedBuild.isPresent());
-        assertEquals("PRJ-100", loadedBuild.get().getKey());
+        assertEquals("PRJ", loadedBuild.get().getKey().toStringValue());
         assertEquals("workingDirectory", loadedBuild.get().getWorkingDirectory());
         assertEquals("buildDirectory", loadedBuild.get().getBuildCommand());
         assertEquals("environmentVars", loadedBuild.get().getEnvironmentVars());
@@ -66,36 +67,36 @@ public class BuildRepositoryImplTest extends AbstractRepositoryTest {
 
     @Test
     public void testSave() {
-        impl.save(ModelStereotypeUtil.createBuild("PRJ-100"));
-        impl.save(ModelStereotypeUtil.createBuild("PRJ-200"));
+        impl.save(ModelStereotypeUtil.createBuild(new BuildKey("PRJ")));
+        impl.save(ModelStereotypeUtil.createBuild(new BuildKey("PRJ2")));
 
-        assertTrue(impl.getOne("PRJ-100").isPresent());
-        assertTrue(impl.getOne("PRJ-200").isPresent());
-        assertFalse(impl.getOne("PRJ-300").isPresent());
+        assertTrue(impl.getOne(new BuildKey("PRJ")).isPresent());
+        assertTrue(impl.getOne(new BuildKey("PRJ2")).isPresent());
+        assertFalse(impl.getOne(new BuildKey("PRJ3")).isPresent());
     }
 
     @Test
     public void testFindAll() {
-        impl.save(ModelStereotypeUtil.createBuild("PRJ-100"));
-        impl.save(ModelStereotypeUtil.createBuild("PRJ-200"));
+        impl.save(ModelStereotypeUtil.createBuild(new BuildKey("PRJ")));
+        impl.save(ModelStereotypeUtil.createBuild(new BuildKey("PRJ2")));
 
         final List<Build> builds = impl.findAll(0, -1);
         assertEquals(2, builds.size());
-        assertTrue(isContains("PRJ-100", builds));
-        assertTrue(isContains("PRJ-200", builds));
-        assertFalse(isContains("PRJ-300", builds));
+        assertTrue(isContains(new BuildKey("PRJ"), builds));
+        assertTrue(isContains(new BuildKey("PRJ2"), builds));
+        assertFalse(isContains(new BuildKey("PRJ3"), builds));
     }
 
     @Test
     public void testDelete() {
-        impl.save(ModelStereotypeUtil.createBuild("PRJ-100"));
-        impl.save(ModelStereotypeUtil.createBuild("PRJ-200"));
+        impl.save(ModelStereotypeUtil.createBuild(new BuildKey("PRJ")));
+        impl.save(ModelStereotypeUtil.createBuild(new BuildKey("PRJ200")));
 
         deleteAll();
         assertEquals(0, impl.findAll(0, -1).size());
     }
 
-    private boolean isContains(String key, List<Build> builds) {
+    private boolean isContains(BuildKey key, List<Build> builds) {
         return builds.stream().map(p -> p.getKey()).filter(k -> k.equals(key)).count() > 0;
     }
 }

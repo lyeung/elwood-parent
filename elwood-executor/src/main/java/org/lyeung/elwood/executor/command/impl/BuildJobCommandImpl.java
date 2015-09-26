@@ -31,8 +31,11 @@ import org.lyeung.elwood.common.command.impl.ShellCommandImpl;
 import org.lyeung.elwood.common.event.Event;
 import org.lyeung.elwood.common.event.impl.DefaultEventListener;
 import org.lyeung.elwood.data.redis.domain.Build;
+import org.lyeung.elwood.data.redis.domain.BuildKey;
 import org.lyeung.elwood.data.redis.domain.BuildResult;
+import org.lyeung.elwood.data.redis.domain.BuildResultKey;
 import org.lyeung.elwood.data.redis.domain.Project;
+import org.lyeung.elwood.data.redis.domain.ProjectKey;
 import org.lyeung.elwood.data.redis.domain.enums.BuildStatus;
 import org.lyeung.elwood.data.redis.repository.BuildRepository;
 import org.lyeung.elwood.data.redis.repository.BuildResultRepository;
@@ -76,11 +79,11 @@ public class BuildJobCommandImpl implements BuildJobCommand {
     public Integer execute(KeyCountTuple keyCountTuple) {
         final String key = keyCountTuple.getKey();
 
-        final Optional<Project> project = param.projectRepository.getOne(key);
+        final Optional<Project> project = param.projectRepository.getOne(new ProjectKey(key));
         if (!project.isPresent()) {
             return null;
         }
-        final Optional<Build> build = param.buildRepository.getOne(key);
+        final Optional<Build> build = param.buildRepository.getOne(new BuildKey(key));
 
         final File targetDir = mkDir(build.get(), keyCountTuple);
         final File elwoodLog = createElwoodLog(targetDir);
@@ -90,13 +93,13 @@ public class BuildJobCommandImpl implements BuildJobCommand {
         final Integer result = buildProject(keyCountTuple, process, elwoodLog);
 
         final Optional<BuildResult> buildResult = param.buildResultRepository.getOne(
-                keyCountTuple.getKey(), keyCountTuple.toString());
+                new BuildResultKey(new BuildKey(keyCountTuple.getKey()), keyCountTuple.getCount()));
         if (!buildResult.isPresent()) {
             return null;
         }
         buildResult.get().setBuildStatus(getBuildStatus(result));
         buildResult.get().setFinishRunDate(new Date());
-        param.buildResultRepository.save("buildResult", buildResult.get());
+        param.buildResultRepository.save(buildResult.get());
 
         final boolean removedFuture = param.buildMapLog.removeFuture(keyCountTuple);
         assert removedFuture;

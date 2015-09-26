@@ -18,10 +18,13 @@
 
 package org.lyeung.elwood.data.redis.repository.impl;
 
+import org.lyeung.elwood.data.redis.domain.BuildKey;
 import org.lyeung.elwood.data.redis.domain.BuildResult;
+import org.lyeung.elwood.data.redis.domain.BuildResultKey;
 import org.lyeung.elwood.data.redis.repository.BuildResultRepository;
 import org.lyeung.elwood.data.redis.repository.HashRepository;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -37,23 +40,26 @@ public class BuildResultRepositoryImpl implements BuildResultRepository {
     }
 
     @Override
-    public List<BuildResult> findAll(String hashKey, long start, long end) {
-        return repository.findAll(hashKey, start, end);
+    public List<BuildResult> findAll(BuildKey buildKey, long start, long end) {
+        return repository.findAll(buildKey.toStringValue(), start, end);
     }
 
     @Override
-    public void save(String hashKey, BuildResult value) {
-        repository.save(hashKey, value.getKey(), value);
+    public void save(BuildResult value) {
+        repository.save(value.getKey().getBuildKey().toStringValue(),
+                value.getKey().toStringValue(), value);
     }
 
     @Override
-    public void delete(String hashKey, List<String> objectKeys) {
-        repository.delete(hashKey, objectKeys);
-
+    public void delete(List<BuildResultKey> objectKeys) {
+        objectKeys.forEach(k ->
+                repository.delete(k.getBuildKey().toStringValue(),
+                Collections.singletonList(k.toStringValue())));
     }
 
     @Override
-    public Optional<BuildResult> getOne(String hashKey, String objectKey) {
-        return repository.getOne(hashKey, objectKey);
+    public Optional<BuildResult> getOne(BuildResultKey buildResultKey) {
+        return repository.getOne(buildResultKey.getBuildKey().toStringValue(),
+                buildResultKey.toStringValue());
     }
 }

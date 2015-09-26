@@ -19,11 +19,13 @@
 package org.lyeung.elwood.data.redis.repository.impl;
 
 import org.lyeung.elwood.data.redis.domain.Build;
+import org.lyeung.elwood.data.redis.domain.BuildKey;
 import org.lyeung.elwood.data.redis.repository.BuildRepository;
 import org.lyeung.elwood.data.redis.repository.HashRepository;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * Created by lyeung on 1/08/2015.
@@ -42,18 +44,20 @@ public class BuildRepositoryImpl implements BuildRepository {
     }
 
     @Override
-    public Optional<Build> getOne(String objectKey) {
-        return repository.getOne(hashKey, objectKey);
+    public Optional<Build> getOne(BuildKey buildKey) {
+        return repository.getOne(hashKey, buildKey.toStringValue());
     }
 
     @Override
     public void save(Build build) {
-        repository.save(hashKey, build.getKey(), build);
+        repository.save(hashKey, build.getKey().toStringValue(), build);
     }
 
     @Override
-    public void delete(List<String> objectKeys) {
-        repository.delete(hashKey, objectKeys);
+    public void delete(List<BuildKey> buildKeys) {
+        final List<String> keys = buildKeys.stream()
+                .map(k -> k.toStringValue()).collect(Collectors.toList());
+        repository.delete(hashKey, keys);
     }
 
     @Override

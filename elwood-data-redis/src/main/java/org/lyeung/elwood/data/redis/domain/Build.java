@@ -21,7 +21,7 @@ package org.lyeung.elwood.data.redis.domain;
 /**
  * Created by lyeung on 1/08/2015.
  */
-public class Build extends AbstractDomain {
+public class Build extends AbstractDomain<BuildKey> {
 
     private String buildCommand;
 

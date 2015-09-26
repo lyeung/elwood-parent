@@ -38,7 +38,7 @@ public class ProjectBuildTupleToBuildJobMapperImpl
 
     private BuildJob toBuildJob(Project project, Build build) {
         final BuildJob buildJob = new BuildJob();
-        buildJob.setKey(project.getKey());
+        buildJob.setKey(project.getKey().toStringValue());
         buildJob.setName(project.getName());
         buildJob.setDescription(project.getDescription());
         buildJob.setBuildFile(project.getBuildFile());

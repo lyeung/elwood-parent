@@ -35,8 +35,12 @@ import org.lyeung.elwood.common.command.ShellCommandExecutor;
 import org.lyeung.elwood.common.command.ShellCommandParamBuilder;
 import org.lyeung.elwood.common.test.QuickTest;
 import org.lyeung.elwood.data.redis.domain.Build;
+import org.lyeung.elwood.data.redis.domain.BuildKey;
 import org.lyeung.elwood.data.redis.domain.BuildResult;
+import org.lyeung.elwood.data.redis.domain.BuildResultKey;
 import org.lyeung.elwood.data.redis.domain.Project;
+import org.lyeung.elwood.data.redis.domain.ProjectKey;
+import org.lyeung.elwood.data.redis.domain.enums.BuildStatus;
 import org.lyeung.elwood.data.redis.repository.BuildRepository;
 import org.lyeung.elwood.data.redis.repository.BuildResultRepository;
 import org.lyeung.elwood.data.redis.repository.ProjectRepository;
@@ -58,8 +62,12 @@ import java.util.List;
 
 import static java.util.Optional.of;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyList;
+import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 /**
@@ -147,8 +155,8 @@ public class BuildJobCommandImplTest {
 
     @Test
     public void testExecute() {
-        when(projectRepository.getOne(KEY)).thenReturn(of(createProject()));
-        when(buildRepository.getOne(KEY)).thenReturn(of(createBuild()));
+        when(projectRepository.getOne(new ProjectKey(KEY))).thenReturn(of(createProject()));
+        when(buildRepository.getOne(new BuildKey(KEY))).thenReturn(of(createBuild()));
 
         // mkdir command
         when(mkDirCommandFactory.createMkDirCommand()).thenReturn(mkDirCommand);
@@ -167,7 +175,7 @@ public class BuildJobCommandImplTest {
         when(elwoodLogFileCreatorCommand.execute(targetDir)).thenReturn(elwoodLog);
 
         // clone command
-        when(cloneCommandFactory.makeCommand(any(List.class))).thenReturn(cloneCommand);
+        when(cloneCommandFactory.makeCommand(anyList())).thenReturn(cloneCommand);
         when(cloneCommand.execute(any(CloneCommandParam.class))).thenReturn(checkoutDir);
 
         // process command
@@ -182,7 +190,7 @@ public class BuildJobCommandImplTest {
 
         // build result repository
         final BuildResult buildResult = new BuildResult();
-        when(buildResultRepository.getOne(KEY, new KeyCountTuple(KEY, 10L).toString()))
+        when(buildResultRepository.getOne(new BuildResultKey(new BuildKey(KEY), 10L)))
                 .thenReturn(of(buildResult));
 
         when(buildMapLog.removeFuture(new KeyCountTuple(KEY, 10L))).thenReturn(true);
@@ -190,6 +198,11 @@ public class BuildJobCommandImplTest {
 
         final Integer resultStatus = impl.execute(new KeyCountTuple(KEY, 10L));
         assertEquals(0, resultStatus.intValue());
+        assertEquals(BuildStatus.SUCCEEDED, buildResult.getBuildStatus());
+        assertNotNull(buildResult.getFinishRunDate());
+
+        verify(buildMapLog).removeFuture(eq(new KeyCountTuple(KEY, 10L)));
+        verify(buildMapLog).removeContent(eq(new KeyCountTuple(KEY, 10L)));
 
     }
 
@@ -203,7 +216,7 @@ public class BuildJobCommandImplTest {
 
     private Project createProject() {
         final Project project = new Project();
-        project.setKey(KEY);
+        project.setKey(new ProjectKey(KEY));
         project.setPassphrase(null);
         project.setSourceUrl("git@bitbucket.org:lyeung/elwood-parent.git");
         project.setIdentityKey("src/test/resources/ssh-keys/id_rsa-elwood-project");

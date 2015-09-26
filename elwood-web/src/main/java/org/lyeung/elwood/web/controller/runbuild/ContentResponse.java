@@ -18,6 +18,7 @@
 
 package org.lyeung.elwood.web.controller.runbuild;
 
+import org.lyeung.elwood.executor.command.KeyCountTuple;
 import org.lyeung.elwood.web.controller.runbuild.enums.ContentResponseStatus;
 
 import java.net.URL;
@@ -27,18 +28,26 @@ import java.net.URL;
  */
 public class ContentResponse {
 
+    private final KeyCountTuple keyCount;
+
     private final ContentResponseStatus status;
 
     private String content;
 
     private URL redirectUrl;
 
-    public ContentResponse(ContentResponseStatus status, String content) {
+    public ContentResponse(KeyCountTuple keyCount, ContentResponseStatus status,
+        String content) {
+
+        this.keyCount = keyCount;
         this.status = status;
         this.content = content;
     }
 
-    public ContentResponse(ContentResponseStatus status, URL redirectUrl) {
+    public ContentResponse(KeyCountTuple keyCount, ContentResponseStatus status,
+        URL redirectUrl) {
+
+        this.keyCount = keyCount;
         this.status = status;
         this.redirectUrl = redirectUrl;
     }
@@ -53,5 +62,9 @@ public class ContentResponse {
 
     public URL getRedirectUrl() {
         return redirectUrl;
+    }
+
+    public KeyCountTuple getKeyCount() {
+        return keyCount;
     }
 }

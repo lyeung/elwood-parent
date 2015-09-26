@@ -39,7 +39,7 @@ import static org.junit.Assert.assertTrue;
 @Category(SlowTest.class)
 public class BuildCountRepositoryImplTest extends AbstractRepositoryTest {
 
-    private static final String HASH_KEY = "test:buildCount";
+    private static final String HASH_KEY = "test/buildCount";
 
     private BuildCountRepositoryImpl impl;
 
