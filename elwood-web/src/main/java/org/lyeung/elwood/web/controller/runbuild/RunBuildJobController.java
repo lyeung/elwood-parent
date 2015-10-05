@@ -95,6 +95,14 @@ public class RunBuildJobController {
         return buildResult;
     }
 
+    @RequestMapping(value = "/buildKeys/{key}", method = RequestMethod.GET)
+    public GetBuildKeysResponse getBuildKeys(@PathVariable("key") String key) {
+        return new GetBuildKeysResponse(new KeyTuple(key),
+                buildMapLog.getFutureKeys().stream()
+                        .filter(kc -> kc.getKey().equals(key))
+                        .collect(Collectors.toList()));
+    }
+
     @RequestMapping(value = "/{key}/{count}", method = RequestMethod.GET)
     public ContentResponse getContentByKey(
             @PathVariable("key") String key, @PathVariable("count") Long count)

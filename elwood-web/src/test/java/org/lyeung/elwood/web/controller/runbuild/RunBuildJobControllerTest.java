@@ -40,12 +40,14 @@ import org.mockito.runners.MockitoJUnitRunner;
 import java.net.MalformedURLException;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 import java.util.concurrent.Future;
 
 import static java.util.Optional.empty;
 import static java.util.Optional.of;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.argThat;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.verify;
@@ -90,8 +92,7 @@ public class RunBuildJobControllerTest {
         when(buildExecutor.add(KEY_COUNT_TUPLE)).thenReturn(future);
         when(buildMapLog.addFuture(KEY_COUNT_TUPLE, future)).thenReturn(null);
 
-        final KeyTuple keyTuple = new KeyTuple();
-        keyTuple.setKey("KEY");
+        final KeyTuple keyTuple = new KeyTuple("KEY");
 
         final RunBuildJobResponse response = controller.runBuildJob(keyTuple);
         assertEquals(KEY_COUNT_TUPLE, response.getKeyCountTuple());
@@ -254,6 +255,21 @@ public class RunBuildJobControllerTest {
         verify(buildMapLog).isFutureDone(eq(KEY_COUNT_TUPLE));
         verifyNoMoreInteractions(buildMapLog);
         verifyZeroInteractions(buildResultRepository);
+    }
+
+    @Test
+    public void testGetFutureKeys() {
+        List<KeyCountTuple> futureKeys = Arrays.asList(
+                new KeyCountTuple("ELWP", 10L),
+                new KeyCountTuple("ELWP", 20L),
+                new KeyCountTuple("ELWUI", 20L));
+        when(buildMapLog.getFutureKeys()).thenReturn(futureKeys);
+
+        final GetBuildKeysResponse result = controller.getBuildKeys("ELWP");
+        assertEquals("ELWP", result.getKey().getKey());
+        assertEquals(2, result.getKeyCounts().size());
+        assertTrue(result.getKeyCounts().contains(new KeyCountTuple("ELWP", 10L)));
+        assertTrue(result.getKeyCounts().contains(new KeyCountTuple("ELWP", 20L)));
     }
 
     private BuildResult createBuildResult(KeyCountTuple keyCountTuple, BuildStatus status) {

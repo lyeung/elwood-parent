@@ -19,42 +19,30 @@
 package org.lyeung.elwood.web.controller.runbuild;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import org.lyeung.elwood.executor.command.KeyCountTuple;
 
-import java.util.Objects;
+import java.util.List;
 
 /**
- * Created by lyeung on 13/08/2015.
+ * Created by lyeung on 2/10/2015.
  */
-public class KeyTuple {
+public class GetBuildKeysResponse {
 
-    private String key;
+    private KeyTuple key;
+
+    private List<KeyCountTuple>  keyCounts;
 
     @JsonCreator
-    public KeyTuple(@JsonProperty("key") String key) {
+    public GetBuildKeysResponse(KeyTuple key, List<KeyCountTuple> keyCounts) {
         this.key = key;
+        this.keyCounts = keyCounts;
     }
 
-    public String getKey() {
+    public KeyTuple getKey() {
         return key;
     }
 
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj) {
-            return true;
-        }
-
-        if (obj == null || getClass() != obj.getClass()) {
-            return false;
-        }
-
-        KeyTuple keyTuple = (KeyTuple) obj;
-        return Objects.equals(key, keyTuple.key);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(key);
+    public List<KeyCountTuple> getKeyCounts() {
+        return keyCounts;
     }
 }

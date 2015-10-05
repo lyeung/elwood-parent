@@ -98,4 +98,9 @@ public class BuildMapLog<K extends Serializable> {
     public boolean removeFuture(K key) {
         return futureMap.remove(key) != null;
     }
+
+    public List<K> getFutureKeys() {
+        return new ArrayList<>(futureMap.keySet());
+    }
+
 }
