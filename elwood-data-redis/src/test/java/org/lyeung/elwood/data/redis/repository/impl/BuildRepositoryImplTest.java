@@ -44,7 +44,7 @@ public class BuildRepositoryImplTest extends AbstractRepositoryTest {
     @Before
     public void setUp() {
         impl = new BuildRepositoryImpl("test/build",
-                new RedisHashRepositoryImpl<>(redisTemplate(Build.class)));
+                new RedisHashRepositoryImpl<>(redisTemplate()));
         deleteAll();
     }
 

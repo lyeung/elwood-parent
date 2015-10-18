@@ -44,7 +44,7 @@ public class ProjectRepositoryImplTest extends AbstractRepositoryTest {
     @Before
     public void setUp() {
         impl = new ProjectRepositoryImpl("test/project",
-                new RedisHashRepositoryImpl<>(redisTemplate(Project.class)));
+                new RedisHashRepositoryImpl<>(redisTemplate()));
         deleteAll();
     }
 

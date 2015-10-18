@@ -18,9 +18,7 @@
 
 package org.lyeung.elwood.web.config;
 
-import org.lyeung.elwood.data.redis.domain.Build;
 import org.lyeung.elwood.data.redis.domain.BuildResult;
-import org.lyeung.elwood.data.redis.domain.Project;
 import org.lyeung.elwood.data.redis.repository.BuildCountRepository;
 import org.lyeung.elwood.data.redis.repository.BuildRepository;
 import org.lyeung.elwood.data.redis.repository.BuildResultRepository;
@@ -34,18 +32,21 @@ import org.lyeung.elwood.data.redis.repository.impl.ProjectRepositoryImpl;
 import org.lyeung.elwood.data.redis.repository.impl.RedisHashRepositoryImpl;
 import org.lyeung.elwood.executor.command.IncrementBuildCountCommand;
 import org.lyeung.elwood.executor.command.impl.IncrementBuildCountCommandImpl;
+import org.lyeung.elwood.web.config.enums.KeyType;
 import org.lyeung.elwood.web.controller.build.command.DeleteBuildJobCommand;
 import org.lyeung.elwood.web.controller.build.command.GetBuildJobCommand;
 import org.lyeung.elwood.web.controller.build.command.SaveBuildJobCommand;
 import org.lyeung.elwood.web.controller.build.command.impl.DeleteBuildJobCommandImpl;
 import org.lyeung.elwood.web.controller.build.command.impl.GetBuildJobCommandImpl;
 import org.lyeung.elwood.web.controller.build.command.impl.SaveBuildJobCommandImpl;
+import org.lyeung.elwood.web.controller.buildresult.command.GetBuildResultCommand;
+import org.lyeung.elwood.web.controller.buildresult.command.impl.GetBuildResultCommandImpl;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.GenericToStringSerializer;
-import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
 import redis.clients.jedis.JedisPoolConfig;
 
 /**
@@ -72,9 +73,9 @@ public class ElwoodRepositoryConfiguraiton {
         return template;
     }
 
-    private <K, V> RedisTemplate<K, V> redisTemplate(Class<V> clazz) {
+    private <K, V> RedisTemplate<K, V> redisTemplate() {
         RedisTemplate<K, V> template = createRedisTemplate();
-        template.setDefaultSerializer(new Jackson2JsonRedisSerializer<>(clazz));
+        template.setDefaultSerializer(new GenericJackson2JsonRedisSerializer());
         template.afterPropertiesSet();
         return template;
     }
@@ -98,27 +99,27 @@ public class ElwoodRepositoryConfiguraiton {
 
     @Bean
     public ProjectRepository projectRepository() {
-        return new ProjectRepositoryImpl("project",
-                new RedisHashRepositoryImpl<>(redisTemplate(Project.class)));
+        return new ProjectRepositoryImpl(KeyType.Project.getType(),
+                new RedisHashRepositoryImpl<>(redisTemplate()));
     }
 
     @Bean
     public BuildRepository buildRepository() {
-        return new BuildRepositoryImpl("build",
-                new RedisHashRepositoryImpl<>(redisTemplate(Build.class)));
+        return new BuildRepositoryImpl(KeyType.Build.getType(),
+                new RedisHashRepositoryImpl<>(redisTemplate()));
     }
 
     @Bean
     public BuildCountRepository buildCountRepository() {
-        return new BuildCountRepositoryImpl("buildCount",
+        return new BuildCountRepositoryImpl(KeyType.BuildCount.getType(),
                 new CountRepositoryImpl<>(redisCountTemplate()));
     }
 
     @Bean
     public BuildResultRepository buildResultRepository() {
         final HashRepository<BuildResult, String, String> repository =
-                new RedisHashRepositoryImpl<>(redisTemplate(BuildResult.class));
-        return new BuildResultRepositoryImpl(repository);
+                new RedisHashRepositoryImpl<>(redisTemplate());
+        return new BuildResultRepositoryImpl(KeyType.BuildResult.getType(), repository);
     }
 
     @Bean
@@ -139,5 +140,10 @@ public class ElwoodRepositoryConfiguraiton {
     @Bean
     public IncrementBuildCountCommand incrementBuildCountCommand() {
         return new IncrementBuildCountCommandImpl(buildCountRepository());
+    }
+
+    @Bean
+    public GetBuildResultCommand buildResultCommand() {
+        return new GetBuildResultCommandImpl(buildResultRepository());
     }
 }

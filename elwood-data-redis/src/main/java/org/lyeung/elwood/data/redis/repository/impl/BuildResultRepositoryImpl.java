@@ -35,31 +35,35 @@ public class BuildResultRepositoryImpl implements BuildResultRepository {
 
     private final HashRepository<BuildResult, String, String> repository;
 
-    public BuildResultRepositoryImpl(HashRepository<BuildResult, String, String> repository) {
+    private final String keyType;
+
+    public BuildResultRepositoryImpl(
+            String keyType, HashRepository<BuildResult, String, String> repository) {
+        this.keyType = keyType;
         this.repository = repository;
     }
 
     @Override
     public List<BuildResult> findAll(BuildKey buildKey, long start, long end) {
-        return repository.findAll(buildKey.toStringValue(), start, end);
+        return repository.findAll(keyType + buildKey.toStringValue(), start, end);
     }
 
     @Override
     public void save(BuildResult value) {
-        repository.save(value.getKey().getBuildKey().toStringValue(),
+        repository.save(keyType + value.getKey().getBuildKey().toStringValue(),
                 value.getKey().toStringValue(), value);
     }
 
     @Override
     public void delete(List<BuildResultKey> objectKeys) {
         objectKeys.forEach(k ->
-                repository.delete(k.getBuildKey().toStringValue(),
+                repository.delete(keyType + k.getBuildKey().toStringValue(),
                 Collections.singletonList(k.toStringValue())));
     }
 
     @Override
     public Optional<BuildResult> getOne(BuildResultKey buildResultKey) {
-        return repository.getOne(buildResultKey.getBuildKey().toStringValue(),
+        return repository.getOne(keyType + buildResultKey.getBuildKey().toStringValue(),
                 buildResultKey.toStringValue());
     }
 }
