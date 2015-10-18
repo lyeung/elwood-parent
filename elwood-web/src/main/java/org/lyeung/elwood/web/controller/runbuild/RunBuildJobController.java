@@ -28,6 +28,7 @@ import org.lyeung.elwood.executor.BuildMapLog;
 import org.lyeung.elwood.executor.command.IncrementBuildCountCommand;
 import org.lyeung.elwood.executor.command.KeyCountTuple;
 import org.lyeung.elwood.web.controller.NavigationConstants;
+import org.lyeung.elwood.web.controller.buildresult.GetBuildResultResponse;
 import org.lyeung.elwood.web.controller.runbuild.enums.ContentResponseStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -70,7 +71,7 @@ public class RunBuildJobController {
         final Long count = incrementBuildCountCommand.execute(keyTuple.getKey());
         final KeyCountTuple keyCountTuple = new KeyCountTuple(keyTuple.getKey(), count);
 
-        BuildResult buildResult = createBuildResult(keyCountTuple);
+        final BuildResult buildResult = createBuildResult(keyCountTuple);
         buildResultRepository.save(buildResult);
 
         final Future<Integer> previousFuture = buildMapLog.addFuture(keyCountTuple,
@@ -82,7 +83,13 @@ public class RunBuildJobController {
                             + keyCountTuple + "]");
         }
 
-        return new RunBuildJobResponse(keyCountTuple);
+        return new RunBuildJobResponse(keyCountTuple, toBuildResultResponse(buildResult));
+    }
+
+    private GetBuildResultResponse toBuildResultResponse(BuildResult buildResult) {
+        return new GetBuildResultResponse(new KeyCountTuple(buildResult.getKey().getKey(),
+                buildResult.getKey().getCount()), buildResult.getBuildStatus(),
+                buildResult.getStartRunDate(), buildResult.getFinishRunDate());
     }
 
     private BuildResult createBuildResult(KeyCountTuple keyCountTuple) {

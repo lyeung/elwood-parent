@@ -29,7 +29,7 @@ import redis.clients.jedis.JedisPoolConfig;
  */
 public abstract class AbstractRepositoryTest {
 
-    <K, V> RedisTemplate<K, V> redisTemplate(Class<V> clazz) {
+    <K, V> RedisTemplate<K, V> redisTemplate() {
         final RedisTemplate<K, V> template = new RedisTemplate<>();
         template.setConnectionFactory(jedisConnectionFactory());
         template.setDefaultSerializer(new GenericJackson2JsonRedisSerializer());

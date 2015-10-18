@@ -31,6 +31,7 @@ import org.lyeung.elwood.executor.BuildExecutor;
 import org.lyeung.elwood.executor.BuildMapLog;
 import org.lyeung.elwood.executor.command.IncrementBuildCountCommand;
 import org.lyeung.elwood.executor.command.KeyCountTuple;
+import org.lyeung.elwood.web.controller.buildresult.GetBuildResultResponse;
 import org.lyeung.elwood.web.controller.runbuild.enums.ContentResponseStatus;
 import org.mockito.ArgumentMatcher;
 import org.mockito.InjectMocks;
@@ -96,16 +97,14 @@ public class RunBuildJobControllerTest {
 
         final RunBuildJobResponse response = controller.runBuildJob(keyTuple);
         assertEquals(KEY_COUNT_TUPLE, response.getKeyCountTuple());
+        assertTrue(assertGetBuildResultResponse(response.getBuildResultResponse()));
 
         verify(incrementBuildCountCommand).execute(eq(KEY));
         verify(buildResultRepository).save(argThat(new ArgumentMatcher<BuildResult>() {
             @Override
             public boolean matches(Object argument) {
                 final BuildResult buildResult = (BuildResult) argument;
-                return buildResult.getKey().equals(new BuildResultKey(new BuildKey("KEY"), 2L))
-                        && buildResult.getBuildStatus() == BuildStatus.IN_PROGRESS
-                        && buildResult.getStartRunDate() != null
-                        && buildResult.getFinishRunDate() == null;
+                return assertBuildResult(buildResult);
             }
         }));
         verify(buildMapLog).addFuture(eq(KEY_COUNT_TUPLE), eq(future));
@@ -115,13 +114,27 @@ public class RunBuildJobControllerTest {
         verifyZeroInteractions(buildResultRepository);
     }
 
+    private boolean assertGetBuildResultResponse(GetBuildResultResponse buildResultResponse) {
+        return buildResultResponse.getKeyCountTuple().equals(new KeyCountTuple(KEY, COUNT))
+                && buildResultResponse.getBuildStatus() == BuildStatus.IN_PROGRESS
+                && buildResultResponse.getStartRunDate() != null
+                && buildResultResponse.getFinishRunDate() == null;
+    }
+
+    private boolean assertBuildResult(BuildResult buildResult) {
+        return buildResult.getKey().equals(new BuildResultKey(new BuildKey(KEY), COUNT))
+                        && buildResult.getBuildStatus() == BuildStatus.IN_PROGRESS
+                        && buildResult.getStartRunDate() != null
+                        && buildResult.getFinishRunDate() == null;
+    }
+
     @Test
     public void testGetContentByKey() throws MalformedURLException {
         when(buildMapLog.isFutureDone(KEY_COUNT_TUPLE)).thenReturn(of(false));
         when(buildMapLog.getContent(KEY_COUNT_TUPLE)).thenReturn(
                 of(Arrays.asList("hello", "world")));
 
-        final ContentResponse response = controller.getContentByKey(KEY, 2L);
+        final ContentResponse response = controller.getContentByKey(KEY, COUNT);
         assertEquals(ContentResponseStatus.RUNNING, response.getStatus());
         assertEquals("helloworld", response.getContent());
         assertNull(response.getRedirectUrl());
@@ -143,7 +156,7 @@ public class RunBuildJobControllerTest {
         when(buildResultRepository.getOne(key))
                 .thenReturn(of(buildResult));
 
-        final ContentResponse response = controller.getContentByKey(KEY, 2L);
+        final ContentResponse response = controller.getContentByKey(KEY, COUNT);
         assertEquals(ContentResponseStatus.RUNNING, response.getStatus());
         assertNull(response.getContent());
         assertNull(response.getRedirectUrl());
@@ -162,7 +175,7 @@ public class RunBuildJobControllerTest {
                 KEY_COUNT_TUPLE.getCount());
         when(buildResultRepository.getOne(key)).thenReturn(empty());
 
-        final ContentResponse response = controller.getContentByKey(KEY, 2L);
+        final ContentResponse response = controller.getContentByKey(KEY, COUNT);
         assertEquals(ContentResponseStatus.UNKNOWN, response.getStatus());
         assertNull(response.getContent());
         assertNull(response.getRedirectUrl());
@@ -183,7 +196,7 @@ public class RunBuildJobControllerTest {
         when(buildResultRepository.getOne(key))
                 .thenReturn(of(buildResult));
 
-        final ContentResponse response = controller.getContentByKey(KEY, 2L);
+        final ContentResponse response = controller.getContentByKey(KEY, COUNT);
         assertEquals(ContentResponseStatus.SUCCESS, response.getStatus());
         assertNull(response.getContent());
         assertEquals("http://localhost:8080/viewBuildLog/" + KEY_COUNT_TUPLE,
@@ -205,7 +218,7 @@ public class RunBuildJobControllerTest {
         when(buildResultRepository.getOne(key))
                 .thenReturn(of(buildResult));
 
-        final ContentResponse response = controller.getContentByKey(KEY, 2L);
+        final ContentResponse response = controller.getContentByKey(KEY, COUNT);
         assertEquals(ContentResponseStatus.FAILED, response.getStatus());
         assertNull(response.getContent());
         assertEquals("http://localhost:8080/viewBuildLog/" + KEY_COUNT_TUPLE,
@@ -228,7 +241,7 @@ public class RunBuildJobControllerTest {
         when(buildResultRepository.getOne(key))
                 .thenReturn(of(buildResult));
 
-        final ContentResponse response = controller.getContentByKey(KEY, 2L);
+        final ContentResponse response = controller.getContentByKey(KEY, COUNT);
         assertEquals(ContentResponseStatus.FAILED, response.getStatus());
         assertNull(response.getContent());
         assertEquals("http://localhost:8080/viewBuildLog/" + KEY_COUNT_TUPLE,
@@ -246,7 +259,7 @@ public class RunBuildJobControllerTest {
     public void testGetDoneContentByKey() throws MalformedURLException {
         when(buildMapLog.isFutureDone(KEY_COUNT_TUPLE)).thenReturn(of(true));
 
-        final ContentResponse response = controller.getContentByKey(KEY, 2L);
+        final ContentResponse response = controller.getContentByKey(KEY, COUNT);
         assertEquals(ContentResponseStatus.SUCCESS, response.getStatus());
         assertNull(response.getContent());
         assertEquals("http://localhost:8080/viewBuildLog/" + KEY_COUNT_TUPLE,
@@ -259,7 +272,7 @@ public class RunBuildJobControllerTest {
 
     @Test
     public void testGetFutureKeys() {
-        List<KeyCountTuple> futureKeys = Arrays.asList(
+        final List<KeyCountTuple> futureKeys = Arrays.asList(
                 new KeyCountTuple("ELWP", 10L),
                 new KeyCountTuple("ELWP", 20L),
                 new KeyCountTuple("ELWUI", 20L));

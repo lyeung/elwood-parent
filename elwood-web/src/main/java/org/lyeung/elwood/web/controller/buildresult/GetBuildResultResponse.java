@@ -16,34 +16,49 @@
  *
  */
 
-package org.lyeung.elwood.web.controller.runbuild;
+package org.lyeung.elwood.web.controller.buildresult;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
+import org.lyeung.elwood.data.redis.domain.enums.BuildStatus;
 import org.lyeung.elwood.executor.command.KeyCountTuple;
-import org.lyeung.elwood.web.controller.buildresult.GetBuildResultResponse;
+
+import java.util.Date;
 
 /**
- * Created by lyeung on 2/09/2015.
+ * Created by lyeung on 6/10/2015.
  */
-public class RunBuildJobResponse {
+public class GetBuildResultResponse {
 
     private final KeyCountTuple keyCountTuple;
 
-    private final GetBuildResultResponse buildResultResponse;
+    private final BuildStatus buildStatus;
+
+    private final Date startRunDate;
+
+    private final Date finishRunDate;
 
     @JsonCreator
-    public RunBuildJobResponse(KeyCountTuple keyCountTuple,
-        GetBuildResultResponse buildResultResponse) {
-
+    public GetBuildResultResponse(KeyCountTuple keyCountTuple, BuildStatus buildStatus,
+        Date startRunDate, Date finishRunDate) {
         this.keyCountTuple = keyCountTuple;
-        this.buildResultResponse = buildResultResponse;
+        this.buildStatus = buildStatus;
+        this.startRunDate = startRunDate;
+        this.finishRunDate = finishRunDate;
     }
 
     public KeyCountTuple getKeyCountTuple() {
         return keyCountTuple;
     }
 
-    public GetBuildResultResponse getBuildResultResponse() {
-        return buildResultResponse;
+    public BuildStatus getBuildStatus() {
+        return buildStatus;
+    }
+
+    public Date getStartRunDate() {
+        return startRunDate;
+    }
+
+    public Date getFinishRunDate() {
+        return finishRunDate;
     }
 }

@@ -40,7 +40,7 @@ import static org.junit.Assert.assertTrue;
  */
 public class BuildResultRepositoryImplTest extends AbstractRepositoryTest {
 
-    private static final BuildKey BUILD_KEY = new BuildKey("test/PRJ");
+    private static final BuildKey BUILD_KEY = new BuildKey("PRJ");
 
     private BuildResultRepositoryImpl impl;
 
@@ -48,8 +48,8 @@ public class BuildResultRepositoryImplTest extends AbstractRepositoryTest {
 
     @Before
     public void setUp() {
-        repository = new RedisHashRepositoryImpl<>(redisTemplate(BuildResult.class));
-        impl = new BuildResultRepositoryImpl(repository);
+        repository = new RedisHashRepositoryImpl<>(redisTemplate());
+        impl = new BuildResultRepositoryImpl("test/", repository);
         deleteAll();
     }
 
