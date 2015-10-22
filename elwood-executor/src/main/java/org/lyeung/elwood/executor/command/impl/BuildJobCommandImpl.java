@@ -22,6 +22,7 @@ import org.lyeung.elwood.builder.command.ProcessBuilderCommandFactory;
 import org.lyeung.elwood.builder.command.ProjectBuilderCommandFactory;
 import org.lyeung.elwood.builder.model.BuildModel;
 import org.lyeung.elwood.builder.model.ProjectModel;
+import org.lyeung.elwood.common.EncodingConstants;
 import org.lyeung.elwood.common.command.MkDirCommandFactory;
 import org.lyeung.elwood.common.command.MkDirCommandParamBuilder;
 import org.lyeung.elwood.common.command.ShellCommandParamBuilder;
@@ -57,8 +58,10 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
+import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
 
@@ -159,8 +162,10 @@ public class BuildJobCommandImpl implements BuildJobCommand {
     private Integer buildProject(KeyCountTuple keyCountTuple, Process process, File elwoodLog) {
         return param.projectBuilderCommandFactory.makeCommand(new ShellCommandExecutorImpl(
                 Collections.singletonList(new DefaultEventListener<>(
-                        new ShellCommandBuildMapWriter(
-                                keyCountTuple, param.buildMapLog, elwoodLog)))))
+                        new ShellCommandBuildMapWriter<>(keyCountTuple, Arrays.asList(
+                                new FileConsumer(keyCountTuple, elwoodLog),
+                                new MapConsumer(keyCountTuple, param.buildMapLog)))))))
+
                 .execute(process);
     }
 
@@ -209,7 +214,7 @@ public class BuildJobCommandImpl implements BuildJobCommand {
         public void accept(Event<GitCloneEventData> event) {
             final byte[] data = event.getEventData().getData();
             try {
-                final String content = new String(data, "UTF-8");
+                final String content = new String(data, EncodingConstants.UTF_8);
                 System.out.println(content);
                 write(content, file);
                 buildMapLog.append(key, content);
@@ -234,40 +239,74 @@ public class BuildJobCommandImpl implements BuildJobCommand {
 
         private final K key;
 
-        private final BuildMapLog buildMapLog;
+        private final List<ShellCommandConsumer<K>> shellCommandConsumers;
 
-        private final File file;
+        public ShellCommandBuildMapWriter(
+                K key, List<ShellCommandConsumer<K>> shellCommandConsumers) {
 
-        public ShellCommandBuildMapWriter(K key, BuildMapLog buildMapLog, File file) {
             this.key = key;
-            this.buildMapLog = buildMapLog;
-            this.file = file;
+            this.shellCommandConsumers = shellCommandConsumers;
         }
 
         @Override
         public void accept(Event<ShellCommandExecutorEventData> event) {
             final byte[] data = event.getEventData().getData();
-            try {
-                final String content = new String(data, "UTF-8");
-                System.out.println(content);
-                write(content, file);
-                buildMapLog.append(key, content);
-            } catch (UnsupportedEncodingException e) {
-                throw new BuildJobException(
-                        "unsupported encoding", e, key.toString());
+            for (ShellCommandConsumer<K> shellCommandConsumer : shellCommandConsumers) {
+                try {
+                    shellCommandConsumer.consume(data);
+                } catch (IOException e) {
+                    throw new BuildJobException(
+                            "io exception", e, key.toString());
+                }
             }
         }
+    }
 
-        private void write(String content, File file) {
+
+    private interface ShellCommandConsumer<K> {
+
+        void consume(byte[] data) throws IOException;
+    }
+
+    private static class MapConsumer<K extends Serializable> implements ShellCommandConsumer {
+
+        private final K key;
+
+        private final BuildMapLog<K> buildMapLog;
+
+        public MapConsumer(K key, BuildMapLog<K> buildMapLog) {
+            this.key = key;
+            this.buildMapLog = buildMapLog;
+        }
+
+        @Override
+        public void consume(byte[] data) throws IOException {
+            final String content = new String(data, EncodingConstants.UTF_8);
+            buildMapLog.append(key, content);
+        }
+    }
+
+    private static class FileConsumer<K extends Serializable> implements ShellCommandConsumer {
+
+        private final K key;
+
+        private final File file;
+
+        public FileConsumer(K key, File file) {
+            this.key = key;
+            this.file = file;
+        }
+
+        @Override
+        public void consume(byte[] data) throws IOException {
             try (FileWriter fileWriter = new FileWriter(file, true)) {
-                fileWriter.write(content);
+                fileWriter.write(new String(data, EncodingConstants.UTF_8));
             } catch (IOException e) {
                 throw new BuildJobException(
                         "unable to write to file", e, key.toString());
             }
         }
     }
-
 
     public static class Param {
 
@@ -277,7 +316,7 @@ public class BuildJobCommandImpl implements BuildJobCommand {
 
         private BuildResultRepository buildResultRepository;
 
-        private BuildMapLog buildMapLog;
+        private BuildMapLog<KeyCountTuple> buildMapLog;
 
         private MkDirCommandFactory mkDirCommandFactory;
 
