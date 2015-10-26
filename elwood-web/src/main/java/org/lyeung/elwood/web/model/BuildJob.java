@@ -18,29 +18,38 @@
 
 package org.lyeung.elwood.web.model;
 
+import org.hibernate.validator.constraints.NotEmpty;
 import org.lyeung.elwood.vcs.command.CloneCommandParam;
+
+import javax.validation.constraints.NotNull;
 
 /**
  * Created by lyeung on 3/08/2015.
  */
 public class BuildJob {
 
+    @NotEmpty(message = "Required")
     private String key;
 
+    @NotEmpty(message = "Required")
     private String name;
 
     private String description;
 
     private String buildFile;
 
+    @NotEmpty(message = "Required")
     private String buildCommand;
 
     private String environmentVars;
 
+    @NotEmpty(message = "Required")
     private String sourceUrl;
 
+    @NotNull(message = "Required")
     private CloneCommandParam.AuthenticationType authenticationType;
 
+    @NotEmpty(message = "Required")
     private String identityKey;
 
     private String passphrase;

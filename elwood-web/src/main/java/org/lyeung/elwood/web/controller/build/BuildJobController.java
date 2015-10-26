@@ -20,18 +20,23 @@ package org.lyeung.elwood.web.controller.build;
 
 import org.lyeung.elwood.data.redis.domain.BuildKey;
 import org.lyeung.elwood.web.controller.NavigationConstants;
+import org.lyeung.elwood.web.controller.ValidationException;
 import org.lyeung.elwood.web.controller.build.command.DeleteBuildJobCommand;
 import org.lyeung.elwood.web.controller.build.command.GetBuildJobCommand;
 import org.lyeung.elwood.web.controller.build.command.SaveBuildJobCommand;
 import org.lyeung.elwood.web.model.BuildJob;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+
+import javax.validation.Valid;
 
 /**
  * Created by lyeung on 3/08/2015.
@@ -55,9 +60,15 @@ public class BuildJobController {
     }
 
     @RequestMapping(method = RequestMethod.POST)
-    @ResponseStatus(HttpStatus.CREATED)
-    public BuildJob saveBuildJob(@RequestBody BuildJob buildJob) {
-        return saveBuildJobCommand.execute(buildJob);
+    public ResponseEntity<BuildJob> saveBuildJob(
+            @RequestBody @Valid BuildJob buildJob, BindingResult bindingResult) {
+
+        if (bindingResult.hasErrors()) {
+            throw new ValidationException("error", bindingResult.getAllErrors());
+        }
+
+        final BuildJob updatedBuildJob = saveBuildJobCommand.execute(buildJob);
+        return new ResponseEntity<>(updatedBuildJob, HttpStatus.OK);
     }
 
     @RequestMapping(value = "/{key}", method = RequestMethod.DELETE)
