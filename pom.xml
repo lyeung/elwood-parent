@@ -8,7 +8,33 @@
     <packaging>pom</packaging>
 
     <name>elwood-parent</name>
-    <url>http://maven.apache.org</url>
+    <url>https://bitbucket.org/lyeung/elwood-parent</url>
+    <inceptionYear>2015</inceptionYear>
+
+    <licenses>
+        <license>
+            <name>Apache License, Version 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+
+
+    <developers>
+        <developer>
+            <email>lenming.yeung@gmail.com</email>
+            <name>Lenming Yeung</name>
+            <url>https://bitbucket.org/lyeung</url>
+            <id>lyeung</id>
+        </developer>
+    </developers>
+
+    <scm>
+        <developerConnection>scm:git:ssh://git@bitbucket.org:lyeung/elwood-parent.git/</developerConnection>
+        <connection>scm:git:ssh://git@bitbucket.org:lyeung/elwood-parent.git/</connection>
+        <url>https://bitbucket.org/lyeung/elwood-parent</url>
+        <tag>HEAD</tag>
+    </scm>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -220,6 +246,11 @@
                         </goals>
                     </execution>
                 </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-release-plugin</artifactId>
+                <version>2.5.3</version>
             </plugin>
             <!--<plugin>-->
                 <!--<groupId>org.apache.maven.plugins</groupId>-->
