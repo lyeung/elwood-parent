@@ -33,7 +33,6 @@
         <connection>scm:git:ssh://git@bitbucket.org/lyeung/elwood-parent.git</connection>
         <developerConnection>scm:git:ssh://git@bitbucket.org/lyeung/elwood-parent.git</developerConnection>
         <url>https://bitbucket.org/lyeung/elwood-parent.git</url>
-        <tag>HEAD</tag>
     </scm>
 
     <properties>
