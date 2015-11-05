@@ -40,7 +40,7 @@
         <repository>
             <id>nexus-release-repo</id>
             <name>Release Repository</name>
-            <url>https://localhost:8081/nexus/content/repositories/releases/</url>
+            <url>https://192.168.0.19:8081/nexus/content/repositories/releases/</url>
         </repository>
     </distributionManagement>
 
