@@ -33,7 +33,16 @@
         <connection>scm:git:ssh://git@bitbucket.org/lyeung/elwood-parent.git</connection>
         <developerConnection>scm:git:ssh://git@bitbucket.org/lyeung/elwood-parent.git</developerConnection>
         <url>https://bitbucket.org/lyeung/elwood-parent.git</url>
+        <tag>HEAD</tag>
     </scm>
+
+    <distributionManagement>
+        <repository>
+            <id>nexus-release-repo</id>
+            <name>Release Repository</name>
+            <url>https://localhost:8081/nexus/content/repositories/releases/</url>
+        </repository>
+    </distributionManagement>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
