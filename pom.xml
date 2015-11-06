@@ -278,7 +278,6 @@
                 </dependencies>
                 <!--<version>1.0</version>-->
                 <configuration>
-                    <tag>test</tag>
                     <connectionType>connection</connectionType>
                 </configuration>
                 <executions>
