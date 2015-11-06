@@ -4,12 +4,12 @@
     <parent>
         <groupId>org.lyeung</groupId>
         <artifactId>elwood-parent</artifactId>
-        <version>1.0.2-SNAPSHOT</version>
+        <version>1.0.2</version>
     </parent>
 
     <groupId>org.lyeung</groupId>
     <artifactId>elwood-executor</artifactId>
-    <version>1.0.2-SNAPSHOT</version>
+    <version>1.0.2</version>
     <name>elwood-executor</name>
     <url>http://maven.apache.org</url>
 
