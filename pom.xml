@@ -263,6 +263,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-scm-plugin</artifactId>
+                <version>1.9.4</version>
                 <dependencies>
                     <dependency>
                         <groupId>org.codehaus.plexus</groupId>
