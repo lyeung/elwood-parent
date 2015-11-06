@@ -4,11 +4,11 @@
     <parent>
         <groupId>org.lyeung</groupId>
         <artifactId>elwood-parent</artifactId>
-        <version>1.0.2-SNAPSHOT</version>
+        <version>1.0.3-SNAPSHOT</version>
     </parent>
 
     <artifactId>elwood-builder</artifactId>
-    <version>1.0.2-SNAPSHOT</version>
+    <version>1.0.3-SNAPSHOT</version>
 
     <name>elwood-builder</name>
     <url>http://maven.apache.org</url>
