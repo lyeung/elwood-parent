@@ -79,27 +79,27 @@
             <dependency>
                 <groupId>org.lyeung</groupId>
                 <artifactId>elwood-common</artifactId>
-                <version>1.0.1-SNAPSHOT</version>
+                <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.lyeung</groupId>
                 <artifactId>elwood-builder</artifactId>
-                <version>1.0.1-SNAPSHOT</version>
+                <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.lyeung</groupId>
                 <artifactId>elwood-vcs</artifactId>
-                <version>1.0.1-SNAPSHOT</version>
+                <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.lyeung</groupId>
                 <artifactId>elwood-data-redis</artifactId>
-                <version>1.0.1-SNAPSHOT</version>
+                <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.lyeung</groupId>
                 <artifactId>elwood-executor</artifactId>
-                <version>1.0.1-SNAPSHOT</version>
+                <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.springframework</groupId>
