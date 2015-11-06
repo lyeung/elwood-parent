@@ -4,7 +4,7 @@
 
     <groupId>org.lyeung</groupId>
     <artifactId>elwood-parent</artifactId>
-    <version>1.0.4</version>
+    <version>1.0.5-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <name>elwood-parent</name>
@@ -33,7 +33,7 @@
         <connection>scm:git:ssh://git@bitbucket.org/lyeung/elwood-parent.git</connection>
         <developerConnection>scm:git:ssh://git@bitbucket.org/lyeung/elwood-parent.git</developerConnection>
         <url>https://bitbucket.org/lyeung/elwood-parent.git</url>
-        <tag>elwood-parent-1.0.4</tag>
+        <tag>elwood-parent-1.0.1</tag>
     </scm>
 
     <distributionManagement>
