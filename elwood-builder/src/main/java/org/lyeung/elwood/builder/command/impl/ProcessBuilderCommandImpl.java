@@ -35,7 +35,9 @@ public class ProcessBuilderCommandImpl implements ProcessBuilderCommand {
 
     private final ShellCommandParamBuilder paramBuilder;
 
-    public ProcessBuilderCommandImpl(ShellCommand shellCommand, ShellCommandParamBuilder paramBuilder) {
+    public ProcessBuilderCommandImpl(
+            ShellCommand shellCommand, ShellCommandParamBuilder paramBuilder) {
+
         this.shellCommand = shellCommand;
         this.paramBuilder = paramBuilder;
     }

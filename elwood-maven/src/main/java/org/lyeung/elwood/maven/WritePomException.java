@@ -1,4 +1,4 @@
-package org.lyeung.elwood;
+package org.lyeung.elwood.maven;
 
 import org.apache.maven.model.Model;
 import org.lyeung.elwood.common.SystemException;

@@ -10,28 +10,13 @@
         <version>1.1.0-SNAPSHOT</version>
     </parent>
 
-    <artifactId>elwood-maven</artifactId>
+    <artifactId>elwood-common-test</artifactId>
     <version>1.1.0-SNAPSHOT</version>
-    <name>elwood-maven</name>
+
+    <name>elwood-common-test</name>
     <url>http://maven.apache.org</url>
 
     <dependencies>
-        <dependency>
-            <groupId>org.lyeung</groupId>
-            <artifactId>elwood-maven-runlistener</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.lyeung</groupId>
-            <artifactId>elwood-common</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-simple</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.maven</groupId>
-            <artifactId>maven-embedder</artifactId>
-        </dependency>
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>

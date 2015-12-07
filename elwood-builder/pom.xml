@@ -21,6 +21,10 @@
             <artifactId>elwood-common</artifactId>
         </dependency>
         <dependency>
+            <groupId>org.lyeung</groupId>
+            <artifactId>elwood-maven</artifactId>
+        </dependency>
+        <dependency>
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
         </dependency>

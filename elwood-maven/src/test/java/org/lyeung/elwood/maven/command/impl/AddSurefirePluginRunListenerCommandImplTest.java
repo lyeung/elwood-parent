@@ -9,9 +9,9 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.rules.TemporaryFolder;
 import org.junit.runner.notification.RunListener;
-import org.lyeung.PomModelManager;
 import org.lyeung.elwood.common.test.SlowTest;
 import org.lyeung.elwood.maven.ElwoodMavenConstants;
+import org.lyeung.elwood.maven.PomModelManager;
 import org.lyeung.elwood.maven.command.AddSurefirePluginRunListenerCommandParamBuilder;
 import org.lyeung.elwood.maven.impl.PomModelManagerImpl;
 
@@ -49,7 +49,7 @@ public class AddSurefirePluginRunListenerCommandImplTest {
     @Test
     public void testExecute() throws IOException {
         final String content = impl.execute(new AddSurefirePluginRunListenerCommandParamBuilder()
-                .pomFile("src/test/resources/test-sample-multi-module/pom.xml")
+                .pomFile("src/test/resources/test-simple/pom.xml")
                 .runListenerClassNames(
                         Collections.singletonList(RunListener.class.getCanonicalName()))
                 .build());
@@ -61,7 +61,7 @@ public class AddSurefirePluginRunListenerCommandImplTest {
         }
 
         final Model model = pomModelManager.readPom(updatedPom);
-        assertEquals("test-sample-multi-module", model.getName());
+        assertEquals("test-simple", model.getName());
         final Plugin plugin = model.getBuild().getPluginsAsMap().get(
                 ElwoodMavenConstants.SUREFIRE_PLUGIN);
         assertNotNull(plugin);

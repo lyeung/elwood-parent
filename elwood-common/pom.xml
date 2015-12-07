@@ -20,6 +20,14 @@
 
     <dependencies>
         <dependency>
+            <groupId>org.lyeung</groupId>
+            <artifactId>elwood-common-test</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.lyeung</groupId>
+            <artifactId>elwood-maven-runlistener</artifactId>
+        </dependency>
+        <dependency>
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
             <scope>test</scope>

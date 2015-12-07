@@ -9,10 +9,10 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.rules.TemporaryFolder;
-import org.lyeung.elwood.ReadPomException;
-import org.lyeung.elwood.WritePomException;
-import org.lyeung.elwood.common.test.SlowTest;
+import org.lyeung.elwood.common.test.QuickTest;
 import org.lyeung.elwood.maven.ElwoodMavenConstants;
+import org.lyeung.elwood.maven.ReadPomException;
+import org.lyeung.elwood.maven.WritePomException;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -29,7 +29,7 @@ import static org.junit.Assert.assertNull;
 /**
  * Created by lyeung on 13/11/2015.
  */
-@Category(SlowTest.class)
+@Category(QuickTest.class)
 public class PomModelManagerImplTest {
 
     private static final String PROJECT_NAME = "test-sample-multi-module";

@@ -20,8 +20,10 @@ package org.lyeung.elwood.builder.command.impl;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
+import org.junit.rules.TemporaryFolder;
 import org.lyeung.elwood.builder.model.BuildModel;
 import org.lyeung.elwood.builder.model.ModelStereotypeUtil;
 import org.lyeung.elwood.common.EncodingConstants;
@@ -33,13 +35,16 @@ import org.lyeung.elwood.common.command.impl.ShellCommandExecutorImpl;
 import org.lyeung.elwood.common.command.impl.ShellCommandImpl;
 import org.lyeung.elwood.common.event.impl.DefaultEventListener;
 import org.lyeung.elwood.common.test.SlowTest;
+import org.lyeung.elwood.maven.command.AddSurefirePluginRunListenerCommandParamBuilder;
+import org.lyeung.elwood.maven.command.impl.AddSurefirePluginRunListenerCommandImpl;
+import org.lyeung.elwood.maven.impl.PomModelManagerImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.util.Arrays;
+import java.util.Collections;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
@@ -53,6 +58,9 @@ public class MavenBuildIntegrationTest {
     private static final Logger LOGGER = LoggerFactory.getLogger(MavenBuildIntegrationTest.class);
 
     private static final String LOCAL_DIR = "target/test-sample-artifact";
+
+    @Rule
+    public TemporaryFolder temporaryFolder = new TemporaryFolder();
 
     @Before
     public void setUp() throws IOException {
@@ -69,18 +77,39 @@ public class MavenBuildIntegrationTest {
                 .build());
         FileUtils.copyDirectory(new File("src/test/resources/test-sample-artifact"), localDir);
 
-        final BuildModel buildModel = ModelStereotypeUtil.createBuildModel("mvn clean package",
+        final String content = new AddSurefirePluginRunListenerCommandImpl(
+                new PomModelManagerImpl())
+                .execute(new AddSurefirePluginRunListenerCommandParamBuilder()
+                    .pomFile(new File(localDir, "pom.xml").getAbsolutePath())
+                    .runListenerClassNames(Collections.singletonList(
+                            "org.lyeung.elwood.maven.implElwoodRunListener"))
+                    .build());
+
+        final File updatedPom = new File(localDir, "pom.xml.elwood");
+
+        final boolean created = updatedPom.createNewFile();
+        if (!created) {
+            fail("unable to update " + updatedPom.getAbsolutePath());
+        }
+
+        FileUtils.write(updatedPom, content);
+
+        final BuildModel buildModel = ModelStereotypeUtil.createBuildModel(
+                "mvn -f pom.xml.elwood clean package",
                 ModelStereotypeUtil.createProjectModel());
         buildModel.setWorkingDirectory("target/test-sample-artifact");
-        final Process process = new ProcessBuilderCommandImpl(new ShellCommandImpl(), new ShellCommandParamBuilder())
+        final Process process = new ProcessBuilderCommandImpl(
+                new ShellCommandImpl(), new ShellCommandParamBuilder())
                 .execute(buildModel);
 
-        final Integer exitStatus = new ProjectBuilderCommandImpl(new ShellCommandExecutorImpl(Arrays.asList(
-                createShellCommandExecutorListener()))).execute(process);
+        final Integer exitStatus = new ProjectBuilderCommandImpl(new ShellCommandExecutorImpl(
+                Collections.singletonList(createShellCommandExecutorListener()))).execute(process);
         assertEquals(0, exitStatus.intValue());
     }
 
-    private DefaultEventListener<ShellCommandExecutorEventData> createShellCommandExecutorListener() {
+    private DefaultEventListener<ShellCommandExecutorEventData>
+        createShellCommandExecutorListener() {
+
         return new DefaultEventListener<>(e -> {
             try {
                 LOGGER.debug(new String(e.getEventData().getData(), EncodingConstants.UTF_8));

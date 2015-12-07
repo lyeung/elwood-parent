@@ -1,4 +1,4 @@
-package org.lyeung;
+package org.lyeung.elwood.maven;
 
 import org.apache.maven.model.Model;
 import org.codehaus.plexus.util.xml.Xpp3Dom;

@@ -10,9 +10,9 @@ import org.apache.maven.model.building.ModelBuildingRequest;
 import org.apache.maven.model.building.ModelBuildingResult;
 import org.apache.maven.model.io.xpp3.MavenXpp3Writer;
 import org.codehaus.plexus.util.xml.Xpp3Dom;
-import org.lyeung.PomModelManager;
-import org.lyeung.elwood.ReadPomException;
-import org.lyeung.elwood.WritePomException;
+import org.lyeung.elwood.maven.PomModelManager;
+import org.lyeung.elwood.maven.ReadPomException;
+import org.lyeung.elwood.maven.WritePomException;
 
 import java.io.File;
 import java.io.IOException;
