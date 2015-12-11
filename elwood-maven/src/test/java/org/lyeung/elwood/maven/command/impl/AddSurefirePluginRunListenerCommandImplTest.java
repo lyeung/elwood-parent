@@ -26,6 +26,7 @@ import java.util.stream.Collectors;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 /**
  * Created by lyeung on 23/11/2015.
@@ -47,7 +48,7 @@ public class AddSurefirePluginRunListenerCommandImplTest {
     }
 
     @Test
-    public void testExecute() throws IOException {
+    public void testSimpleExecute() throws IOException {
         final String content = impl.execute(new AddSurefirePluginRunListenerCommandParamBuilder()
                 .pomFile("src/test/resources/test-simple/pom.xml")
                 .runListenerClassNames(
@@ -62,8 +63,56 @@ public class AddSurefirePluginRunListenerCommandImplTest {
 
         final Model model = pomModelManager.readPom(updatedPom);
         assertEquals("test-simple", model.getName());
-        final Plugin plugin = model.getBuild().getPluginsAsMap().get(
-                ElwoodMavenConstants.SUREFIRE_PLUGIN);
+
+        assertSurefirePlugin(model);
+        assertNull(getPlugin(model, ElwoodMavenConstants.FAILSAFE_PLUGIN));
+    }
+
+    @Test
+    public void testSimpleFailsafeExecute() throws IOException {
+        final String content = impl.execute(new AddSurefirePluginRunListenerCommandParamBuilder()
+                .pomFile("src/test/resources/test-simple-failsafe/pom.xml")
+                .runListenerClassNames(
+                        Collections.singletonList(RunListener.class.getCanonicalName()))
+                .build());
+
+        final File folder = temporaryFolder.newFolder("temp");
+        final File updatedPom = new File(folder, "updated-pom.xml");
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(updatedPom))) {
+            writer.write(content, 0, content.length());
+        }
+
+        final Model model = pomModelManager.readPom(updatedPom);
+        assertEquals("test-simple-failsafe", model.getName());
+
+        assertSurefirePlugin(model);
+        assertFailsafePlugin(model);
+    }
+
+    private Plugin getPlugin(Model model, String pluginName) {
+        return model.getBuild().getPluginsAsMap().get(pluginName);
+    }
+
+    private void assertSurefirePlugin(Model model) {
+        final Plugin plugin = getPlugin(model, ElwoodMavenConstants.SUREFIRE_PLUGIN);
+        assertNotNull(plugin);
+
+        final Xpp3Dom config = (Xpp3Dom) plugin.getConfiguration();
+        final Xpp3Dom props = config.getChild("properties");
+        List<Xpp3Dom> propList = Arrays.asList(props.getChildren("property"));
+        final List<Xpp3Dom> values = propList.stream()
+                .flatMap(p -> Arrays.asList(p.getChildren()).stream()
+                        .filter(c -> c.getName().equals("value")))
+                .collect(Collectors.toList());
+
+        assertEquals(1, values.size());
+        final Xpp3Dom dom = values.get(0);
+        assertEquals("value", dom.getName());
+        assertEquals(ElwoodMavenConstants.RUN_LISTENER_CLASS, dom.getValue());
+    }
+
+    private void assertFailsafePlugin(Model model) {
+        final Plugin plugin = getPlugin(model, ElwoodMavenConstants.FAILSAFE_PLUGIN);
         assertNotNull(plugin);
 
         final Xpp3Dom config = (Xpp3Dom) plugin.getConfiguration();
