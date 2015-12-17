@@ -32,7 +32,9 @@ import org.lyeung.elwood.common.command.MkDirCommandFactory;
 import org.lyeung.elwood.common.command.MkDirCommandParam;
 import org.lyeung.elwood.common.command.ShellCommand;
 import org.lyeung.elwood.common.command.ShellCommandExecutor;
-import org.lyeung.elwood.common.command.ShellCommandParamBuilder;
+import org.lyeung.elwood.common.command.WriteFileCommand;
+import org.lyeung.elwood.common.command.WriteFileCommandFactory;
+import org.lyeung.elwood.common.command.WriteFileCommandParam;
 import org.lyeung.elwood.common.test.QuickTest;
 import org.lyeung.elwood.data.redis.domain.Build;
 import org.lyeung.elwood.data.redis.domain.BuildKey;
@@ -45,6 +47,9 @@ import org.lyeung.elwood.data.redis.repository.BuildRepository;
 import org.lyeung.elwood.data.redis.repository.BuildResultRepository;
 import org.lyeung.elwood.data.redis.repository.ProjectRepository;
 import org.lyeung.elwood.executor.BuildMapLog;
+import org.lyeung.elwood.executor.command.AttachRunListenerCommand;
+import org.lyeung.elwood.executor.command.AttachRunListenerCommandFactory;
+import org.lyeung.elwood.executor.command.AttachRunListenerCommandParam;
 import org.lyeung.elwood.executor.command.CheckoutDirCreatorCommandFactory;
 import org.lyeung.elwood.executor.command.ElwoodLogFileCreatorCommandFactory;
 import org.lyeung.elwood.executor.command.FileCreatorCommand;
@@ -58,7 +63,6 @@ import org.mockito.runners.MockitoJUnitRunner;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.List;
 
 import static java.util.Optional.of;
 import static org.junit.Assert.assertEquals;
@@ -68,6 +72,7 @@ import static org.mockito.Matchers.anyList;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 /**
@@ -103,6 +108,12 @@ public class BuildJobCommandImplTest {
     private CloneCommandFactory cloneCommandFactory;
 
     @Mock
+    private AttachRunListenerCommandFactory attachRunListenerCommandFactory;
+
+    @Mock
+    private WriteFileCommandFactory writeFileCommandFactory;
+
+    @Mock
     private ProcessBuilderCommandFactory processBuilderCommandFactory;
 
     @Mock
@@ -121,6 +132,12 @@ public class BuildJobCommandImplTest {
     private CloneCommand cloneCommand;
 
     @Mock
+    private AttachRunListenerCommand attachRunListenerCommand;
+
+    @Mock
+    private WriteFileCommand writeFileCommand;
+
+    @Mock
     private ProcessBuilderCommand processBuilderCommand;
 
     @Mock
@@ -134,11 +151,6 @@ public class BuildJobCommandImplTest {
 
     @Before
     public void setUp() throws IOException {
-//        final File dir = new File("/tmp/workspace");
-//        if (dir.exists() && dir.isDirectory()) {
-//            FileUtils.forceDelete(dir);
-//        }
-
         MockitoAnnotations.initMocks(this);
         impl = new BuildJobCommandImpl(new BuildJobCommandImpl.Param()
                 .buildMapLog(buildMapLog)
@@ -148,6 +160,8 @@ public class BuildJobCommandImplTest {
                 .checkOutDirCreatorCommandFactory(checkoutDirCreatorCommandFactory)
                 .elwoodLogFileCreatorCommandFactory(elwoodLogFileCreatorCommandFactory)
                 .cloneCommandFactory(cloneCommandFactory)
+                .attachRunListenerCommandFactory(attachRunListenerCommandFactory)
+                .writeFileCommandFactory(writeFileCommandFactory)
                 .processBuilderCommandFactory(processBuilderCommandFactory)
                 .projectBuilderCommandFactory(projectBuilderCommandFactory)
                 .buildResultRepository(buildResultRepository));
@@ -155,17 +169,19 @@ public class BuildJobCommandImplTest {
 
     @Test
     public void testExecute() {
-        when(projectRepository.getOne(new ProjectKey(KEY))).thenReturn(of(createProject()));
-        when(buildRepository.getOne(new BuildKey(KEY))).thenReturn(of(createBuild()));
+        final ProjectKey projectKey = new ProjectKey(KEY);
+        when(projectRepository.getOne(projectKey)).thenReturn(of(createProject()));
+        final BuildKey buildKey = new BuildKey(KEY);
+        when(buildRepository.getOne(buildKey)).thenReturn(of(createBuild()));
 
         // mkdir command
-        when(mkDirCommandFactory.createMkDirCommand()).thenReturn(mkDirCommand);
+        when(mkDirCommandFactory.makeCommand()).thenReturn(mkDirCommand);
         final File targetDir = mock(File.class);
         when(mkDirCommand.execute(any(MkDirCommandParam.class))).thenReturn(targetDir);
 
         // checkout dir command
         when(checkoutDirCreatorCommandFactory.makeCommand()).thenReturn(checkoutDirCreatorCommand);
-        final File checkoutDir = mock(File.class);
+        final File checkoutDir = new File("checkOutDir");
         when(checkoutDirCreatorCommand.execute(targetDir)).thenReturn(checkoutDir);
 
         // elwood log command
@@ -178,9 +194,17 @@ public class BuildJobCommandImplTest {
         when(cloneCommandFactory.makeCommand(anyList())).thenReturn(cloneCommand);
         when(cloneCommand.execute(any(CloneCommandParam.class))).thenReturn(checkoutDir);
 
+        when(attachRunListenerCommandFactory.makeCommand()).thenReturn(attachRunListenerCommand);
+        when(attachRunListenerCommand.execute(any(AttachRunListenerCommandParam.class)))
+                .thenReturn("content");
+
+        when(writeFileCommandFactory.makeCommand()).thenReturn(writeFileCommand);
+        when(writeFileCommand.execute(any(WriteFileCommandParam.class)))
+                .thenReturn(new File("updated-pom.xml"));
+
         // process command
-        when(processBuilderCommandFactory.makeCommand(any(ShellCommand.class),
-                any(ShellCommandParamBuilder.class))).thenReturn(processBuilderCommand);
+        when(processBuilderCommandFactory.makeCommand(any(ShellCommand.class)))
+                .thenReturn(processBuilderCommand);
         when(processBuilderCommand.execute(any(BuildModel.class))).thenReturn(process);
 
         // project command
@@ -190,7 +214,8 @@ public class BuildJobCommandImplTest {
 
         // build result repository
         final BuildResult buildResult = new BuildResult();
-        when(buildResultRepository.getOne(new BuildResultKey(new BuildKey(KEY), 10L)))
+        final BuildResultKey buildResultKey = new BuildResultKey(buildKey, 10L);
+        when(buildResultRepository.getOne(buildResultKey))
                 .thenReturn(of(buildResult));
 
         when(buildMapLog.removeFuture(new KeyCountTuple(KEY, 10L))).thenReturn(true);
@@ -204,6 +229,47 @@ public class BuildJobCommandImplTest {
         verify(buildMapLog).removeFuture(eq(new KeyCountTuple(KEY, 10L)));
         verify(buildMapLog).removeContent(eq(new KeyCountTuple(KEY, 10L)));
 
+        verify(projectRepository).getOne(projectKey);
+        verify(buildRepository).getOne(buildKey);
+        verify(mkDirCommandFactory).makeCommand();
+        verify(mkDirCommand).execute(any(MkDirCommandParam.class));
+        verify(checkoutDirCreatorCommandFactory).makeCommand();
+        verify(checkoutDirCreatorCommand).execute(targetDir);
+        verify(elwoodLogFileCreatorCommandFactory).makeCommand();
+        verify(elwoodLogFileCreatorCommand).execute(eq(targetDir));
+        verify(cloneCommandFactory).makeCommand(anyList());
+        verify(cloneCommand).execute(any(CloneCommandParam.class));
+        verify(attachRunListenerCommandFactory).makeCommand();
+        verify(attachRunListenerCommand).execute(any(AttachRunListenerCommandParam.class));
+        verify(writeFileCommandFactory).makeCommand();
+        verify(writeFileCommand).execute(any(WriteFileCommandParam.class));
+        verify(processBuilderCommandFactory).makeCommand(any(ShellCommand.class));
+        verify(processBuilderCommand).execute(any(BuildModel.class));
+        verify(projectBuilderCommandFactory).makeCommand(any(ShellCommandExecutor.class));
+        verify(projectBuilderCommand).execute(eq(process));
+        verify(buildResultRepository).getOne(eq(buildResultKey));
+        verify(buildResultRepository).save(eq(buildResult));
+
+        verifyNoMoreInteractions(projectRepository);
+        verifyNoMoreInteractions(buildRepository);
+        verifyNoMoreInteractions(mkDirCommandFactory);
+        verifyNoMoreInteractions(mkDirCommand);
+        verifyNoMoreInteractions(checkoutDirCreatorCommandFactory);
+        verifyNoMoreInteractions(checkoutDirCreatorCommand);
+        verifyNoMoreInteractions(elwoodLogFileCreatorCommandFactory);
+        verifyNoMoreInteractions(elwoodLogFileCreatorCommand);
+        verifyNoMoreInteractions(cloneCommandFactory);
+        verifyNoMoreInteractions(cloneCommand);
+        verifyNoMoreInteractions(attachRunListenerCommandFactory);
+        verifyNoMoreInteractions(attachRunListenerCommand);
+        verifyNoMoreInteractions(writeFileCommandFactory);
+        verifyNoMoreInteractions(writeFileCommand);
+        verifyNoMoreInteractions(processBuilderCommandFactory);
+        verifyNoMoreInteractions(processBuilderCommand);
+        verifyNoMoreInteractions(projectBuilderCommandFactory);
+        verifyNoMoreInteractions(projectBuilderCommand);
+        verifyNoMoreInteractions(buildResultRepository);
+        verifyNoMoreInteractions(buildMapLog);
     }
 
     private Build createBuild() {

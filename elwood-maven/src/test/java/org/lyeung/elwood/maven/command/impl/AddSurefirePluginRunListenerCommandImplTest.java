@@ -1,5 +1,6 @@
 package org.lyeung.elwood.maven.command.impl;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.maven.model.Model;
 import org.apache.maven.model.Plugin;
 import org.codehaus.plexus.util.xml.Xpp3Dom;
@@ -8,7 +9,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.rules.TemporaryFolder;
-import org.junit.runner.notification.RunListener;
 import org.lyeung.elwood.common.test.SlowTest;
 import org.lyeung.elwood.maven.ElwoodMavenConstants;
 import org.lyeung.elwood.maven.PomModelManager;
@@ -20,7 +20,6 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -51,8 +50,6 @@ public class AddSurefirePluginRunListenerCommandImplTest {
     public void testSimpleExecute() throws IOException {
         final String content = impl.execute(new AddSurefirePluginRunListenerCommandParamBuilder()
                 .pomFile("src/test/resources/test-simple/pom.xml")
-                .runListenerClassNames(
-                        Collections.singletonList(RunListener.class.getCanonicalName()))
                 .build());
 
         final File folder = temporaryFolder.newFolder("temp");
@@ -69,11 +66,32 @@ public class AddSurefirePluginRunListenerCommandImplTest {
     }
 
     @Test
+    public void testSimpleExecuteWithSurefire() throws IOException {
+        final String content = impl.execute(new AddSurefirePluginRunListenerCommandParamBuilder()
+                .pomFile("src/test/resources/test-simple/pom-with-surefire.xml")
+                .build());
+
+        final File folder = temporaryFolder.newFolder("temp");
+        final File updatedPom = new File(folder, "updated-pom-with-surefire.xml");
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(updatedPom))) {
+            writer.write(content, 0, content.length());
+        }
+
+        final Model model = pomModelManager.readPom(updatedPom);
+        assertEquals("test-simple", model.getName());
+
+        assertSurefirePlugin(model);
+        assertNull(getPlugin(model, ElwoodMavenConstants.FAILSAFE_PLUGIN));
+
+        assertEquals(FileUtils.readFileToString(new File(folder, "updated-pom-with-surefire.xml")),
+                FileUtils.readFileToString(new File(
+                        "src/test/resources/test-simple/expected-updated-pom-with-surefire.xml")));
+    }
+
+    @Test
     public void testSimpleFailsafeExecute() throws IOException {
         final String content = impl.execute(new AddSurefirePluginRunListenerCommandParamBuilder()
                 .pomFile("src/test/resources/test-simple-failsafe/pom.xml")
-                .runListenerClassNames(
-                        Collections.singletonList(RunListener.class.getCanonicalName()))
                 .build());
 
         final File folder = temporaryFolder.newFolder("temp");

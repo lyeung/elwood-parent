@@ -23,5 +23,5 @@ package org.lyeung.elwood.common.command;
  */
 public interface MkDirCommandFactory {
 
-    MkDirCommand createMkDirCommand();
+    MkDirCommand makeCommand();
 }

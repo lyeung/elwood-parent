@@ -27,7 +27,7 @@ import org.lyeung.elwood.common.command.MkDirCommandFactory;
 public class MkDirCommandFactoryImpl implements MkDirCommandFactory {
 
     @Override
-    public MkDirCommand createMkDirCommand() {
+    public MkDirCommand makeCommand() {
         return new MkDirCommandImpl();
     }
 }

@@ -21,17 +21,21 @@ package org.lyeung.elwood.web.config;
 import org.lyeung.elwood.builder.command.impl.ProcessBuilderCommandFactoryImpl;
 import org.lyeung.elwood.builder.command.impl.ProjectBuilderCommandFactoryImpl;
 import org.lyeung.elwood.common.command.impl.MkDirCommandFactoryImpl;
+import org.lyeung.elwood.common.command.impl.WriteFileCommandFactoryImpl;
 import org.lyeung.elwood.data.redis.repository.BuildRepository;
 import org.lyeung.elwood.data.redis.repository.BuildResultRepository;
 import org.lyeung.elwood.data.redis.repository.ProjectRepository;
 import org.lyeung.elwood.executor.BuildExecutor;
 import org.lyeung.elwood.executor.BuildMapLog;
 import org.lyeung.elwood.executor.command.BuildJobCommandFactory;
+import org.lyeung.elwood.executor.command.impl.AddSurefirePluginRunListenerCommandFactoryImpl;
+import org.lyeung.elwood.executor.command.impl.AttachRunListenerCommandFactoryImpl;
 import org.lyeung.elwood.executor.command.impl.BuildJobCommandFactoryImpl;
 import org.lyeung.elwood.executor.command.impl.BuildJobCommandImpl;
 import org.lyeung.elwood.executor.command.impl.CheckoutDirCreatorCommandFactoryImpl;
 import org.lyeung.elwood.executor.command.impl.ElwoodLogFileCreatorCommandFactoryImpl;
 import org.lyeung.elwood.executor.impl.BuildExecutorImpl;
+import org.lyeung.elwood.maven.impl.PomModelManagerImpl;
 import org.lyeung.elwood.vcs.command.impl.GitCloneCommandFactoryImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -80,6 +84,10 @@ public class ElwoodExecutorConfiguration {
                 .checkOutDirCreatorCommandFactory(new CheckoutDirCreatorCommandFactoryImpl())
                 .elwoodLogFileCreatorCommandFactory(new ElwoodLogFileCreatorCommandFactoryImpl())
                 .cloneCommandFactory(new GitCloneCommandFactoryImpl())
+                .attachRunListenerCommandFactory(new AttachRunListenerCommandFactoryImpl(
+                        new AddSurefirePluginRunListenerCommandFactoryImpl(
+                                new PomModelManagerImpl())))
+                .writeFileCommandFactory(new WriteFileCommandFactoryImpl())
                 .processBuilderCommandFactory(new ProcessBuilderCommandFactoryImpl())
                 .projectBuilderCommandFactory(new ProjectBuilderCommandFactoryImpl()));
     }

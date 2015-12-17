@@ -20,7 +20,6 @@ package org.lyeung.elwood.builder.command.impl;
 
 import org.lyeung.elwood.builder.command.ProcessBuilderCommandFactory;
 import org.lyeung.elwood.common.command.ShellCommand;
-import org.lyeung.elwood.common.command.ShellCommandParamBuilder;
 
 /**
  * Created by lyeung on 1/09/2015.
@@ -28,8 +27,7 @@ import org.lyeung.elwood.common.command.ShellCommandParamBuilder;
 public class ProcessBuilderCommandFactoryImpl implements ProcessBuilderCommandFactory {
 
     @Override
-    public ProcessBuilderCommandImpl makeCommand(
-            ShellCommand shellCommand, ShellCommandParamBuilder shellCommandParamBuilder) {
-        return new ProcessBuilderCommandImpl(shellCommand, shellCommandParamBuilder);
+    public ProcessBuilderCommandImpl makeCommand(ShellCommand shellCommand) {
+        return new ProcessBuilderCommandImpl(shellCommand);
     }
 }

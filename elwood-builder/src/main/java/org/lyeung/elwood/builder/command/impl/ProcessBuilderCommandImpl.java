@@ -33,19 +33,15 @@ public class ProcessBuilderCommandImpl implements ProcessBuilderCommand {
 
     private final ShellCommand shellCommand;
 
-    private final ShellCommandParamBuilder paramBuilder;
-
-    public ProcessBuilderCommandImpl(
-            ShellCommand shellCommand, ShellCommandParamBuilder paramBuilder) {
-
+    public ProcessBuilderCommandImpl(ShellCommand shellCommand) {
         this.shellCommand = shellCommand;
-        this.paramBuilder = paramBuilder;
     }
 
     @Override
     public Process execute(BuildModel buildModel) {
         try {
-            final ShellCommandParam param = paramBuilder.command(buildModel.getBuildCommand())
+            final ShellCommandParam param = new ShellCommandParamBuilder()
+                    .command(buildModel.getBuildCommand())
                     .directory(buildModel.getWorkingDirectory())
                     .environmentVars(buildModel.getEnvironmentVars())
                     .redirectErrorStream(true)

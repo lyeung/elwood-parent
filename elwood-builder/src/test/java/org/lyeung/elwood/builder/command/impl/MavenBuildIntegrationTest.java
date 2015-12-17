@@ -28,7 +28,6 @@ import org.lyeung.elwood.builder.model.BuildModel;
 import org.lyeung.elwood.builder.model.ModelStereotypeUtil;
 import org.lyeung.elwood.common.EncodingConstants;
 import org.lyeung.elwood.common.command.MkDirCommandParamBuilder;
-import org.lyeung.elwood.common.command.ShellCommandParamBuilder;
 import org.lyeung.elwood.common.command.event.impl.ShellCommandExecutorEventData;
 import org.lyeung.elwood.common.command.impl.MkDirCommandImpl;
 import org.lyeung.elwood.common.command.impl.ShellCommandExecutorImpl;
@@ -81,8 +80,6 @@ public class MavenBuildIntegrationTest {
                 new PomModelManagerImpl())
                 .execute(new AddSurefirePluginRunListenerCommandParamBuilder()
                     .pomFile(new File(localDir, "pom.xml").getAbsolutePath())
-                    .runListenerClassNames(Collections.singletonList(
-                            "org.lyeung.elwood.maven.implElwoodRunListener"))
                     .build());
 
         final File updatedPom = new File(localDir, "pom.xml.elwood");
@@ -98,8 +95,7 @@ public class MavenBuildIntegrationTest {
                 "mvn -f pom.xml.elwood clean package",
                 ModelStereotypeUtil.createProjectModel());
         buildModel.setWorkingDirectory("target/test-sample-artifact");
-        final Process process = new ProcessBuilderCommandImpl(
-                new ShellCommandImpl(), new ShellCommandParamBuilder())
+        final Process process = new ProcessBuilderCommandImpl(new ShellCommandImpl())
                 .execute(buildModel);
 
         final Integer exitStatus = new ProjectBuilderCommandImpl(new ShellCommandExecutorImpl(

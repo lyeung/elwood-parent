@@ -19,13 +19,11 @@
 package org.lyeung.elwood.builder.command;
 
 import org.lyeung.elwood.common.command.ShellCommand;
-import org.lyeung.elwood.common.command.ShellCommandParamBuilder;
 
 /**
  * Created by lyeung on 1/09/2015.
  */
 public interface ProcessBuilderCommandFactory {
 
-    ProcessBuilderCommand makeCommand(
-            ShellCommand shellCommand, ShellCommandParamBuilder shellCommandParamBuilder);
+    ProcessBuilderCommand makeCommand(ShellCommand shellCommand );
 }

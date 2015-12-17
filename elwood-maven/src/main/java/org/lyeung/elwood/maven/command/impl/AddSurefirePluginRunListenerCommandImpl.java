@@ -42,9 +42,9 @@ public class AddSurefirePluginRunListenerCommandImpl implements
         if (surefirePlugin == null) {
             surefirePlugin = createPlugin(model, ElwoodMavenConstants.MAVEN_PLUGINS_GROUP_ID,
                     ElwoodMavenConstants.SUREFIRE_PLUGIN_ARTIFACT_ID);
+            model.getBuild().addPlugin(surefirePlugin);
         }
         addPluginProperties(surefirePlugin);
-        model.getBuild().addPlugin(surefirePlugin);
 
         final Plugin failsafePlugin = getPlugin(model,
                 ElwoodMavenConstants.FAILSAFE_PLUGIN);

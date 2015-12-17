@@ -25,7 +25,8 @@ import org.lyeung.elwood.builder.model.ProjectModel;
 import org.lyeung.elwood.common.EncodingConstants;
 import org.lyeung.elwood.common.command.MkDirCommandFactory;
 import org.lyeung.elwood.common.command.MkDirCommandParamBuilder;
-import org.lyeung.elwood.common.command.ShellCommandParamBuilder;
+import org.lyeung.elwood.common.command.WriteFileCommandFactory;
+import org.lyeung.elwood.common.command.WriteFileCommandParamBuilder;
 import org.lyeung.elwood.common.command.event.impl.ShellCommandExecutorEventData;
 import org.lyeung.elwood.common.command.impl.ShellCommandExecutorImpl;
 import org.lyeung.elwood.common.command.impl.ShellCommandImpl;
@@ -42,6 +43,9 @@ import org.lyeung.elwood.data.redis.repository.BuildRepository;
 import org.lyeung.elwood.data.redis.repository.BuildResultRepository;
 import org.lyeung.elwood.data.redis.repository.ProjectRepository;
 import org.lyeung.elwood.executor.BuildMapLog;
+import org.lyeung.elwood.executor.command.AttachRunListenerCommandFactory;
+import org.lyeung.elwood.executor.command.AttachRunListenerCommandParam;
+import org.lyeung.elwood.executor.command.AttachRunListenerCommandParamBuilder;
 import org.lyeung.elwood.executor.command.BuildJobCommand;
 import org.lyeung.elwood.executor.command.BuildJobException;
 import org.lyeung.elwood.executor.command.CheckoutDirCreatorCommandFactory;
@@ -126,7 +130,7 @@ public class BuildJobCommandImpl implements BuildJobCommand {
     }
 
     private File mkDir(Build build, KeyCountTuple keyCountTuple) {
-        return param.mkDirCommandFactory.createMkDirCommand()
+        return param.mkDirCommandFactory.makeCommand()
                 .execute(new MkDirCommandParamBuilder()
                         .directory(getTargetDirectory(build, keyCountTuple))
                         .build());
@@ -153,9 +157,28 @@ public class BuildJobCommandImpl implements BuildJobCommand {
                 .build());
     }
 
+    private void attachRunListener(Build build, File checkedOutDir) {
+        final AttachRunListenerCommandParam attachRunListenerCommandParam =
+                new AttachRunListenerCommandParamBuilder()
+                        .build(build)
+                        .outputDir(checkedOutDir)
+                        .build();
+
+        final String updatedPomContent = param.attachRunListenerCommandFactory.makeCommand()
+                .execute(attachRunListenerCommandParam);
+        final File updatedPom = new File(checkedOutDir, "pom.xml");
+
+        final File updatedFile = param.writeFileCommandFactory.makeCommand()
+                .execute(new WriteFileCommandParamBuilder()
+                        .content(updatedPomContent)
+                        .file(updatedPom)
+                        .build());
+        assert updatedFile != null;
+    }
+
     private Process createProcess(Project project, Build build, File checkedOutDir) {
-        return param.processBuilderCommandFactory.makeCommand(new ShellCommandImpl(),
-                new ShellCommandParamBuilder()).execute(
+        attachRunListener(build, checkedOutDir);
+        return param.processBuilderCommandFactory.makeCommand(new ShellCommandImpl()).execute(
                 toBuildModel(project, build, checkedOutDir));
     }
 
@@ -326,6 +349,10 @@ public class BuildJobCommandImpl implements BuildJobCommand {
 
         private CloneCommandFactory cloneCommandFactory;
 
+        private AttachRunListenerCommandFactory attachRunListenerCommandFactory;
+
+        private WriteFileCommandFactory writeFileCommandFactory;
+
         private ProcessBuilderCommandFactory processBuilderCommandFactory;
 
         private ProjectBuilderCommandFactory projectBuilderCommandFactory;
@@ -369,6 +396,17 @@ public class BuildJobCommandImpl implements BuildJobCommand {
 
         public Param cloneCommandFactory(CloneCommandFactory cloneCommandFactory) {
             this.cloneCommandFactory = cloneCommandFactory;
+            return this;
+        }
+
+        public Param attachRunListenerCommandFactory(
+                AttachRunListenerCommandFactory attachRunListenerCommandFactory) {
+            this.attachRunListenerCommandFactory = attachRunListenerCommandFactory;
+            return this;
+        }
+
+        public Param writeFileCommandFactory(WriteFileCommandFactory writeFileCommandFactory) {
+            this.writeFileCommandFactory = writeFileCommandFactory;
             return this;
         }
 

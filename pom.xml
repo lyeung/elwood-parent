@@ -212,7 +212,7 @@
                 <groupId>junit</groupId>
                 <artifactId>junit</artifactId>
                 <version>${junit.version}</version>
-                <scope>test</scope>
+                <!--<scope>test</scope>-->
             </dependency>
             <dependency>
                 <groupId>org.springframework</groupId>
@@ -253,12 +253,12 @@
                 </dependencies>
                 <configuration>
                     <groups>org.lyeung.elwood.common.test.QuickTest</groups>
-                    <properties>
-                        <property>
-                            <name>listener</name>
-                            <value>org.lyeung.elwood.maven.runlistener.ElwoodRunListener</value>
-                        </property>
-                    </properties>
+                    <!--<properties>-->
+                        <!--<property>-->
+                            <!--<name>listener</name>-->
+                            <!--<value>org.lyeung.elwood.maven.runlistener.ElwoodRunListener</value>-->
+                        <!--</property>-->
+                    <!--</properties>-->
                 </configuration>
             </plugin>
             <plugin>
@@ -274,12 +274,12 @@
                 </dependencies>
                 <configuration>
                     <groups>org.lyeung.elwood.common.test.SlowTest</groups>
-                    <properties>
-                        <property>
-                            <name>listener</name>
-                            <value>org.lyeung.elwood.maven.runlistener.ElwoodRunListener</value>
-                        </property>
-                    </properties>
+                    <!--<properties>-->
+                        <!--<property>-->
+                            <!--<name>listener</name>-->
+                            <!--<value>org.lyeung.elwood.maven.runlistener.ElwoodRunListener</value>-->
+                        <!--</property>-->
+                    <!--</properties>-->
                 </configuration>
                 <executions>
                     <execution>

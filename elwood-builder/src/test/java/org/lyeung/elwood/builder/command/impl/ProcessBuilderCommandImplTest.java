@@ -29,7 +29,6 @@ import org.lyeung.elwood.builder.model.ModelStereotypeUtil;
 import org.lyeung.elwood.common.command.ShellCommand;
 import org.lyeung.elwood.common.command.ShellCommandException;
 import org.lyeung.elwood.common.command.ShellCommandParam;
-import org.lyeung.elwood.common.command.ShellCommandParamBuilder;
 import org.lyeung.elwood.common.test.QuickTest;
 import org.mockito.ArgumentMatcher;
 import org.mockito.Mock;
@@ -61,9 +60,9 @@ public class ProcessBuilderCommandImplTest {
 
     @Before
     public void setUp() {
-        ShellCommandParamBuilder paramBuilder = new ShellCommandParamBuilder();
-        command = new ProcessBuilderCommandImpl(shellCommand, paramBuilder);
-        buildModel = ModelStereotypeUtil.createBuildModel("echo hello", ModelStereotypeUtil.createProjectModel());
+        command = new ProcessBuilderCommandImpl(shellCommand);
+        buildModel = ModelStereotypeUtil.createBuildModel("echo hello",
+                ModelStereotypeUtil.createProjectModel());
     }
 
     @Test

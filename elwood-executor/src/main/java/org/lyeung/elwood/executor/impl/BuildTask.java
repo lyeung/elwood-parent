@@ -20,6 +20,8 @@ package org.lyeung.elwood.executor.impl;
 
 import org.lyeung.elwood.executor.command.BuildJobCommandFactory;
 import org.lyeung.elwood.executor.command.KeyCountTuple;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.concurrent.Callable;
 
@@ -27,6 +29,8 @@ import java.util.concurrent.Callable;
  * Created by lyeung on 14/08/2015.
  */
 public class BuildTask implements Callable<Integer> {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(BuildTask.class);
 
     private final BuildJobCommandFactory buildJobCommandFactory;
 
@@ -43,8 +47,13 @@ public class BuildTask implements Callable<Integer> {
 
     @Override
     public Integer call() throws Exception {
-        return buildJobCommandFactory
-                .makeCommand()
-                .execute(keyCountTuple);
+        try {
+            return buildJobCommandFactory
+                    .makeCommand()
+                    .execute(keyCountTuple);
+        } catch (Throwable e) {
+            LOGGER.error("unable to execute build key-count=[" + keyCountTuple + "]", e);
+            return -100;
+        }
     }
 }
