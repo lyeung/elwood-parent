@@ -1,5 +1,6 @@
 package org.lyeung.elwood.maven.command.impl;
 
+import org.apache.maven.model.Build;
 import org.apache.maven.model.Model;
 import org.apache.maven.model.Plugin;
 import org.codehaus.plexus.util.xml.Xpp3Dom;
@@ -38,15 +39,17 @@ public class AddSurefirePluginRunListenerCommandImpl implements
     public String execute(AddSurefirePluginRunListenerCommandParam param) {
         final Model model = pomModelManager.readPom(new File(param.getPomFile()));
 
-        Plugin surefirePlugin = getPlugin(model, ElwoodMavenConstants.SUREFIRE_PLUGIN);
+        final Build build = getBuild(model);
+
+        Plugin surefirePlugin = getPlugin(build, ElwoodMavenConstants.SUREFIRE_PLUGIN);
         if (surefirePlugin == null) {
-            surefirePlugin = createPlugin(model, ElwoodMavenConstants.MAVEN_PLUGINS_GROUP_ID,
+            surefirePlugin = createPlugin(build, ElwoodMavenConstants.MAVEN_PLUGINS_GROUP_ID,
                     ElwoodMavenConstants.SUREFIRE_PLUGIN_ARTIFACT_ID);
             model.getBuild().addPlugin(surefirePlugin);
         }
         addPluginProperties(surefirePlugin);
 
-        final Plugin failsafePlugin = getPlugin(model,
+        final Plugin failsafePlugin = getPlugin(model.getBuild(),
                 ElwoodMavenConstants.FAILSAFE_PLUGIN);
         if (failsafePlugin != null) {
             addPluginProperties(failsafePlugin);
@@ -55,8 +58,17 @@ public class AddSurefirePluginRunListenerCommandImpl implements
         return pomModelManager.writeModel(model);
     }
 
-    private Plugin createPlugin(Model model, String groupId, String artifactId) {
-        Plugin plugin = getPlugin(model, groupId + ":" + artifactId);
+    private Build getBuild(Model model) {
+        if (model.getBuild() == null) {
+            Build build = new Build();
+            model.setBuild(build);
+        }
+
+        return model.getBuild();
+    }
+
+    private Plugin createPlugin(Build build, String groupId, String artifactId) {
+        Plugin plugin = getPlugin(build, groupId + ":" + artifactId);
         if (plugin == null) {
             plugin = new Plugin();
             plugin.setArtifactId(groupId);
@@ -115,7 +127,7 @@ public class AddSurefirePluginRunListenerCommandImpl implements
         return null;
     }
 
-    private Plugin getPlugin(Model model, String pluginName) {
-        return model.getBuild().getPluginsAsMap().get(pluginName);
+    private Plugin getPlugin(Build build, String pluginName) {
+        return build.getPluginsAsMap().get(pluginName);
     }
 }

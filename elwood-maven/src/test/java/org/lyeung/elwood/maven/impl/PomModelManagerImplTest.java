@@ -9,7 +9,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.rules.TemporaryFolder;
-import org.lyeung.elwood.common.test.QuickTest;
+import org.lyeung.elwood.common.test.SlowTest;
 import org.lyeung.elwood.maven.ElwoodMavenConstants;
 import org.lyeung.elwood.maven.ReadPomException;
 import org.lyeung.elwood.maven.WritePomException;
@@ -29,7 +29,7 @@ import static org.junit.Assert.assertNull;
 /**
  * Created by lyeung on 13/11/2015.
  */
-@Category(QuickTest.class)
+@Category(SlowTest.class)
 public class PomModelManagerImplTest {
 
     private static final String PROJECT_NAME = "test-sample-multi-module";
@@ -125,6 +125,4 @@ public class PomModelManagerImplTest {
         assertEquals("value", dom.getName());
         assertEquals(ElwoodMavenConstants.RUN_LISTENER_CLASS, dom.getValue());
     }
-
-
 }

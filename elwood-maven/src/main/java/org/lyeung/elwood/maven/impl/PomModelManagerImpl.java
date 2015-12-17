@@ -1,20 +1,16 @@
 package org.lyeung.elwood.maven.impl;
 
-import org.apache.maven.cli.MavenCli;
 import org.apache.maven.model.Model;
-import org.apache.maven.model.building.DefaultModelBuilderFactory;
-import org.apache.maven.model.building.DefaultModelBuildingRequest;
-import org.apache.maven.model.building.ModelBuilder;
-import org.apache.maven.model.building.ModelBuildingException;
-import org.apache.maven.model.building.ModelBuildingRequest;
-import org.apache.maven.model.building.ModelBuildingResult;
+import org.apache.maven.model.io.xpp3.MavenXpp3Reader;
 import org.apache.maven.model.io.xpp3.MavenXpp3Writer;
 import org.codehaus.plexus.util.xml.Xpp3Dom;
+import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
 import org.lyeung.elwood.maven.PomModelManager;
 import org.lyeung.elwood.maven.ReadPomException;
 import org.lyeung.elwood.maven.WritePomException;
 
 import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.StringWriter;
 
@@ -25,28 +21,16 @@ public class PomModelManagerImpl implements PomModelManager {
 
     @Override
     public Model readPom(File pomFile) {
-        System.setProperty(MavenCli.MULTIMODULE_PROJECT_DIRECTORY, pomFile.getAbsolutePath());
 
         try {
             return buildModel(pomFile);
-        } catch (ModelBuildingException e) {
+        } catch (IOException | XmlPullParserException e) {
             throw new ReadPomException("unable to read pom", e, pomFile);
         }
     }
 
-    private Model buildModel(File pomFile) throws ModelBuildingException {
-        final ModelBuilder builder = new DefaultModelBuilderFactory().newInstance();
-        final ModelBuildingResult result = builder.build(createBuildingRequest(pomFile));
-
-        return result.getEffectiveModel();
-    }
-
-    private ModelBuildingRequest createBuildingRequest(File pomFile) {
-        final DefaultModelBuildingRequest request = new DefaultModelBuildingRequest();
-        request.setProcessPlugins(true);
-        request.setPomFile(pomFile);
-
-        return request;
+    private Model buildModel(File pomFile) throws IOException, XmlPullParserException {
+        return new MavenXpp3Reader().read(new FileReader(pomFile));
     }
 
     @Override

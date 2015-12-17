@@ -83,9 +83,10 @@ public class AddSurefirePluginRunListenerCommandImplTest {
         assertSurefirePlugin(model);
         assertNull(getPlugin(model, ElwoodMavenConstants.FAILSAFE_PLUGIN));
 
-        assertEquals(FileUtils.readFileToString(new File(folder, "updated-pom-with-surefire.xml")),
-                FileUtils.readFileToString(new File(
-                        "src/test/resources/test-simple/expected-updated-pom-with-surefire.xml")));
+        assertEquals(FileUtils.readFileToString(new File(
+                        "src/test/resources/test-simple/expected-updated-pom-with-surefire.xml")),
+                FileUtils.readFileToString(new File(folder,
+                        "updated-pom-with-surefire.xml")));
     }
 
     @Test
