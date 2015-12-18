@@ -1,6 +1,7 @@
 package org.lyeung.elwood.maven.command.impl;
 
 import org.apache.maven.model.Build;
+import org.apache.maven.model.Dependency;
 import org.apache.maven.model.Model;
 import org.apache.maven.model.Plugin;
 import org.codehaus.plexus.util.xml.Xpp3Dom;
@@ -39,23 +40,61 @@ public class AddSurefirePluginRunListenerCommandImpl implements
     public String execute(AddSurefirePluginRunListenerCommandParam param) {
         final Model model = pomModelManager.readPom(new File(param.getPomFile()));
 
-        final Build build = getBuild(model);
+        addElwoodRunListenerArtifactDependencyManagement(model);
+        addSurefirePlugin(model);
+        addFailsafePluginProperties(model);
 
-        Plugin surefirePlugin = getPlugin(build, ElwoodMavenConstants.SUREFIRE_PLUGIN);
-        if (surefirePlugin == null) {
-            surefirePlugin = createPlugin(build, ElwoodMavenConstants.MAVEN_PLUGINS_GROUP_ID,
-                    ElwoodMavenConstants.SUREFIRE_PLUGIN_ARTIFACT_ID);
-            model.getBuild().addPlugin(surefirePlugin);
-        }
-        addPluginProperties(surefirePlugin);
+        return pomModelManager.writeModel(model);
+    }
 
+    private void addFailsafePluginProperties(Model model) {
         final Plugin failsafePlugin = getPlugin(model.getBuild(),
                 ElwoodMavenConstants.FAILSAFE_PLUGIN);
         if (failsafePlugin != null) {
             addPluginProperties(failsafePlugin);
         }
+    }
 
-        return pomModelManager.writeModel(model);
+    private void addSurefirePlugin(Model model) {
+        final Build build = getBuild(model);
+        Plugin surefirePlugin = getPlugin(build, ElwoodMavenConstants.SUREFIRE_PLUGIN);
+        if (surefirePlugin == null) {
+            surefirePlugin = createPlugin(build, ElwoodMavenConstants.MAVEN_PLUGINS_GROUP_ID,
+                    ElwoodMavenConstants.SUREFIRE_PLUGIN_ARTIFACT_ID);
+            build.addPlugin(surefirePlugin);
+        }
+
+        addPluginProperties(surefirePlugin);
+    }
+
+    private void addElwoodRunListenerArtifactDependencyManagement(Model model) {
+        boolean found = false;
+        final Dependency elwoodRunListenerArtifact = createElwoodRunListenerArtifact();
+        for (Dependency dependency : model.getDependencies()) {
+            if (isElwoodRunListenerArtifact(dependency, elwoodRunListenerArtifact)) {
+                found = true;
+                break;
+            }
+        }
+
+        if (!found) {
+            model.addDependency(elwoodRunListenerArtifact);
+        }
+    }
+
+    private Dependency createElwoodRunListenerArtifact() {
+        Dependency dependency = new Dependency();
+        dependency.setGroupId(ElwoodMavenConstants.ELWOOD_RUN_LISTENER_GROUP_ID);
+        dependency.setArtifactId(ElwoodMavenConstants.ELWOOD_RUN_LISTENER_ARTIFACT_ID);
+        dependency.setVersion(ElwoodMavenConstants.ELWOOD_RUN_LISTENER_VERSION);
+
+        return dependency;
+    }
+
+    private boolean isElwoodRunListenerArtifact(Dependency dependency, Dependency elwoodArtifact) {
+        return dependency.getGroupId().equals(elwoodArtifact.getGroupId())
+                && dependency.getArtifactId().equals(elwoodArtifact.getArtifactId())
+                && dependency.getVersion().equals(elwoodArtifact.getVersion());
     }
 
     private Build getBuild(Model model) {

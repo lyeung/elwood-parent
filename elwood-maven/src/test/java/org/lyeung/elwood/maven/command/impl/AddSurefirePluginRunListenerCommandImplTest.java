@@ -1,6 +1,7 @@
 package org.lyeung.elwood.maven.command.impl;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.maven.model.Dependency;
 import org.apache.maven.model.Model;
 import org.apache.maven.model.Plugin;
 import org.codehaus.plexus.util.xml.Xpp3Dom;
@@ -26,6 +27,7 @@ import java.util.stream.Collectors;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Created by lyeung on 23/11/2015.
@@ -80,6 +82,7 @@ public class AddSurefirePluginRunListenerCommandImplTest {
         final Model model = pomModelManager.readPom(updatedPom);
         assertEquals("test-simple", model.getName());
 
+        assertElwoodRunListenerDepdenency(model);
         assertSurefirePlugin(model);
         assertNull(getPlugin(model, ElwoodMavenConstants.FAILSAFE_PLUGIN));
 
@@ -87,6 +90,27 @@ public class AddSurefirePluginRunListenerCommandImplTest {
                         "src/test/resources/test-simple/expected-updated-pom-with-surefire.xml")),
                 FileUtils.readFileToString(new File(folder,
                         "updated-pom-with-surefire.xml")));
+    }
+
+    private void assertElwoodRunListenerDepdenency(Model model) {
+        boolean found = false;
+        for (Dependency dependency : model.getDependencies()) {
+            if (dependency.getGroupId().equals(ElwoodMavenConstants.ELWOOD_RUN_LISTENER_GROUP_ID)
+                && dependency.getArtifactId().equals(
+                    ElwoodMavenConstants.ELWOOD_RUN_LISTENER_ARTIFACT_ID)) {
+                found = true;
+            }
+        }
+
+        assertTrue(found);
+    }
+
+    private boolean isElwoodRunListenerArtifact(Dependency dependency) {
+        return dependency.getGroupId().equals(ElwoodMavenConstants.ELWOOD_RUN_LISTENER_GROUP_ID)
+                && dependency.getArtifactId().equals(
+                    ElwoodMavenConstants.ELWOOD_RUN_LISTENER_ARTIFACT_ID)
+                && dependency.getVersion().equals(ElwoodMavenConstants.ELWOOD_RUN_LISTENER_VERSION);
+
     }
 
     @Test
