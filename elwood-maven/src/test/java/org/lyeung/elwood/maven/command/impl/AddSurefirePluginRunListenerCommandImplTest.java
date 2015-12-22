@@ -105,14 +105,6 @@ public class AddSurefirePluginRunListenerCommandImplTest {
         assertTrue(found);
     }
 
-    private boolean isElwoodRunListenerArtifact(Dependency dependency) {
-        return dependency.getGroupId().equals(ElwoodMavenConstants.ELWOOD_RUN_LISTENER_GROUP_ID)
-                && dependency.getArtifactId().equals(
-                    ElwoodMavenConstants.ELWOOD_RUN_LISTENER_ARTIFACT_ID)
-                && dependency.getVersion().equals(ElwoodMavenConstants.ELWOOD_RUN_LISTENER_VERSION);
-
-    }
-
     @Test
     public void testSimpleFailsafeExecute() throws IOException {
         final String content = impl.execute(new AddSurefirePluginRunListenerCommandParamBuilder()

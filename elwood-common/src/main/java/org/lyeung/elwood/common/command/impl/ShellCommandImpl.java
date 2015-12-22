@@ -31,6 +31,8 @@ import java.io.IOException;
  */
 public class ShellCommandImpl implements ShellCommand {
 
+    private static final String ELWOOD_BUILD_DIR = "ELWOOD_BUILD_DIR";
+
     @Override
     public Process execute(ShellCommandParam param) {
         try {
@@ -41,6 +43,7 @@ public class ShellCommandImpl implements ShellCommand {
 
             builder.environment().putAll(new BuildEnvironmentHelper()
                     .buildEnvironment(param.getEnvironmentVars()));
+            builder.environment().put(ELWOOD_BUILD_DIR, param.getDirectory());
             return builder.start();
         } catch (IOException e) {
             throw new ShellCommandException(

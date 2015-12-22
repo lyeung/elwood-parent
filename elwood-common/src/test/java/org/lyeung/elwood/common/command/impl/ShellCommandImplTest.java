@@ -57,7 +57,8 @@ public class ShellCommandImplTest {
                 .build();
         final Process process = command.execute(param);
 
-        try (BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
+        try (BufferedReader reader = new BufferedReader(
+                new InputStreamReader(process.getInputStream()))) {
             String line;
             while ((line = reader.readLine()) != null) {
                 builder.append(line).append("\n");

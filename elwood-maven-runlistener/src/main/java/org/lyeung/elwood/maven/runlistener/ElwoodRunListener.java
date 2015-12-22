@@ -5,6 +5,10 @@ import org.junit.runner.Result;
 import org.junit.runner.notification.Failure;
 import org.junit.runner.notification.RunListener;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -18,12 +22,17 @@ public class ElwoodRunListener extends RunListener {
 
     private enum Status { SUCCESS, FAILED, IGNORED }
 
+    private static final String ELWOOD_RUN_LISTENER_RESULT_FILE = ".elwood.result";
+
     private final Map<String, Status> resultMap = new HashMap<>();
+
+    private String filename;
 
     @Override
     public void testRunFinished(Result result) throws Exception {
         final Map<Status, List<Map.Entry<String, Status>>> groupBy = resultMap.entrySet().stream()
                 .collect(Collectors.groupingBy(e -> e.getValue()));
+
         final int ignored = getCount(groupBy, Status.IGNORED);
         if (ignored != result.getIgnoreCount()) {
             throw new IllegalArgumentException("expecting ignored count=["
@@ -49,13 +58,29 @@ public class ElwoodRunListener extends RunListener {
                     + success + "]");
         }
 
-        System.out.println("********** elwood runlistener statistics **********\n"
-                + "\tsuccess: " + success + "="
-                    + getMethodNames(groupBy, Status.SUCCESS) + "\n\t"
-                + "\tfailed: " + failed + "="
-                    + getMethodNames(groupBy, Status.FAILED) + "\n\t"
-                + "\tignored: " + ignored + "="
-                    + getMethodNames(groupBy, Status.IGNORED) + "\n");
+
+        String content = "success: " + getMethodNames(groupBy, Status.SUCCESS) + "\n"
+                + "failed: " + getMethodNames(groupBy, Status.FAILED) + "\n"
+                + "ignored: " + getMethodNames(groupBy, Status.IGNORED);
+
+        writeResult(content);
+    }
+
+    private void writeResult(String content) throws IOException {
+        File targetDir = new File(System.getenv("ELWOOD_BUILD_DIR"), "test-results");
+
+        // TODO: add result check here
+        targetDir.mkdir();
+
+        final File resultFile = new File(targetDir,
+                filename + ELWOOD_RUN_LISTENER_RESULT_FILE);
+
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(resultFile))) {
+            writer.write(content);
+        } catch (IOException e) {
+            e.printStackTrace(System.err);
+            throw e;
+        }
     }
 
     @Override
@@ -63,10 +88,10 @@ public class ElwoodRunListener extends RunListener {
         resultMap.put(getClassMethodName(description), Status.SUCCESS);
     }
 
-//    @Override
-//    public void testFinished(Description description) throws Exception {
-//        resultMap.put(getClassMethodName(descrddiption), Status.SUCCESS);
-//    }
+    @Override
+    public void testFinished(Description description) throws Exception {
+        filename = description.getTestClass().getCanonicalName();
+    }
 
     @Override
     public void testFailure(Failure failure) throws Exception {
