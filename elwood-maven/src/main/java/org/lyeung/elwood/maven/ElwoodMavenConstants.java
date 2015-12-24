@@ -25,6 +25,8 @@ public final class ElwoodMavenConstants {
     public static final String FAILSAFE_PLUGIN = MAVEN_PLUGINS_GROUP_ID + ":"
             + FAILSAFE_PLUGIN_ARTIFACT_ID;
 
+    public static final String SCOPE_PROVIDED = "provided";
+
     public static final String RUN_LISTENER_CLASS = ElwoodRunListener.class.getCanonicalName();
 
     private ElwoodMavenConstants() {

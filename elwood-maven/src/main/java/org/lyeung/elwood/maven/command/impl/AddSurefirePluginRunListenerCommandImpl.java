@@ -87,6 +87,7 @@ public class AddSurefirePluginRunListenerCommandImpl implements
         dependency.setGroupId(ElwoodMavenConstants.ELWOOD_RUN_LISTENER_GROUP_ID);
         dependency.setArtifactId(ElwoodMavenConstants.ELWOOD_RUN_LISTENER_ARTIFACT_ID);
         dependency.setVersion(ElwoodMavenConstants.ELWOOD_RUN_LISTENER_VERSION);
+        dependency.setScope(ElwoodMavenConstants.SCOPE_PROVIDED);
 
         return dependency;
     }
