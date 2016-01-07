@@ -23,6 +23,7 @@ import org.lyeung.elwood.builder.command.impl.ProjectBuilderCommandFactoryImpl;
 import org.lyeung.elwood.common.command.impl.MkDirCommandFactoryImpl;
 import org.lyeung.elwood.common.command.impl.WriteFileCommandFactoryImpl;
 import org.lyeung.elwood.data.redis.repository.BuildRepository;
+import org.lyeung.elwood.data.redis.repository.BuildResultMavenStatsRepository;
 import org.lyeung.elwood.data.redis.repository.BuildResultRepository;
 import org.lyeung.elwood.data.redis.repository.ProjectRepository;
 import org.lyeung.elwood.executor.BuildExecutor;
@@ -34,6 +35,9 @@ import org.lyeung.elwood.executor.command.impl.BuildJobCommandFactoryImpl;
 import org.lyeung.elwood.executor.command.impl.BuildJobCommandImpl;
 import org.lyeung.elwood.executor.command.impl.CheckoutDirCreatorCommandFactoryImpl;
 import org.lyeung.elwood.executor.command.impl.ElwoodLogFileCreatorCommandFactoryImpl;
+import org.lyeung.elwood.executor.command.impl.GetMavenStatusCommandFactoryImpl;
+import org.lyeung.elwood.executor.command.impl.MavenStatusRuleMatcherManagerImpl;
+import org.lyeung.elwood.executor.command.impl.SaveBuildResultMavenStatsCommandFactoryImpl;
 import org.lyeung.elwood.executor.impl.BuildExecutorImpl;
 import org.lyeung.elwood.maven.impl.PomModelManagerImpl;
 import org.lyeung.elwood.vcs.command.impl.GitCloneCommandFactoryImpl;
@@ -61,7 +65,10 @@ public class ElwoodExecutorConfiguration {
     private ProjectRepository projectRepository;
 
     @Autowired
-    BuildRepository buildRepository;
+    private BuildRepository buildRepository;
+
+    @Autowired
+    private BuildResultMavenStatsRepository buildResultMavenStatsRepository;
 
     @Autowired
     private BuildResultRepository buildResultRepository;
@@ -89,7 +96,12 @@ public class ElwoodExecutorConfiguration {
                                 new PomModelManagerImpl())))
                 .writeFileCommandFactory(new WriteFileCommandFactoryImpl())
                 .processBuilderCommandFactory(new ProcessBuilderCommandFactoryImpl())
-                .projectBuilderCommandFactory(new ProjectBuilderCommandFactoryImpl()));
+                .projectBuilderCommandFactory(new ProjectBuilderCommandFactoryImpl())
+                .getMavenStatusCommandFactory(new GetMavenStatusCommandFactoryImpl(
+                        new MavenStatusRuleMatcherManagerImpl()))
+                .saveBuildResultMavenStatsCommandFactory(
+                        new SaveBuildResultMavenStatsCommandFactoryImpl(
+                                buildResultMavenStatsRepository)));
     }
 
     private ExecutorService executorService() {

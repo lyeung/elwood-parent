@@ -40,6 +40,7 @@ import org.lyeung.elwood.data.redis.domain.Build;
 import org.lyeung.elwood.data.redis.domain.BuildKey;
 import org.lyeung.elwood.data.redis.domain.BuildResult;
 import org.lyeung.elwood.data.redis.domain.BuildResultKey;
+import org.lyeung.elwood.data.redis.domain.BuildResultMavenStats;
 import org.lyeung.elwood.data.redis.domain.Project;
 import org.lyeung.elwood.data.redis.domain.ProjectKey;
 import org.lyeung.elwood.data.redis.domain.enums.BuildStatus;
@@ -53,10 +54,16 @@ import org.lyeung.elwood.executor.command.AttachRunListenerCommandParam;
 import org.lyeung.elwood.executor.command.CheckoutDirCreatorCommandFactory;
 import org.lyeung.elwood.executor.command.ElwoodLogFileCreatorCommandFactory;
 import org.lyeung.elwood.executor.command.FileCreatorCommand;
+import org.lyeung.elwood.executor.command.GetMavenStatusCommand;
+import org.lyeung.elwood.executor.command.GetMavenStatusCommandFactory;
+import org.lyeung.elwood.executor.command.GetMavenStatusCommandParam;
 import org.lyeung.elwood.executor.command.KeyCountTuple;
+import org.lyeung.elwood.executor.command.SaveBuildResultMavenStatsCommand;
+import org.lyeung.elwood.executor.command.SaveBuildResultMavenStatsCommandFactory;
 import org.lyeung.elwood.vcs.command.CloneCommand;
 import org.lyeung.elwood.vcs.command.CloneCommandFactory;
 import org.lyeung.elwood.vcs.command.CloneCommandParam;
+import org.mockito.ArgumentMatcher;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.runners.MockitoJUnitRunner;
@@ -69,6 +76,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyList;
+import static org.mockito.Matchers.argThat;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -120,6 +128,12 @@ public class BuildJobCommandImplTest {
     private ProjectBuilderCommandFactory projectBuilderCommandFactory;
 
     @Mock
+    private GetMavenStatusCommandFactory getMavenStatusCommandFactory;
+
+    @Mock
+    private SaveBuildResultMavenStatsCommandFactory saveBuildResultMavenStatsCommandFactory;
+
+    @Mock
     private MkDirCommand mkDirCommand;
 
     @Mock
@@ -149,6 +163,12 @@ public class BuildJobCommandImplTest {
     @Mock
     private BuildResultRepository buildResultRepository;
 
+    @Mock
+    private GetMavenStatusCommand getMavenStatusCommand;
+
+    @Mock
+    private SaveBuildResultMavenStatsCommand saveBuildResultMavenStatsCommand;
+
     @Before
     public void setUp() throws IOException {
         MockitoAnnotations.initMocks(this);
@@ -164,7 +184,9 @@ public class BuildJobCommandImplTest {
                 .writeFileCommandFactory(writeFileCommandFactory)
                 .processBuilderCommandFactory(processBuilderCommandFactory)
                 .projectBuilderCommandFactory(projectBuilderCommandFactory)
-                .buildResultRepository(buildResultRepository));
+                .buildResultRepository(buildResultRepository)
+                .getMavenStatusCommandFactory(getMavenStatusCommandFactory)
+                .saveBuildResultMavenStatsCommandFactory(saveBuildResultMavenStatsCommandFactory));
     }
 
     @Test
@@ -212,11 +234,16 @@ public class BuildJobCommandImplTest {
                 .thenReturn(projectBuilderCommand);
         when(projectBuilderCommand.execute(process)).thenReturn(0);
 
+
         // build result repository
         final BuildResult buildResult = new BuildResult();
         final BuildResultKey buildResultKey = new BuildResultKey(buildKey, 10L);
+        buildResult.setKey(buildResultKey);
         when(buildResultRepository.getOne(buildResultKey))
                 .thenReturn(of(buildResult));
+
+        when(getMavenStatusCommandFactory.makeCommand()).thenReturn(getMavenStatusCommand);
+        when(saveBuildResultMavenStatsCommandFactory.makeCommand()).thenReturn(saveBuildResultMavenStatsCommand);
 
         when(buildMapLog.removeFuture(new KeyCountTuple(KEY, 10L))).thenReturn(true);
         when(buildMapLog.removeContent(new KeyCountTuple(KEY, 10L))).thenReturn(true);
@@ -249,6 +276,17 @@ public class BuildJobCommandImplTest {
         verify(projectBuilderCommand).execute(eq(process));
         verify(buildResultRepository).getOne(eq(buildResultKey));
         verify(buildResultRepository).save(eq(buildResult));
+        verify(getMavenStatusCommandFactory).makeCommand();
+        verify(getMavenStatusCommand).execute(argThat(new ArgumentMatcher<GetMavenStatusCommandParam>() {
+            @Override
+            public boolean matches(Object argument) {
+                final GetMavenStatusCommandParam param = (GetMavenStatusCommandParam) argument;
+                return param.getCheckedOutDir() == checkoutDir
+                        && param.getBuildResultKey().equals(buildResultKey);
+            }
+        }));
+        verify(saveBuildResultMavenStatsCommandFactory).makeCommand();
+        verify(saveBuildResultMavenStatsCommand).execute(any(BuildResultMavenStats.class));
 
         verifyNoMoreInteractions(projectRepository);
         verifyNoMoreInteractions(buildRepository);
@@ -268,6 +306,10 @@ public class BuildJobCommandImplTest {
         verifyNoMoreInteractions(processBuilderCommand);
         verifyNoMoreInteractions(projectBuilderCommandFactory);
         verifyNoMoreInteractions(projectBuilderCommand);
+        verifyNoMoreInteractions(getMavenStatusCommandFactory);
+        verifyNoMoreInteractions(getMavenStatusCommand);
+        verifyNoMoreInteractions(saveBuildResultMavenStatsCommandFactory);
+        verifyNoMoreInteractions(saveBuildResultMavenStatsCommand);
         verifyNoMoreInteractions(buildResultRepository);
         verifyNoMoreInteractions(buildMapLog);
     }

@@ -23,11 +23,12 @@ package org.lyeung.elwood.web.config.enums;
  */
 public enum KeyType {
     BuildResult("buildResult/"),
+    BuildResultStats("buildResultStats/"),
     Build("build/"),
     BuildCount("buildCount/"),
     Project("project/");
 
-    private String type;
+    private final String type;
 
     KeyType(String type) {
         this.type = type;

@@ -22,6 +22,7 @@ import org.lyeung.elwood.data.redis.domain.Build;
 import org.lyeung.elwood.data.redis.domain.BuildKey;
 import org.lyeung.elwood.data.redis.domain.BuildResult;
 import org.lyeung.elwood.data.redis.domain.BuildResultKey;
+import org.lyeung.elwood.data.redis.domain.BuildResultMavenStats;
 import org.lyeung.elwood.data.redis.domain.Project;
 import org.lyeung.elwood.data.redis.domain.ProjectKey;
 import org.lyeung.elwood.data.redis.domain.enums.BuildStatus;
@@ -72,5 +73,15 @@ public final class ModelStereotypeUtil {
         buildResult.setBuildStatus(BuildStatus.SUCCEEDED);
 
         return buildResult;
+    }
+
+    public static BuildResultMavenStats createBuildResultMavenStats(BuildResultKey buildResultKey) {
+        final BuildResultMavenStats stats = new BuildResultMavenStats();
+        stats.setKey(buildResultKey);
+        stats.setSuccessCount(1);
+        stats.setIgnoredCount(2);
+        stats.setFailedCount(3);
+
+        return stats;
     }
 }

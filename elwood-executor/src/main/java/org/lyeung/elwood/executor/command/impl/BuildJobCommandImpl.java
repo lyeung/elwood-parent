@@ -36,6 +36,7 @@ import org.lyeung.elwood.data.redis.domain.Build;
 import org.lyeung.elwood.data.redis.domain.BuildKey;
 import org.lyeung.elwood.data.redis.domain.BuildResult;
 import org.lyeung.elwood.data.redis.domain.BuildResultKey;
+import org.lyeung.elwood.data.redis.domain.BuildResultMavenStats;
 import org.lyeung.elwood.data.redis.domain.Project;
 import org.lyeung.elwood.data.redis.domain.ProjectKey;
 import org.lyeung.elwood.data.redis.domain.enums.BuildStatus;
@@ -50,7 +51,10 @@ import org.lyeung.elwood.executor.command.BuildJobCommand;
 import org.lyeung.elwood.executor.command.BuildJobException;
 import org.lyeung.elwood.executor.command.CheckoutDirCreatorCommandFactory;
 import org.lyeung.elwood.executor.command.ElwoodLogFileCreatorCommandFactory;
+import org.lyeung.elwood.executor.command.GetMavenStatusCommandFactory;
+import org.lyeung.elwood.executor.command.GetMavenStatusCommandParamBuilder;
 import org.lyeung.elwood.executor.command.KeyCountTuple;
+import org.lyeung.elwood.executor.command.SaveBuildResultMavenStatsCommandFactory;
 import org.lyeung.elwood.vcs.command.CloneCommand;
 import org.lyeung.elwood.vcs.command.CloneCommandFactory;
 import org.lyeung.elwood.vcs.command.CloneCommandParam;
@@ -86,10 +90,13 @@ public class BuildJobCommandImpl implements BuildJobCommand {
     public Integer execute(KeyCountTuple keyCountTuple) {
         final String key = keyCountTuple.getKey();
 
+        // TODO: move this into a command
         final Optional<Project> project = param.projectRepository.getOne(new ProjectKey(key));
         if (!project.isPresent()) {
             return null;
         }
+
+        // TODO: move this into a command
         final Optional<Build> build = param.buildRepository.getOne(new BuildKey(key));
 
         final File targetDir = mkDir(build.get(), keyCountTuple);
@@ -99,14 +106,16 @@ public class BuildJobCommandImpl implements BuildJobCommand {
         final Process process = createProcess(project.get(), build.get(), checkedOutDir);
         final Integer result = buildProject(keyCountTuple, process, elwoodLog);
 
-        final Optional<BuildResult> buildResult = param.buildResultRepository.getOne(
-                new BuildResultKey(new BuildKey(keyCountTuple.getKey()), keyCountTuple.getCount()));
+        final Optional<BuildResult> buildResult = getBuildResult( keyCountTuple);
         if (!buildResult.isPresent()) {
             return null;
         }
-        buildResult.get().setBuildStatus(getBuildStatus(result));
-        buildResult.get().setFinishRunDate(new Date());
-        param.buildResultRepository.save(buildResult.get());
+
+        saveBuildResult(buildResult.get(), result);
+
+        final BuildResultMavenStats mavenStats = readMavenStats(
+                checkedOutDir, buildResult.get().getKey());
+        saveMavenStats(mavenStats);
 
         final boolean removedFuture = param.buildMapLog.removeFuture(keyCountTuple);
         assert removedFuture;
@@ -115,6 +124,31 @@ public class BuildJobCommandImpl implements BuildJobCommand {
         assert removedContent;
 
         return result;
+    }
+
+    private Optional<BuildResult> getBuildResult(KeyCountTuple keyCountTuple) {
+        final BuildResultKey buildResultKey = new BuildResultKey(new BuildKey(
+                keyCountTuple.getKey()), keyCountTuple.getCount());
+        return param.buildResultRepository.getOne(buildResultKey);
+    }
+
+    private void saveBuildResult(BuildResult buildResult, Integer result) {
+        buildResult.setBuildStatus(getBuildStatus(result));
+        buildResult.setFinishRunDate(new Date());
+        param.buildResultRepository.save(buildResult);
+    }
+
+
+    private void saveMavenStats(BuildResultMavenStats mavenStats) {
+        param.saveBuildResultMavenStatsCommandFactory.makeCommand().execute(mavenStats);
+    }
+
+    private BuildResultMavenStats readMavenStats(File checkedOutDir, BuildResultKey buildResultKey) {
+        return param.getMavenStatusCommandFactory.makeCommand()
+                .execute(new GetMavenStatusCommandParamBuilder()
+                        .checkedOutDir(checkedOutDir)
+                        .buildResultKey(buildResultKey)
+                        .build());
     }
 
     private BuildStatus getBuildStatus(Integer result) {
@@ -238,7 +272,10 @@ public class BuildJobCommandImpl implements BuildJobCommand {
             final byte[] data = event.getEventData().getData();
             try {
                 final String content = new String(data, EncodingConstants.UTF_8);
+
+                // TODO: remove this soon
                 System.out.println(content);
+
                 write(content, file);
                 buildMapLog.append(key, content);
             } catch (UnsupportedEncodingException e) {
@@ -339,6 +376,8 @@ public class BuildJobCommandImpl implements BuildJobCommand {
 
         private BuildResultRepository buildResultRepository;
 
+        private SaveBuildResultMavenStatsCommandFactory saveBuildResultMavenStatsCommandFactory;
+
         private BuildMapLog<KeyCountTuple> buildMapLog;
 
         private MkDirCommandFactory mkDirCommandFactory;
@@ -357,6 +396,8 @@ public class BuildJobCommandImpl implements BuildJobCommand {
 
         private ProjectBuilderCommandFactory projectBuilderCommandFactory;
 
+        private GetMavenStatusCommandFactory getMavenStatusCommandFactory;
+
         public Param projectRepository(ProjectRepository projectRepository) {
             this.projectRepository = projectRepository;
             return this;
@@ -369,6 +410,12 @@ public class BuildJobCommandImpl implements BuildJobCommand {
 
         public Param buildResultRepository(BuildResultRepository buildResultRepository) {
             this.buildResultRepository = buildResultRepository;
+            return this;
+        }
+
+        public Param saveBuildResultMavenStatsCommandFactory(
+                SaveBuildResultMavenStatsCommandFactory saveBuildResultMavenStatsCommandFactory) {
+            this.saveBuildResultMavenStatsCommandFactory = saveBuildResultMavenStatsCommandFactory;
             return this;
         }
 
@@ -419,6 +466,11 @@ public class BuildJobCommandImpl implements BuildJobCommand {
         public Param projectBuilderCommandFactory(
                 ProjectBuilderCommandFactory projectBuilderCommandFactory) {
             this.projectBuilderCommandFactory = projectBuilderCommandFactory;
+            return this;
+        }
+
+        public Param getMavenStatusCommandFactory(GetMavenStatusCommandFactory factory) {
+            this.getMavenStatusCommandFactory = factory;
             return this;
         }
     }

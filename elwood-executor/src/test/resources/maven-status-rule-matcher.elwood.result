@@ -1,0 +1,4 @@
+
+success: [org.lyeung.test.Class.method1, org.lyeung.test.Class.method2,org.lyeung.test.Class.method3]
+failed:[org.lyeung.test.Class.method1,org.lyeung.test.Class.method2]
+ignored: [org.lyeung.test.Class.method1]

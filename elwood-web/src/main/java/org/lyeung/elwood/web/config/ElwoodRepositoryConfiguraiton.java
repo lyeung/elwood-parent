@@ -19,13 +19,16 @@
 package org.lyeung.elwood.web.config;
 
 import org.lyeung.elwood.data.redis.domain.BuildResult;
+import org.lyeung.elwood.data.redis.domain.BuildResultMavenStats;
 import org.lyeung.elwood.data.redis.repository.BuildCountRepository;
 import org.lyeung.elwood.data.redis.repository.BuildRepository;
+import org.lyeung.elwood.data.redis.repository.BuildResultMavenStatsRepository;
 import org.lyeung.elwood.data.redis.repository.BuildResultRepository;
 import org.lyeung.elwood.data.redis.repository.HashRepository;
 import org.lyeung.elwood.data.redis.repository.ProjectRepository;
 import org.lyeung.elwood.data.redis.repository.impl.BuildCountRepositoryImpl;
 import org.lyeung.elwood.data.redis.repository.impl.BuildRepositoryImpl;
+import org.lyeung.elwood.data.redis.repository.impl.BuildResultMavenStatsRepositoryImpl;
 import org.lyeung.elwood.data.redis.repository.impl.BuildResultRepositoryImpl;
 import org.lyeung.elwood.data.redis.repository.impl.CountRepositoryImpl;
 import org.lyeung.elwood.data.redis.repository.impl.ProjectRepositoryImpl;
@@ -120,6 +123,14 @@ public class ElwoodRepositoryConfiguraiton {
         final HashRepository<BuildResult, String, String> repository =
                 new RedisHashRepositoryImpl<>(redisTemplate());
         return new BuildResultRepositoryImpl(KeyType.BuildResult.getType(), repository);
+    }
+
+    @Bean
+    public BuildResultMavenStatsRepository buildResultMavenStatsRepository() {
+        final HashRepository<BuildResultMavenStats, String, String> repository =
+                new RedisHashRepositoryImpl<>(redisTemplate());
+        return new BuildResultMavenStatsRepositoryImpl(
+                KeyType.BuildResultStats.getType(), repository);
     }
 
     @Bean
