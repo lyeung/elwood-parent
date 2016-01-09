@@ -38,4 +38,4 @@ This README would normally document whatever steps are necessary to get your app
     * (TBD)
 
 ### Development Updates ###
-http://www.tamemymonkeymind.blogspot.com
+http://www.tamemymonkeymind.blogspot.com/search/label/elwood
