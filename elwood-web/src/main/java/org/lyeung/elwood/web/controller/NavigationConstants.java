@@ -26,10 +26,10 @@ public final class NavigationConstants {
     public static final String APP_INFO = "/appInfo";
     public static final String PROJECT = "/project";
     public static final String PROJECTS = "/projects";
-    public static final String VCS = "/vcs";
     public static final String BUILD_JOB = "/buildJob";
     public static final String RUN_BUILD_JOB = "/runBuildJob";
     public static final String BUILD_RESULT = "/buildResult";
+    public static final String BUILD_RESULT_STATS = "/buildResultStats";
 
     private NavigationConstants() {
         // do-nothing

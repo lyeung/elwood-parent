@@ -44,6 +44,8 @@ import org.lyeung.elwood.web.controller.build.command.impl.GetBuildJobCommandImp
 import org.lyeung.elwood.web.controller.build.command.impl.SaveBuildJobCommandImpl;
 import org.lyeung.elwood.web.controller.buildresult.command.GetBuildResultCommand;
 import org.lyeung.elwood.web.controller.buildresult.command.impl.GetBuildResultCommandImpl;
+import org.lyeung.elwood.web.controller.buildstats.command.GetBuildResultStatsCommand;
+import org.lyeung.elwood.web.controller.buildstats.command.impl.GetBuildResultStatsCommandImpl;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
@@ -156,5 +158,10 @@ public class ElwoodRepositoryConfiguraiton {
     @Bean
     public GetBuildResultCommand buildResultCommand() {
         return new GetBuildResultCommandImpl(buildResultRepository());
+    }
+
+    @Bean
+    public GetBuildResultStatsCommand buildResultStatsCommand() {
+        return new GetBuildResultStatsCommandImpl(buildResultMavenStatsRepository());
     }
 }
