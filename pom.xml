@@ -8,7 +8,7 @@
     <packaging>pom</packaging>
 
     <name>elwood-parent</name>
-    <url>https://bitbucket.org/lyeung/elwood-parent</url>
+    <url>https://www.hostedredmine.com/projects/elwood-parent</url>
     <inceptionYear>2015</inceptionYear>
 
     <licenses>
@@ -31,8 +31,7 @@
 
     <scm>
         <connection>scm:git:ssh://git@bitbucket.org/lyeung/elwood-parent.git</connection>
-        <developerConnection>scm:git:ssh://git@bitbucket.org/lyeung/elwood-parent.git
-        </developerConnection>
+        <developerConnection>scm:git:ssh://git@bitbucket.org/lyeung/elwood-parent.git</developerConnection>
         <url>https://bitbucket.org/lyeung/elwood-parent.git</url>
         <tag>HEAD</tag>
     </scm>
