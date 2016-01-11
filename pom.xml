@@ -36,6 +36,10 @@
         <url>https://bitbucket.org/lyeung/elwood-parent.git</url>
         <tag>HEAD</tag>
     </scm>
+    <issueManagement>
+        <system>Redmine</system>
+        <url>https://www.hostedredmine.com/projects/elwood-parent</url>
+    </issueManagement>
 
     <distributionManagement>
         <repository>
