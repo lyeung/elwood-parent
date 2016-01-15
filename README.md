@@ -33,7 +33,7 @@ This README would normally document whatever steps are necessary to get your app
 * Database configuration
     * Start up Redis3 server "redis-server"
 * How to run tests
-    * Run Maven command "mvn clean verify"
+    * Run Maven command "mvn clean install"
 * Deployment instructions
     * (TBD)
 
