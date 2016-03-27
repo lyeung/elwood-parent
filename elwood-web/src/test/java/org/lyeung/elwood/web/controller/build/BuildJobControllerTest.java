@@ -1,6 +1,6 @@
 /*
  *
- *  Copyright (C) 2015 the original author or authors.
+ *  Copyright (C) 2015-2016 the original author or authors.
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -72,7 +72,9 @@ public class BuildJobControllerTest {
         final BuildJob buildJob = new BuildJob();
         when(getBuildJobCommand.execute(KEY)).thenReturn(buildJob);
 
-        assertEquals(buildJob, buildJobController.getByKey(KEY));
+        final ResponseEntity<BuildJob> response = buildJobController.getByKey(KEY);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(buildJob, response.getBody());
 
         verify(getBuildJobCommand).execute(eq(KEY));
         verifyNoMoreInteractions(getBuildJobCommand);
