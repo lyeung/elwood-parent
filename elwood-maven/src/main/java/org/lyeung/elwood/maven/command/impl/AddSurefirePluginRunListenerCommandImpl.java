@@ -11,6 +11,7 @@ import org.lyeung.elwood.maven.command.AddSurefirePluginRunListenerCommand;
 import org.lyeung.elwood.maven.command.AddSurefirePluginRunListenerCommandParam;
 
 import java.io.File;
+import java.util.Optional;
 
 /**
  * Created by lyeung on 23/11/2015.
@@ -29,6 +30,8 @@ public class AddSurefirePluginRunListenerCommandImpl implements
     private static final String VALUE = "value";
 
     private static final String LISTENER = "listener";
+
+    private static final String EXCLUDE_ARTIFACT_ID = "elwood-parent";
 
     private final PomModelManager pomModelManager;
 
@@ -69,27 +72,35 @@ public class AddSurefirePluginRunListenerCommandImpl implements
 
     private void addElwoodRunListenerArtifactDependencyManagement(Model model) {
         boolean found = false;
-        final Dependency elwoodRunListenerArtifact = createElwoodRunListenerArtifact();
+        final Optional<Dependency> elwoodRunListenerDependency = createElwoodRunListenerDependency(model);
+        if (!elwoodRunListenerDependency.isPresent()) {
+            return;
+        }
+
         for (Dependency dependency : model.getDependencies()) {
-            if (isElwoodRunListenerArtifact(dependency, elwoodRunListenerArtifact)) {
+            if (isElwoodRunListenerArtifact(dependency, elwoodRunListenerDependency.get())) {
                 found = true;
                 break;
             }
         }
 
         if (!found) {
-            model.addDependency(elwoodRunListenerArtifact);
+            model.addDependency(elwoodRunListenerDependency.get());
         }
     }
 
-    private Dependency createElwoodRunListenerArtifact() {
-        Dependency dependency = new Dependency();
-        dependency.setGroupId(ElwoodMavenConstants.ELWOOD_RUN_LISTENER_GROUP_ID);
-        dependency.setArtifactId(ElwoodMavenConstants.ELWOOD_RUN_LISTENER_ARTIFACT_ID);
-        dependency.setVersion(ElwoodMavenConstants.ELWOOD_RUN_LISTENER_VERSION);
-        dependency.setScope(ElwoodMavenConstants.SCOPE_PROVIDED);
+    private Optional<Dependency> createElwoodRunListenerDependency(Model model) {
+        if (!EXCLUDE_ARTIFACT_ID.equals(model.getArtifactId())) {
+            Dependency dependency = new Dependency();
+            dependency.setGroupId(ElwoodMavenConstants.ELWOOD_RUN_LISTENER_GROUP_ID);
+            dependency.setArtifactId(ElwoodMavenConstants.ELWOOD_RUN_LISTENER_ARTIFACT_ID);
+            dependency.setVersion(ElwoodMavenConstants.ELWOOD_RUN_LISTENER_VERSION);
+            dependency.setScope(ElwoodMavenConstants.SCOPE_PROVIDED);
 
-        return dependency;
+            return Optional.of(dependency);
+        }
+
+        return Optional.empty();
     }
 
     private boolean isElwoodRunListenerArtifact(Dependency dependency, Dependency elwoodArtifact) {

@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -61,8 +62,51 @@ public class AddSurefirePluginRunListenerCommandImplTest {
         }
 
         final Model model = pomModelManager.readPom(updatedPom);
+        assertEquals("test-simple", model.getArtifactId());
         assertEquals("test-simple", model.getName());
 
+        assertSurefirePlugin(model);
+        assertNull(getPlugin(model, ElwoodMavenConstants.FAILSAFE_PLUGIN));
+    }
+
+    @Test
+    public void testExecuteHashElwoodMavenRunListenerDependency() throws IOException {
+        final String content = impl.execute(new AddSurefirePluginRunListenerCommandParamBuilder()
+                .pomFile("src/test/resources/test-simple/pom-with-elwood-maven-runlistener-dependency.xml")
+                .build());
+
+        final File folder = temporaryFolder.newFolder("temp");
+        final File updatedPom = new File(folder, "updated-pom-with-elwood-maven-runlistener-dependency.xml");
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(updatedPom))) {
+            writer.write(content, 0, content.length());
+        }
+
+        final Model model = pomModelManager.readPom(updatedPom);
+        assertEquals("test-pom-with-elwood-maven-runlistener-dependency", model.getArtifactId());
+        assertEquals("test-pom-with-elwood-maven-runlistener-dependency", model.getName());
+
+        assertTrue(hasElwoodRunListenerDepdenency(model));
+        assertSurefirePlugin(model);
+        assertNull(getPlugin(model, ElwoodMavenConstants.FAILSAFE_PLUGIN));
+    }
+
+    @Test
+    public void testExecuteElwoodParentProject() throws IOException {
+        final String content = impl.execute(new AddSurefirePluginRunListenerCommandParamBuilder()
+                .pomFile("src/test/resources/test-simple/pom-as-elwood-project.xml")
+                .build());
+
+        final File folder = temporaryFolder.newFolder("temp");
+        final File updatedPom = new File(folder, "updated-pom-as-elwood-project.xml");
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(updatedPom))) {
+            writer.write(content, 0, content.length());
+        }
+
+        final Model model = pomModelManager.readPom(updatedPom);
+        assertEquals("elwood-parent", model.getArtifactId());
+        assertEquals("elwood-parent", model.getName());
+
+        assertFalse(hasElwoodRunListenerDepdenency(model));
         assertSurefirePlugin(model);
         assertNull(getPlugin(model, ElwoodMavenConstants.FAILSAFE_PLUGIN));
     }
@@ -80,9 +124,10 @@ public class AddSurefirePluginRunListenerCommandImplTest {
         }
 
         final Model model = pomModelManager.readPom(updatedPom);
+        assertEquals("test-simple", model.getArtifactId());
         assertEquals("test-simple", model.getName());
 
-        assertElwoodRunListenerDepdenency(model);
+        assertTrue(hasElwoodRunListenerDepdenency(model));
         assertSurefirePlugin(model);
         assertNull(getPlugin(model, ElwoodMavenConstants.FAILSAFE_PLUGIN));
 
@@ -92,7 +137,7 @@ public class AddSurefirePluginRunListenerCommandImplTest {
                         "updated-pom-with-surefire.xml")));
     }
 
-    private void assertElwoodRunListenerDepdenency(Model model) {
+    private boolean hasElwoodRunListenerDepdenency(Model model) {
         boolean found = false;
         for (Dependency dependency : model.getDependencies()) {
             if (dependency.getGroupId().equals(ElwoodMavenConstants.ELWOOD_RUN_LISTENER_GROUP_ID)
@@ -102,7 +147,7 @@ public class AddSurefirePluginRunListenerCommandImplTest {
             }
         }
 
-        assertTrue(found);
+        return found;
     }
 
     @Test
@@ -118,6 +163,7 @@ public class AddSurefirePluginRunListenerCommandImplTest {
         }
 
         final Model model = pomModelManager.readPom(updatedPom);
+        assertEquals("test-simple-failsafe", model.getArtifactId());
         assertEquals("test-simple-failsafe", model.getName());
 
         assertSurefirePlugin(model);
