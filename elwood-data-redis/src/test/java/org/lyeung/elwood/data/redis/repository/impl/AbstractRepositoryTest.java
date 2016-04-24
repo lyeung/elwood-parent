@@ -77,11 +77,11 @@ public abstract class AbstractRepositoryTest {
     private String redisHostname() {
         String hostname = System.getProperty(ELWOOD_REDIS_HOSTNAME);
         if (hostname == null) {
-            LOGGER.debug("using default redis hostname=[{}]", REDIS_DEFAULT_HOSTNAME);
+            LOGGER.info("using default redis hostname=[{}]", REDIS_DEFAULT_HOSTNAME);
             return REDIS_DEFAULT_HOSTNAME;
         }
 
-        LOGGER.debug("overriding with default redis hostname=[{}]", hostname);
+        LOGGER.info("overriding with default redis hostname=[{}]", hostname);
         return hostname;
     }
 
@@ -89,12 +89,12 @@ public abstract class AbstractRepositoryTest {
         String redisPort = System.getProperty(ELWOOD_REDIS_PORT);
 
         if (redisPort == null) {
-            LOGGER.debug("using default redis port=[{}]", REDIS_DEFAULT_PORT);
+            LOGGER.info("using default redis port=[{}]", REDIS_DEFAULT_PORT);
             return REDIS_DEFAULT_PORT;
         }
 
         try {
-            LOGGER.debug("overriding with default redis port=[{}]", redisPort);
+            LOGGER.info("overriding with default redis port=[{}]", redisPort);
             return Integer.parseInt(redisPort);
         } catch (NumberFormatException e) {
             LOGGER.warn("invalid redis port=[{}], overriding with default redis port=[{}]",
