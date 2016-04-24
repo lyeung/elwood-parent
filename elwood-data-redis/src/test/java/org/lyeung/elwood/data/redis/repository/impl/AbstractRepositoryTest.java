@@ -18,6 +18,8 @@
 
 package org.lyeung.elwood.data.redis.repository.impl;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
@@ -29,9 +31,15 @@ import redis.clients.jedis.JedisPoolConfig;
  */
 public abstract class AbstractRepositoryTest {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(AbstractRepositoryTest.class);
+
+    private static final String ELWOOD_REDIS_HOSTNAME = "elwoodRedisHostname";
+
+    private static final String ELWOOD_REDIS_PORT = "elwoodRedisPort";
+
     private static final int REDIS_DEFAULT_PORT = 6379;
 
-    private static final String REDIS_HOSTNAME = "localhost";
+    private static final String REDIS_DEFAULT_HOSTNAME = "localhost";
 
     <K, V> RedisTemplate<K, V> redisTemplate() {
         final RedisTemplate<K, V> template = new RedisTemplate<>();
@@ -67,23 +75,30 @@ public abstract class AbstractRepositoryTest {
     }
 
     private String redisHostname() {
-        String hostname = System.getenv("REDIS_HOSTNAME");
+        String hostname = System.getProperty(ELWOOD_REDIS_HOSTNAME);
         if (hostname == null) {
-            return REDIS_HOSTNAME;
+            LOGGER.debug("using default redis hostname=[{}]", REDIS_DEFAULT_HOSTNAME);
+            return REDIS_DEFAULT_HOSTNAME;
         }
 
+        LOGGER.debug("overriding with default redis hostname=[{}]", hostname);
         return hostname;
     }
 
     private int redisPort() {
-        String redisPort = System.getenv("REDIS_PORT");
+        String redisPort = System.getProperty(ELWOOD_REDIS_PORT);
+
         if (redisPort == null) {
+            LOGGER.debug("using default redis port=[{}]", REDIS_DEFAULT_PORT);
             return REDIS_DEFAULT_PORT;
         }
 
         try {
+            LOGGER.debug("overriding with default redis port=[{}]", redisPort);
             return Integer.parseInt(redisPort);
         } catch (NumberFormatException e) {
+            LOGGER.warn("invalid redis port=[{}], overriding with default redis port=[{}]",
+                    redisPort, REDIS_DEFAULT_PORT, e);
             return REDIS_DEFAULT_PORT;
         }
     }
