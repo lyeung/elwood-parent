@@ -29,6 +29,10 @@ import redis.clients.jedis.JedisPoolConfig;
  */
 public abstract class AbstractRepositoryTest {
 
+    private static final int REDIS_DEFAULT_PORT = 6379;
+
+    private static final String REDIS_HOSTNAME = "localhost";
+
     <K, V> RedisTemplate<K, V> redisTemplate() {
         final RedisTemplate<K, V> template = new RedisTemplate<>();
         template.setConnectionFactory(jedisConnectionFactory());
@@ -55,10 +59,32 @@ public abstract class AbstractRepositoryTest {
         poolConfig.setTestWhileIdle(true);
 
         final JedisConnectionFactory factory = new JedisConnectionFactory(poolConfig);
-        factory.setHostName("localhost");
-        factory.setPort(6379);
+        factory.setHostName(redisHostname());
+        factory.setPort(redisPort());
         factory.setUsePool(true);
         factory.afterPropertiesSet();
         return factory;
+    }
+
+    private String redisHostname() {
+        String hostname = System.getenv("REDIS_HOSTNAME");
+        if (hostname == null) {
+            return REDIS_HOSTNAME;
+        }
+
+        return hostname;
+    }
+
+    private int redisPort() {
+        String redisPort = System.getenv("REDIS_PORT");
+        if (redisPort == null) {
+            return REDIS_DEFAULT_PORT;
+        }
+
+        try {
+            return Integer.parseInt(redisPort);
+        } catch (NumberFormatException e) {
+            return REDIS_DEFAULT_PORT;
+        }
     }
 }
