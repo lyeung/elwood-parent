@@ -18,10 +18,10 @@
 
 package org.lyeung.elwood.executor.command.impl;
 
+import com.github.lyeung.common.test.QuickTest;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
-import org.lyeung.elwood.common.test.QuickTest;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import static org.junit.Assert.assertNotNull;

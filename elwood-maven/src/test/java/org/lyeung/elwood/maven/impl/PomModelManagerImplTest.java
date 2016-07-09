@@ -1,5 +1,6 @@
 package org.lyeung.elwood.maven.impl;
 
+import com.github.lyeung.common.test.SlowTest;
 import org.apache.maven.model.Model;
 import org.apache.maven.model.Plugin;
 import org.codehaus.plexus.util.xml.Xpp3Dom;
@@ -9,7 +10,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.rules.TemporaryFolder;
-import org.lyeung.elwood.common.test.SlowTest;
 import org.lyeung.elwood.maven.ElwoodMavenConstants;
 import org.lyeung.elwood.maven.ReadPomException;
 import org.lyeung.elwood.maven.WritePomException;

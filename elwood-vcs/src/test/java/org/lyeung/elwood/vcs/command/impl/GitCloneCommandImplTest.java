@@ -18,6 +18,7 @@
 
 package org.lyeung.elwood.vcs.command.impl;
 
+import com.github.lyeung.common.test.SlowTest;
 import org.apache.commons.io.FileUtils;
 import org.junit.Before;
 import org.junit.Ignore;
@@ -25,7 +26,6 @@ import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.lyeung.elwood.common.EncodingConstants;
 import org.lyeung.elwood.common.event.impl.DefaultEventListener;
-import org.lyeung.elwood.common.test.SlowTest;
 import org.lyeung.elwood.vcs.command.CloneCommandParam;
 import org.lyeung.elwood.vcs.command.CloneCommandParamBuilder;
 

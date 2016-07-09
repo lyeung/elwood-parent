@@ -18,9 +18,9 @@
 
 package org.lyeung.elwood.executor;
 
+import com.github.lyeung.common.test.QuickTest;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
-import org.lyeung.elwood.common.test.QuickTest;
 import org.lyeung.elwood.executor.command.KeyCountTuple;
 
 import java.util.List;

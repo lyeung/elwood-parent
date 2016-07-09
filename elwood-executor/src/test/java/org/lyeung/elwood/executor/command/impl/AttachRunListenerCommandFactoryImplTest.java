@@ -1,9 +1,9 @@
 package org.lyeung.elwood.executor.command.impl;
 
+import com.github.lyeung.common.test.QuickTest;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
-import org.lyeung.elwood.common.test.QuickTest;
 import org.lyeung.elwood.executor.command.AddSurefirePluginRunListenerCommandFactory;
 import org.lyeung.elwood.executor.command.AttachRunListenerCommand;
 import org.lyeung.elwood.maven.command.AddSurefirePluginRunListenerCommand;

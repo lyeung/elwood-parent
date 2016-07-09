@@ -18,13 +18,13 @@
 
 package org.lyeung.elwood.common.command.impl;
 
+import com.github.lyeung.common.test.SlowTest;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.lyeung.elwood.common.command.ShellCommandException;
 import org.lyeung.elwood.common.command.ShellCommandParam;
 import org.lyeung.elwood.common.command.ShellCommandParamBuilder;
-import org.lyeung.elwood.common.test.SlowTest;
 
 import java.io.BufferedReader;
 import java.io.IOException;

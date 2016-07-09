@@ -18,11 +18,11 @@
 
 package org.lyeung.elwood.executor.command.impl;
 
+import com.github.lyeung.common.test.QuickTest;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
-import org.lyeung.elwood.common.test.QuickTest;
 import org.lyeung.elwood.data.redis.domain.BuildKey;
 import org.lyeung.elwood.data.redis.domain.BuildResult;
 import org.lyeung.elwood.data.redis.domain.BuildResultKey;

@@ -17,7 +17,7 @@
 
     <dependencies>
         <dependency>
-            <groupId>org.lyeung</groupId>
+            <groupId>com.github.lyeung</groupId>
             <artifactId>elwood-maven-runlistener</artifactId>
         </dependency>
         <dependency>

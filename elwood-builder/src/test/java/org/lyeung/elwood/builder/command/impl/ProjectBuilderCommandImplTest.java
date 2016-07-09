@@ -18,6 +18,7 @@
 
 package org.lyeung.elwood.builder.command.impl;
 
+import com.github.lyeung.common.test.QuickTest;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -26,7 +27,6 @@ import org.lyeung.elwood.builder.command.ProjectBuilderCommand;
 import org.lyeung.elwood.builder.command.ProjectBuilderCommandException;
 import org.lyeung.elwood.common.command.ShellCommandExecutor;
 import org.lyeung.elwood.common.command.ShellCommandExecutorException;
-import org.lyeung.elwood.common.test.QuickTest;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 

@@ -1,10 +1,10 @@
 package org.lyeung.elwood.builder.command.impl;
 
+import com.github.lyeung.common.test.QuickTest;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
 import org.lyeung.elwood.common.command.ShellCommand;
-import org.lyeung.elwood.common.test.QuickTest;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 

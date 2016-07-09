@@ -18,10 +18,10 @@
 
 package org.lyeung.elwood.executor.command.impl;
 
+import com.github.lyeung.common.test.QuickTest;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.lyeung.elwood.common.Tuple;
-import org.lyeung.elwood.common.test.QuickTest;
 import org.lyeung.elwood.executor.command.impl.enums.MavenStatusType;
 
 import static org.junit.Assert.assertEquals;

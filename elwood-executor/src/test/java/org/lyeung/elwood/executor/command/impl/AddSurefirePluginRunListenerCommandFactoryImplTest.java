@@ -1,9 +1,9 @@
 package org.lyeung.elwood.executor.command.impl;
 
+import com.github.lyeung.common.test.QuickTest;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
-import org.lyeung.elwood.common.test.QuickTest;
 import org.lyeung.elwood.maven.PomModelManager;
 import org.lyeung.elwood.maven.command.AddSurefirePluginRunListenerCommand;
 import org.mockito.Mock;

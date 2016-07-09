@@ -24,20 +24,19 @@
         <developer>
             <email>lenming.yeung@gmail.com</email>
             <name>Lenming Yeung</name>
-            <url>https://bitbucket.org/lyeung</url>
+            <url>https://github.com/lyeung</url>
             <id>lyeung</id>
         </developer>
     </developers>
 
     <scm>
-        <connection>scm:git:ssh://git@bitbucket.org/lyeung/elwood-parent.git</connection>
-        <developerConnection>scm:git:ssh://git@bitbucket.org/lyeung/elwood-parent.git</developerConnection>
-        <url>https://bitbucket.org/lyeung/elwood-parent.git</url>
-        <tag>HEAD</tag>
+        <connection>scm:git:ssh://git@github.com:lyeung/elwood-parent.git</connection>
+        <developerConnection>scm:git:ssh://git@github.com:lyeung/elwood-parent.git</developerConnection>
+        <url>https://github.com/lyeung/elwood-parent</url>
     </scm>
     <issueManagement>
-        <system>Redmine</system>
-        <url>https://www.hostedredmine.com/projects/elwood-parent</url>
+        <system>GitHub</system>
+        <url>https://github.com/lyeung/elwood-parent/issues</url>
     </issueManagement>
 
     <distributionManagement>
@@ -50,6 +49,8 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <lyeung-common-test.version>1.0.0-SNAPSHOT</lyeung-common-test.version>
+        <elwood-maven-runlistener.version>1.0.0-SNAPSHOT</elwood-maven-runlistener.version>
         <springframework.version>4.1.7.RELEASE</springframework.version>
         <spring-data-redis.version>1.6.0.RELEASE</spring-data-redis.version>
         <spring-hateoas.version>0.19.0.RELEASE</spring-hateoas.version>
@@ -71,8 +72,6 @@
     </properties>
 
     <modules>
-        <module>elwood-common-test</module>
-        <module>elwood-maven-runlistener</module>
         <module>elwood-common</module>
         <module>elwood-maven</module>
         <module>elwood-data-redis</module>
@@ -80,19 +79,19 @@
         <module>elwood-builder</module>
         <module>elwood-executor</module>
         <module>elwood-web</module>
-  </modules>
+    </modules>
 
     <dependencyManagement>
         <dependencies>
             <dependency>
-                <groupId>org.lyeung</groupId>
-                <artifactId>elwood-common-test</artifactId>
-                <version>${project.version}</version>
+                <groupId>com.github.lyeung</groupId>
+                <artifactId>lyeung-common-test</artifactId>
+                <version>${lyeung-common-test.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.lyeung</groupId>
+                <groupId>com.github.lyeung</groupId>
                 <artifactId>elwood-maven-runlistener</artifactId>
-                <version>${project.version}</version>
+                <version>${elwood-maven-runlistener.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.lyeung</groupId>
@@ -250,7 +249,7 @@
                     </dependency>
                 </dependencies>
                 <configuration>
-                    <groups>org.lyeung.elwood.common.test.QuickTest</groups>
+                    <groups>com.github.lyeung.common.test.QuickTest</groups>
                     <!--<properties>-->
                         <!--<property>-->
                             <!--<name>listener</name>-->
@@ -271,7 +270,7 @@
                     </dependency>
                 </dependencies>
                 <configuration>
-                    <groups>org.lyeung.elwood.common.test.SlowTest</groups>
+                    <groups>com.github.lyeung.common.test.SlowTest</groups>
                     <!--<properties>-->
                         <!--<property>-->
                             <!--<name>listener</name>-->
@@ -374,6 +373,26 @@
         <repository>
             <id>m.g.o-public</id>
             <url>http://repo.jenkins-ci.org/public/</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
+        <repository>
+            <id>ossrh-snapshots</id>
+            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+            <releases>
+                <enabled>false</enabled>
+            </releases>
+        </repository>
+        <repository>
+            <id>ossrh-releases</id>
+            <url>https://oss.sonatype.org/content/repositories/releases</url>
             <releases>
                 <enabled>true</enabled>
             </releases>

@@ -18,10 +18,10 @@
 
 package org.lyeung.elwood.web.controller.buildresult;
 
+import com.github.lyeung.common.test.SlowTest;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
-import org.lyeung.elwood.common.test.SlowTest;
 import org.lyeung.elwood.web.controller.buildresult.command.GetBuildResultCommand;
 import org.lyeung.elwood.web.controller.runbuild.KeyTuple;
 import org.mockito.InjectMocks;
