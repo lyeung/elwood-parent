@@ -1,5 +1,6 @@
 package org.lyeung.elwood.common.command.impl;
 
+import com.github.lyeung.common.test.SlowTest;
 import org.apache.commons.io.FileUtils;
 import org.junit.Before;
 import org.junit.Rule;
@@ -9,7 +10,6 @@ import org.junit.rules.ExpectedException;
 import org.junit.rules.TemporaryFolder;
 import org.lyeung.elwood.common.command.WriteFileCommandException;
 import org.lyeung.elwood.common.command.WriteFileCommandParam;
-import org.lyeung.elwood.common.test.SlowTest;
 
 import java.io.File;
 import java.io.IOException;

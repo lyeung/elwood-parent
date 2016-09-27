@@ -18,10 +18,10 @@
 
 package org.lyeung.elwood.web.controller.exception;
 
+import com.github.lyeung.common.test.SlowTest;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.runner.RunWith;
-import org.lyeung.elwood.common.test.SlowTest;
 import org.lyeung.elwood.web.controller.ValidationException;
 import org.mockito.InjectMocks;
 import org.mockito.runners.MockitoJUnitRunner;

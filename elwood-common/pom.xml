@@ -20,11 +20,11 @@
 
     <dependencies>
         <dependency>
-            <groupId>org.lyeung</groupId>
-            <artifactId>elwood-common-test</artifactId>
+            <groupId>com.github.lyeung</groupId>
+            <artifactId>lyeung-common-test</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.lyeung</groupId>
+            <groupId>com.github.lyeung</groupId>
             <artifactId>elwood-maven-runlistener</artifactId>
         </dependency>
         <dependency>

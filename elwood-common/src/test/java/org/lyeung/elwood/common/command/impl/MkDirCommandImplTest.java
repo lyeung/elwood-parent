@@ -18,6 +18,7 @@
 
 package org.lyeung.elwood.common.command.impl;
 
+import com.github.lyeung.common.test.SlowTest;
 import org.apache.commons.io.FileUtils;
 import org.junit.Before;
 import org.junit.Test;
@@ -25,7 +26,6 @@ import org.junit.experimental.categories.Category;
 import org.lyeung.elwood.common.command.MkDirCommandException;
 import org.lyeung.elwood.common.command.MkDirCommandParam;
 import org.lyeung.elwood.common.command.MkDirCommandParamBuilder;
-import org.lyeung.elwood.common.test.SlowTest;
 
 import java.io.File;
 

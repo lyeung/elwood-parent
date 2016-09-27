@@ -15,6 +15,10 @@
 
     <dependencies>
         <dependency>
+            <groupId>com.github.lyeung</groupId>
+            <artifactId>elwood-maven-runlistener</artifactId>
+        </dependency>
+        <dependency>
             <groupId>org.lyeung</groupId>
             <artifactId>elwood-common</artifactId>
         </dependency>

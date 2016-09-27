@@ -18,6 +18,7 @@
 
 package org.lyeung.elwood.builder.command.impl;
 
+import com.github.lyeung.common.test.QuickTest;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -29,7 +30,6 @@ import org.lyeung.elwood.builder.model.ModelStereotypeUtil;
 import org.lyeung.elwood.common.command.ShellCommand;
 import org.lyeung.elwood.common.command.ShellCommandException;
 import org.lyeung.elwood.common.command.ShellCommandParam;
-import org.lyeung.elwood.common.test.QuickTest;
 import org.mockito.ArgumentMatcher;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;

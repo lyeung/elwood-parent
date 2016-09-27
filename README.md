@@ -8,32 +8,44 @@ This README would normally document whatever steps are necessary to get your app
 
 ### Project Home ###
 
-* https://www.hostedredmine.com/projects/elwood-parent
+* https://github.com/lyeung/elwood-parent
 
 ### Project Wiki ###
 
-* https://www.hostedredmine.com/projects/elwood-parent/wiki
+* https://github.com/lyeung/elwood-parent/wiki
 
 ### Project Blog ###
 
-* http://tamemymonkeymind.blogspot.com.au/search/label/elwood
+* https://tamemymonkeymind.blogspot.com.au/search/label/elwood
 
 ### Issue Management ###
 
-* https://www.hostedredmine.com/projects/elwood-parent/issues
+* https://github.com/lyeung/elwood-parent/issues
 
 ### How do I get set up? ###
 
 * Summary of set up
-    * Requires JDK 8, Maven 3.3.1+ and Redis 3
+    * Requires JDK 8,
+    * Maven 3.3.1+
+    * Redis 3
+    * Git Flow
+
 * Configuration
-    * (TBD)
+    * Export Maven bin directory into path variable
+        * export M2_HOME=<path> && export PATH=$PATH:$M2_HOME/bin
+
 * Dependencies
     * (TBD)
+
 * Database configuration
     * Start up Redis3 server "redis-server"
+
 * How to run tests
     * Run Maven command "mvn clean install"
+    
+* How to run locally
+    * mvn clean install tomcat7:run-war
+
 * Deployment instructions
     * (TBD)
 
@@ -41,8 +53,10 @@ This README would normally document whatever steps are necessary to get your app
 
 * Writing tests
     * (TBD)
+
 * Code review
     * (TBD)
+
 * Other guidelines
     * (TBD)
 
@@ -50,6 +64,7 @@ This README would normally document whatever steps are necessary to get your app
 
 * Repo owner or admin
     * (TBD)
+
 * Other community or team contact
     * (TBD)
 

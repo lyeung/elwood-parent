@@ -1,8 +1,8 @@
 package org.lyeung.elwood.common.command;
 
+import com.github.lyeung.common.test.QuickTest;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
-import org.lyeung.elwood.common.test.QuickTest;
 
 import java.io.File;
 

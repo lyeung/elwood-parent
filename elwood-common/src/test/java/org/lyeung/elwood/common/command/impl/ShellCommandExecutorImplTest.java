@@ -18,6 +18,7 @@
 
 package org.lyeung.elwood.common.command.impl;
 
+import com.github.lyeung.common.test.SlowTest;
 import org.apache.commons.io.FileUtils;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -25,7 +26,6 @@ import org.lyeung.elwood.common.EncodingConstants;
 import org.lyeung.elwood.common.command.ShellCommandParam;
 import org.lyeung.elwood.common.command.ShellCommandParamBuilder;
 import org.lyeung.elwood.common.event.impl.DefaultEventListener;
-import org.lyeung.elwood.common.test.SlowTest;
 
 import java.io.File;
 import java.io.UnsupportedEncodingException;
@@ -69,4 +69,5 @@ public class ShellCommandExecutorImplTest {
 
         assertEquals(0, exitStatus.intValue());
         assertEquals(FileUtils.readFileToString(new File("src/test/resources/readme.txt")), builder.toString());
-    }}
+    }
+}

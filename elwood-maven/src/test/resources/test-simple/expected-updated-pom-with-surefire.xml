@@ -15,9 +15,9 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.lyeung</groupId>
+      <groupId>com.github.lyeung</groupId>
       <artifactId>elwood-maven-runlistener</artifactId>
-      <version>1.1.0-SNAPSHOT</version>
+      <version>1.0.0-SNAPSHOT</version>
       <scope>provided</scope>
     </dependency>
   </dependencies>
@@ -34,11 +34,11 @@
           </dependency>
         </dependencies>
         <configuration>
-          <groups>org.lyeung.elwood.common.test.QuickTest</groups>
+          <groups>com.github.lyeung.common.test.QuickTest</groups>
           <properties>
             <property>
               <name>listener</name>
-              <value>org.lyeung.elwood.maven.runlistener.ElwoodRunListener</value>
+              <value>com.github.lyeung.elwood.maven.runlistener.ElwoodRunListener</value>
             </property>
           </properties>
         </configuration>

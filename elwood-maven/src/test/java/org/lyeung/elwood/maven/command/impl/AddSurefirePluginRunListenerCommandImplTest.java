@@ -1,5 +1,6 @@
 package org.lyeung.elwood.maven.command.impl;
 
+import com.github.lyeung.common.test.SlowTest;
 import org.apache.commons.io.FileUtils;
 import org.apache.maven.model.Dependency;
 import org.apache.maven.model.Model;
@@ -10,7 +11,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.rules.TemporaryFolder;
-import org.lyeung.elwood.common.test.SlowTest;
 import org.lyeung.elwood.maven.ElwoodMavenConstants;
 import org.lyeung.elwood.maven.PomModelManager;
 import org.lyeung.elwood.maven.command.AddSurefirePluginRunListenerCommandParamBuilder;

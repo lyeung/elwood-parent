@@ -30,7 +30,7 @@
                     </dependency>
                 </dependencies>
                 <configuration>
-                    <groups>org.lyeung.elwood.common.test.QuickTest</groups>
+                    <groups>com.github.lyeung.common.test.QuickTest</groups>
                 </configuration>
             </plugin>
         </plugins>

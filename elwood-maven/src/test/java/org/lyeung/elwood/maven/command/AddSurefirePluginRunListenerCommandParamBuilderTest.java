@@ -1,8 +1,8 @@
 package org.lyeung.elwood.maven.command;
 
+import com.github.lyeung.common.test.QuickTest;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
-import org.lyeung.elwood.common.test.QuickTest;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;

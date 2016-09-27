@@ -18,6 +18,7 @@
 
 package org.lyeung.elwood.builder.command.impl;
 
+import com.github.lyeung.common.test.SlowTest;
 import org.apache.commons.io.FileUtils;
 import org.junit.Before;
 import org.junit.Test;
@@ -31,7 +32,6 @@ import org.lyeung.elwood.common.command.impl.MkDirCommandImpl;
 import org.lyeung.elwood.common.command.impl.ShellCommandExecutorImpl;
 import org.lyeung.elwood.common.command.impl.ShellCommandImpl;
 import org.lyeung.elwood.common.event.impl.DefaultEventListener;
-import org.lyeung.elwood.common.test.SlowTest;
 import org.lyeung.elwood.maven.command.AddSurefirePluginRunListenerCommandParamBuilder;
 import org.lyeung.elwood.maven.command.impl.AddSurefirePluginRunListenerCommandImpl;
 import org.lyeung.elwood.maven.impl.PomModelManagerImpl;

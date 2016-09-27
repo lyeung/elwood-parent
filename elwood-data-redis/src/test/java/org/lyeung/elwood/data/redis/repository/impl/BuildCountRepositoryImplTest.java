@@ -18,10 +18,10 @@
 
 package org.lyeung.elwood.data.redis.repository.impl;
 
+import com.github.lyeung.common.test.SlowTest;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
-import org.lyeung.elwood.common.test.SlowTest;
 import org.springframework.data.redis.core.RedisTemplate;
 
 import java.util.Set;

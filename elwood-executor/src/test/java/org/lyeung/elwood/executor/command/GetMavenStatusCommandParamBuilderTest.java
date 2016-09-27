@@ -18,11 +18,11 @@
 
 package org.lyeung.elwood.executor.command;
 
+import com.github.lyeung.common.test.QuickTest;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.junit.rules.TemporaryFolder;
-import org.lyeung.elwood.common.test.QuickTest;
 import org.lyeung.elwood.data.redis.domain.BuildKey;
 import org.lyeung.elwood.data.redis.domain.BuildResultKey;
 
