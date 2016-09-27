@@ -16,7 +16,7 @@ This README would normally document whatever steps are necessary to get your app
 
 ### Project Blog ###
 
-* http://tamemymonkeymind.blogspot.com.au/search/label/elwood
+* https://tamemymonkeymind.blogspot.com.au/search/label/elwood
 
 ### Issue Management ###
 
@@ -42,6 +42,9 @@ This README would normally document whatever steps are necessary to get your app
 
 * How to run tests
     * Run Maven command "mvn clean install"
+    
+* How to run locally
+    * mvn clean install tomcat7:run-war
 
 * Deployment instructions
     * (TBD)
