@@ -4,12 +4,12 @@
     <parent>
         <artifactId>elwood-parent</artifactId>
         <groupId>org.lyeung</groupId>
-        <version>1.1.0</version>
+        <version>${versionNumber}</version>
     </parent>
 
     <artifactId>elwood-common</artifactId>
     <packaging>jar</packaging>
-    <version>1.1.0</version>
+    <version>${project.parent.version}</version>
 
     <name>elwood-common</name>
     <url>http://maven.apache.org</url>

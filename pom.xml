@@ -4,7 +4,7 @@
 
     <groupId>org.lyeung</groupId>
     <artifactId>elwood-parent</artifactId>
-    <version>1.1.0</version>
+    <version>${versionNumber}</version>
     <packaging>pom</packaging>
 
     <name>elwood-parent</name>
@@ -49,6 +49,7 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <versionNumber>latest</versionNumber>
         <lyeung-common-test.version>1.0.12</lyeung-common-test.version>
         <elwood-maven-runlistener.version>1.0.0-SNAPSHOT</elwood-maven-runlistener.version>
         <springframework.version>4.1.7.RELEASE</springframework.version>

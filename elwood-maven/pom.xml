@@ -7,11 +7,11 @@
     <parent>
         <groupId>org.lyeung</groupId>
         <artifactId>elwood-parent</artifactId>
-        <version>1.1.0</version>
+        <version>${versionNumber}</version>
     </parent>
 
     <artifactId>elwood-maven</artifactId>
-    <version>1.1.0</version>
+    <version>${project.parent.version}</version>
     <name>elwood-maven</name>
     <url>http://maven.apache.org</url>
 
